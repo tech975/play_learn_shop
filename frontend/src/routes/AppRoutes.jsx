@@ -20,11 +20,11 @@ const AppRoutes = () => {
 
                 <Route path='*' element={ <NotFound /> } />
 
-                <Route path={`/${loginUser?.role + '/dashboard'}`} element={<ProtectedRoute allowedRoles={["user"]}><UserLayout /></ProtectedRoute> } >
+                {loginUser && <Route path={`/${loginUser?.role + '/dashboard'}`} element={<ProtectedRoute allowedRoles={["user"]}><UserLayout /></ProtectedRoute> } >
                     {/* <Route index element={ <Home /> } /> */}
                     <Route index element={ <UserDashboard /> } />
                     <Route path="bookings" element={<MyBookings />} />
-                </Route>
+                </Route>}
             </Routes>
         </Router>
     )

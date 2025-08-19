@@ -1,39 +1,63 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
+import {navConfig} from "../config/navConfig";
 
 const Navbar = ({ scroller }) => {
   const navigate = useNavigate();
   const [nav, setNav] = useState(false);
   const [activeTab, setActiveTab] = useState("");
+  const [role, setRole] = useState("public");
 
-  const handleNav = () => {
-    setNav(!nav);
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user?.role) setRole(user.role);
+  }, []);
+
+  const handleNav = () => setNav(!nav);
+
+  const handleItemClick = (item) => {
+    setActiveTab(item.text);
+    console.log("item: ", item)
+
+    if (item.type === "scroll" && scroller?.[item.key]) {
+      scroller[item.key](); // Scroll handler
+    } else if (item.type === "route") {
+      navigate(item.path);
+    } else if (item.type === "logout") {
+      localStorage.removeItem("user");
+      setRole("public");
+      navigate("/");
+    }
+
+    setNav(false); // close mobile menu
   };
 
-  const navItems = [
-    { id: 1, text: 'Play', onClick: scroller[0] },
-    { id: 2, text: 'Learn', onClick: scroller[1] },
-    { id: 3, text: 'Shop', onClick: scroller[2] },
-    { id: 4, text: 'Login', onClick: () => navigate('/login')}
-  ];
+  const navItems = navConfig[role]
+  console.log(navItems?.map(item => item))
 
   return (
     <div className="fixed top-2 left-1/2 transform -translate-x-1/2 w-[100%] sm:w-[90%] bg-white/30 backdrop-blur-md border-1 flex justify-between items-center h-12 sm:rounded-2xl px-4 text-white z-50">
       {/* Logo */}
-      <h1 className="w-full text-3xl font-bold text-[#00df9a]">REACT.</h1>
+      <h1
+        className="w-full text-3xl font-bold text-[#00df9a] cursor-pointer"
+        onClick={() => navigate("/")}
+      >
+        REACT.
+      </h1>
 
       {/* Desktop Navigation */}
-      <ul className="hidden md:flex">
-        {navItems.map(item => (
+      <ul className="hidden md:flex justify-center items-center m-2">
+        {navItems.map((item) => (
           <li
             key={item.id}
-            onClick={() => {
-              setActiveTab(item.text);
-              item.onClick && item.onClick();
-            }}
-            className={`py-2 px-16 rounded-xl m-2 cursor-pointer duration-300 gap-5 
-              ${activeTab === item.text ? "bg-[#00df9a] text-black font-semibold" : "hover:bg-[#00df9a] hover:text-black"}`}
+            onClick={() => handleItemClick(item)}
+            className={`px-8 rounded-xl whitespace-nowrap m-2 cursor-pointer duration-300 gap-5 
+              ${
+                activeTab === item.text
+                  ? "bg-[#00df9a] text-black from-neutral-50"
+                  : "hover:bg-[#00df9a] hover:text-black"
+              }`}
           >
             {item.text}
           </li>
@@ -53,20 +77,16 @@ const Navbar = ({ scroller }) => {
             : "ease-in-out w-[70%] duration-500 fixed top-0 bottom-0 left-[-100%]"
         }
       >
-        {/* Mobile Logo */}
-        {/* <h1 className="w-full text-3xl font-bold text-[#00df9a] m-4">REACT.</h1> */}
-
-        {/* Mobile Navigation Items */}
-        {navItems.map(item => (
+        {navItems.map((item) => (
           <li
             key={item.id}
-            onClick={() => {
-              setActiveTab(item.text);
-              item.onClick && item.onClick();
-              setNav(false);
-            }}
+            onClick={() => handleItemClick(item)}
             className={`p-2 border-b rounded-xl cursor-pointer border-gray-600 duration-300 
-              ${activeTab === item.text ? "bg-[#00df9a] text-black font-semibold" : "hover:bg-[#00df9a] hover:text-black"}`}
+              ${
+                activeTab === item.text
+                  ? "bg-[#00df9a] text-black font-semibold"
+                  : "hover:bg-[#00df9a] hover:text-black"
+              }`}
           >
             {item.text}
           </li>

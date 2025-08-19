@@ -10,6 +10,7 @@ import Shop from "./Shop";
 import { sports } from "../../cluster/sportsData";
 import SportsCard from "./SportsCard";
 import Footer from "./Footer";
+import HeroSlider from "./HeroSlider";
 
 const Home = () => {
   const playRef = useRef();
@@ -56,61 +57,16 @@ const Home = () => {
   return () => window.removeEventListener("scroll", handleScroll);
 }, []);
 
-
-  const slides = [
-    { id: 1, img: "https://images.unsplash.com/photo-1430232324554-8f4aebd06683?q=80&w=1632&auto=format&fit=crop", title: "" },
-    { id: 2, img: "https://images.unsplash.com/photo-1625401586060-f12be3d7cc57?q=80&w=1170&auto=format&fit=crop", title: "" },
-    { id: 3, img: "https://images.unsplash.com/photo-1646140715711-d118585579b0?q=80&w=1170&auto=format&fit=crop", title: "" },
-    { id: 4, img: "https://images.unsplash.com/photo-1517927033932-b3d18e61fb3a?q=80&w=1638&auto=format&fit=crop", title: "" },
-  ];
-
   return (
     <div className="relative h-screen">
-      {/* Fixed background carousel (stays as page background) */}
-      <div className="fixed inset-0 -z-10">
-        <Swiper
-          modules={[Autoplay]}
-          autoplay={{ delay: 3000, disableOnInteraction: false }}
-          loop
-          className="w-full h-full"
-        >
-          {slides.map((slide) => (
-            <SwiperSlide key={slide.id}>
-              <div
-                className="w-full h-screen bg-cover bg-center"
-                style={{ backgroundImage: `url(${slide.img})` }}
-              >
-              {<div className="w-full h-full bg-black/50 flex items-center justify-center">
-                  <h2 className="text-white text-3xl md:text-5xl font-bold">
-                    {slide.title}
-                  </h2>
-                </div>}
-              </div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      </div>
+      <HeroSlider />
 
-      {/* Sticky navbar */}
-      {/* <div className="sticky top-2 z-50"> */}
-        <Navbar scroller={[scrollToPlay, scrollToLearn, scrollToShop]} activeTab={activeTab} />
-      {/* </div> */}
-
-      {/* Searchbar overlay:
-          - At top-right when scrolled
-          - Centered over banner when at top */}
-      {/* <div
-        className={`z-40 transition-all duration-700 ease-in-out
-          ${scrolled
-            ? "fixed top-16 right-4 w-full max-w-sm translate-x-0"
-            : "absolute top-[25%] left-1/2 -translate-x-1/2 w-full max-w-3xl"
-          }`}
-      >
-        <Searchbar compact={scrolled} />
-      </div> */}
+      <Navbar scroller={[scrollToPlay, scrollToLearn, scrollToShop]} activeTab={activeTab} />
 
       <div className="w-full h-full flex flex-col items-center justify-center mt-20 mb-12">
-          <Searchbar />
+          <div className="w-full sm:w-[60%]">
+            <Searchbar />
+          </div>
           <>
             <p className="mt-6 text-lg md:text-2xl font-semibold text-white drop-shadow-lg text-center">
               Discover, Book & Play - Your Ultimate Sports Companion App
