@@ -1,7 +1,9 @@
 // src/pages/public/Register.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { mockUsers } from "../../cluster/userData";
+import { useDispatch, useSelector } from "react-redux";
+import { registerUser } from "../../features/auth/authSlice";
+
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -10,33 +12,32 @@ const Register = () => {
   const [role, setRole] = useState("user");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { user, loading, error: authError } = useSelector((state) => state.auth);
+
+  console.log("user: ", user)
 
   const handleRegister = (e) => {
     e.preventDefault();
-
-    const exists = mockUsers?.find((u) => u.email === email);
-    if (exists) {
-      setError("User already exists with this email");
-      return;
-    }
-
-    const newUser = {
-      id: mockUsers.length + 1,
-      name,
-      email,
-      password,
-      role,
-      bookings: [],
-    };
-
-    mockUsers.push(newUser);
-    localStorage.setItem("user", JSON.stringify(newUser));
-
-    if (role === "admin") navigate("/admin");
-    else if (role === "coach") navigate("/coach");
-    else if (role === "groundOwner") navigate("/ground-owner");
-    else navigate("/user");
+    setError("");
+    dispatch(registerUser({ name, email, password, role }));
   };
+
+  useEffect(() => {
+    if (user && user.role) {
+      let targetPath = "/login";
+      if (user.role === "admin") targetPath = "/admin";
+      else if (user.role === "coach") targetPath = "/login";
+      else if (user.role === "owner") targetPath = "/login";
+      if (window.location.pathname !== targetPath) {
+        navigate(targetPath);
+      }
+    }
+  }, [user, navigate]);
+
+  useEffect(() => {
+    if (authError) setError(authError);
+  }, [authError]);
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-100 to-gray-200">
@@ -74,14 +75,15 @@ const Register = () => {
           >
             <option value="user">User</option>
             <option value="coach">Coach</option>
-            <option value="groundOwner">Ground Owner</option>
+            <option value="owner">Owner</option>
             <option value="admin">Admin</option>
           </select>
           <button
             type="submit"
             className="bg-green-500 hover:bg-green-600 text-white py-2 rounded-lg font-semibold transition"
+            disabled={loading}
           >
-            Register
+            {loading ? "Registering..." : "Register"}
           </button>
           {error && <p className="text-red-500 text-sm text-center">{error}</p>}
         </form>

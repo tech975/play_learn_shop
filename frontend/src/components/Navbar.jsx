@@ -1,39 +1,36 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import {navConfig} from "../config/navConfig";
+import { useSelector, useDispatch } from "react-redux";
+import { logout } from "../features/auth/authSlice";
+import { navConfig } from "../config/navConfig";
 
 const Navbar = ({ scroller }) => {
   const navigate = useNavigate();
   const [nav, setNav] = useState(false);
   const [activeTab, setActiveTab] = useState("");
-  const [role, setRole] = useState("public");
-
-  useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (user?.role) setRole(user.role);
-  }, []);
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth.user);
+  const role = user && user.role ? user.role : "public";
+  const navItems = navConfig[role] || navConfig["public"];
 
   const handleNav = () => setNav(!nav);
+  console.log("Navbar user:", user, "role:", role);
 
   const handleItemClick = (item) => {
     setActiveTab(item.text);
-    console.log("item: ", item)
-
     if (item.type === "scroll" && scroller?.[item.key]) {
       scroller[item.key](); // Scroll handler
     } else if (item.type === "route") {
       navigate(item.path);
     } else if (item.type === "logout") {
-      localStorage.removeItem("user");
-      setRole("public");
+      dispatch(logout());
       navigate("/");
     }
-
     setNav(false); // close mobile menu
   };
 
-  const navItems = navConfig[role]
+  // navItems already defined above with fallback
   console.log(navItems?.map(item => item))
 
   return (
@@ -45,14 +42,13 @@ const Navbar = ({ scroller }) => {
       >
         REACT.
       </h1>
-
       {/* Desktop Navigation */}
-      <ul className="hidden md:flex justify-center items-center m-2">
+      <ul className="hidden md:flex justify-center items-center gap-5 m-2">
         {navItems.map((item) => (
           <li
             key={item.id}
             onClick={() => handleItemClick(item)}
-            className={`px-8 rounded-xl whitespace-nowrap m-2 cursor-pointer duration-300 gap-5 
+            className={`px-8 py-2 rounded-xl whitespace-nowrap cursor-pointer duration-300 
               ${
                 activeTab === item.text
                   ? "bg-[#00df9a] text-black from-neutral-50"

@@ -7,27 +7,57 @@ import ProtectedRoute from './ProtectedRoute';
 import UserDashboard from '../pages/user/UserDashboard';
 import MyBookings from '../pages/user/MyBookings';
 import NotFound from '../pages/NotFound';
+import UserProfile from '../pages/user/UserProfile';
+// import { useSelector } from 'react-redux';
+
 
 const AppRoutes = () => {
-    const loginUser = JSON.parse(localStorage.getItem("user"));
+  // const user = useSelector((state) => state.auth.user);
 
-    return (
-        <Router>
-            <Routes>
-                <Route path='/' element={ <Home /> } />
-                <Route path='/login' element={ <Login /> } />
-                <Route path='/register' element={ <Register /> } />
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
-                <Route path='*' element={ <NotFound /> } />
 
-                {loginUser && <Route path={`/${loginUser?.role + '/dashboard'}`} element={<ProtectedRoute allowedRoles={["user"]}><UserLayout /></ProtectedRoute> } >
-                    {/* <Route index element={ <Home /> } /> */}
-                    <Route index element={ <UserDashboard /> } />
-                    <Route path="bookings" element={<MyBookings />} />
-                </Route>}
-            </Routes>
-        </Router>
-    )
-}
+        {/* User Dashboard Route (always defined, protected) */}
+        <Route
+          path="/user/dashboard"
+          element={
+            <ProtectedRoute allowedRoles={["user"]}>
+              <UserLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<UserDashboard />} />
+        </Route>
+
+        <Route
+          path="/user/bookings"
+          element={
+            <ProtectedRoute allowedRoles={["user"]}>
+              <MyBookings />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/user/profile"
+          element={
+            <ProtectedRoute allowedRoles={["user"]}>
+              <UserProfile />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Add more protected routes for other roles here */}
+
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </Router>
+  );
+};
 
 export default AppRoutes;

@@ -1,4 +1,5 @@
-// src/config/navItems.js
+// import AccountMenu from "../components/AccountMenu";
+
 export const navConfig = {
   public: [
     { id: 1, text: "Play", type: "scroll", key: 0 },
@@ -11,9 +12,10 @@ export const navConfig = {
     { id: 1, text: "Dashboard", type: "route", path: "/user/dashboard" },
     { id: 2, text: "Book Turf", type: "route", path: "/user/bookings/turf" },
     { id: 3, text: "Join Coaching", type: "route", path: "/user/bookings/coach" },
-    { id: 4, text: "My Bookings", type: "route", path: "/user/mybookings" },
+    { id: 4, text: "Bookings", type: "route", path: "/user/bookings" },
+    // { id: 5, text: <AccountMenu />, type: "route"},
     { id: 5, text: "Profile", type: "route", path: "/user/profile" },
-    { id: 6, text: "Logout", type: "logout", path: "/" },
+    // { id: 6, text: "Logout", type: "logout", path: "/" },
   ],
 
   admin: [

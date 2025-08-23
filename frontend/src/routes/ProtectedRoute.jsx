@@ -1,14 +1,17 @@
 // src/routes/ProtectedRoute.jsx
 import { Navigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
-  const user = JSON.parse(localStorage.getItem("user"));
+  // Try Redux state first
+  const authUser = useSelector((state) => state.auth.user);
 
-  if (!user) {
+  if (!authUser) {
     return <Navigate to="/login" replace />;
   }
 
-  if (allowedRoles && !allowedRoles.includes(user?.role)) {
+  if (allowedRoles && !allowedRoles.includes(authUser?.role)) {
     return <Navigate to="/unauthorized" replace />;
   }
 

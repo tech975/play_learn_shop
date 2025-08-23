@@ -1,12 +1,15 @@
 // src/pages/public/Login.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
-import { mockUsers } from "../../cluster/userData";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser } from "../../features/auth/authSlice";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const dispatch = useDispatch();
+  const { user, loading, error: authError } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const location = useLocation();
   const path = location?.state?.from;
@@ -39,27 +42,25 @@ const Login = () => {
   //   // if(user?.role) navigate(`{${user?.role}${location.state.from}}`)
   // };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    const user = mockUsers?.find(
-      (u) => u.email === email && u.password === password
-    );
-
-    const moduleName = path?.split("/")?.at(-2) || null;
-
-    if (!user) {
-      setError("Invalid email or password");
-      return;
-    }
-
-    localStorage.setItem("user", JSON.stringify(user));
-
-    if (moduleName) {
-      navigate(`/${user?.role}${path}`);
-    } else {
-      navigate(`/${user?.role}/dashboard`);
-    }
+    setError("");
+    dispatch(loginUser({ email, password }));
   };
+
+  useEffect(() => {
+    if (user && user.role) {
+      const moduleName = path?.split("/")?.at(-2) || null;
+      const targetPath = moduleName ? `/${user.role}${path}` : `/${user.role}/dashboard`;
+      if (window.location.pathname !== targetPath) {
+        navigate(targetPath);
+      }
+    }
+  }, [user, navigate, path]);
+
+  useEffect(() => {
+    if (authError) setError(authError);
+  }, [authError]);
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-100 to-gray-200">
@@ -85,8 +86,9 @@ const Login = () => {
           <button
             type="submit"
             className="bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg font-semibold transition"
+            disabled={loading}
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
           {error && <p className="text-red-500 text-sm text-center">{error}</p>}
         </form>
