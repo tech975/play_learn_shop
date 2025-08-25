@@ -13,6 +13,18 @@ export const fetchUserBookings = createAsyncThunk(
   }
 );
 
+export const bookSlot = createAsyncThunk(
+  'bookings/bookSlot',
+  async (slotData, { rejectWithValue }) => {
+    try {
+      const response = await axios.post('/api/bookings', slotData);
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || 'Failed to book slot');
+    }
+  }
+);
+
 const bookingSlice = createSlice({
   name: 'bookings',
   initialState: {
@@ -32,6 +44,18 @@ const bookingSlice = createSlice({
         state.bookings = action.payload;
       })
       .addCase(fetchUserBookings.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(bookSlot.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(bookSlot.fulfilled, (state, action) => {
+        state.loading = false;
+        state.bookings.push(action.payload);
+      })
+      .addCase(bookSlot.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

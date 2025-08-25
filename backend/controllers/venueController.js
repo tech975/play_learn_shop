@@ -1,13 +1,16 @@
 // Venue Controller
 const Venue = require('../models/Venue');
 const Slot = require('../models/Slot');
+
 exports.getVenues = async (req, res) => {
   try {
-    const { sport, location, price } = req.query;
+    const { sport, location, price, search } = req.query;
+    console.log("search: ", search);
     let filter = {};
     if (sport) filter.sport = sport;
     if (location) filter.location = location;
     if (price) filter.price = { $lte: Number(price) };
+
     const venues = await Venue.find(filter).populate('owner', 'name email').populate('slots');
     res.json(venues);
   } catch (err) {

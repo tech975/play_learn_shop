@@ -1,14 +1,27 @@
 import Searchbar from "../../components/Searchbar";
 import Cards from "../../components/Cards"; // Agar tum generic card use karte ho
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const Play = ({ ref }) => {
+  const navigate = useNavigate();
+  const user = useSelector((state) => state.auth.user);
+  const playOptions = ["Single", "Multiple"];
 
-  const turfs = [
-    { id: 1, name: "Greenfield Arena", owner: "Vikram Singh", rating: 4.8, price: "₹1200/hr", location: "Mumbai, India", img: "https://images.unsplash.com/photo-1503515091255-ab8063a1796d?q=80&w=1172&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" },
-    { id: 2, name: "Elite Turf", owner: "Kavya Reddy", rating: 4.6, price: "₹900/hr", location: "Bangalore, India", img: "https://images.unsplash.com/photo-1610684082661-5d4763eecb39?q=80&w=1172&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D " },
-    { id: 3, name: "Royal Sports Club", owner: "Sahil Kapoor", rating: 4.9, price: "₹1500/hr", location: "Delhi, India", img: "https://images.unsplash.com/photo-1661587535658-50048b8ec242?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", },
-    { id: 4, name: "Elite Turf", owner: "Kavya Reddy", rating: 4.6, price: "₹900/hr", location: "Bangalore, India", img: "https://images.unsplash.com/photo-1610684082661-5d4763eecb39?q=80&w=1172&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D " },
-  ];
+  const handleClick = () => {
+    if(!user) {
+      navigate("/login", { state: { nextRoute: "/user/bookings/turf" }})
+    } else {
+      navigate("/user/bookings/turf")
+    }
+  }
+
+  // const turfs = [
+  //   { id: 1, name: "Greenfield Arena", owner: "Vikram Singh", rating: 4.8, price: "₹1200/hr", location: "Mumbai, India", img: "https://images.unsplash.com/photo-1503515091255-ab8063a1796d?q=80&w=1172&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" },
+  //   { id: 2, name: "Elite Turf", owner: "Kavya Reddy", rating: 4.6, price: "₹900/hr", location: "Bangalore, India", img: "https://images.unsplash.com/photo-1610684082661-5d4763eecb39?q=80&w=1172&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D " },
+  //   { id: 3, name: "Royal Sports Club", owner: "Sahil Kapoor", rating: 4.9, price: "₹1500/hr", location: "Delhi, India", img: "https://images.unsplash.com/photo-1661587535658-50048b8ec242?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", },
+  //   { id: 4, name: "Elite Turf", owner: "Kavya Reddy", rating: 4.6, price: "₹900/hr", location: "Bangalore, India", img: "https://images.unsplash.com/photo-1610684082661-5d4763eecb39?q=80&w=1172&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D " },
+  // ];
 
   return (
     <div ref={ref} className="relative z-30 scroll-mt-24">
@@ -42,7 +55,7 @@ const Play = ({ ref }) => {
         </div>
 
         {/* Cards Section */}
-        <div className="w-full sm:flex justify-between items-center">
+        {/* <div className="w-full sm:flex justify-between items-center">
           <div>
             <h3 className="text-2xl font-semibold text-white mb-6 text-center">
               Turfs near by you
@@ -55,6 +68,23 @@ const Play = ({ ref }) => {
         <div className="flex gap-6 overflow-x-auto scrollbar-hide sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:overflow-visible">
           {turfs.map((turf) => (
             <Cards key={turf.id} {...turf} module={'play'} />
+          ))}
+        </div> */}
+        {/* ✅ Buttons Section */}
+
+        {/* Section Title */}
+        <h3 className="text-6xl font-bold text-white mb-10 text-center drop-shadow-lg">
+          Select Sports type
+        </h3>
+        <div className="flex flex-wrap justify-center gap-6">
+          {playOptions.map((option, index) => (
+            <button
+              key={index}
+              onClick={handleClick}
+              className="px-6 py-3 bg-[#00df9a] text-black font-semibold rounded-xl shadow-md hover:bg-[#00b87d] transition duration-300"
+            >
+              {option}
+            </button>
           ))}
         </div>
       </div>

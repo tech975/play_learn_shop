@@ -8,6 +8,8 @@ import UserDashboard from '../pages/user/UserDashboard';
 import MyBookings from '../pages/user/MyBookings';
 import NotFound from '../pages/NotFound';
 import UserProfile from '../pages/user/UserProfile';
+import VenueList from '../pages/user/VenueList';
+import VenueDetails from '../pages/user/VenueDetails';
 // import { useSelector } from 'react-redux';
 
 
@@ -33,6 +35,24 @@ const AppRoutes = () => {
         >
           <Route index element={<UserDashboard />} />
         </Route>
+
+        <Route
+          path='/user/bookings/turf'
+          element={
+            <ProtectedRoute allowedRoles={["user"]}>
+              <VenueList />
+            </ProtectedRoute>
+          }
+          />
+
+          <Route
+          path='/user/bookings/turf/:id'
+          element={
+            <ProtectedRoute allowedRoles={["user"]}>
+              <VenueDetails />
+            </ProtectedRoute>
+          }
+          />
 
         <Route
           path="/user/bookings"

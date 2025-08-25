@@ -15,7 +15,6 @@ const Navbar = ({ scroller }) => {
   const navItems = navConfig[role] || navConfig["public"];
 
   const handleNav = () => setNav(!nav);
-  console.log("Navbar user:", user, "role:", role);
 
   const handleItemClick = (item) => {
     setActiveTab(item.text);
@@ -29,9 +28,6 @@ const Navbar = ({ scroller }) => {
     }
     setNav(false); // close mobile menu
   };
-
-  // navItems already defined above with fallback
-  console.log(navItems?.map(item => item))
 
   return (
     <div className="fixed top-2 left-1/2 transform -translate-x-1/2 w-[100%] sm:w-[90%] bg-white/30 backdrop-blur-md border-1 flex justify-between items-center h-12 sm:rounded-2xl px-4 text-white z-50">

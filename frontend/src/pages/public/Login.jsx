@@ -1,6 +1,6 @@
 // src/pages/public/Login.jsx
 import { useState, useEffect } from "react";
-import { useNavigate, useLocation, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../../features/auth/authSlice";
 
@@ -10,15 +10,17 @@ const Login = () => {
   const [error, setError] = useState("");
   const dispatch = useDispatch();
   const { user, loading, error: authError } = useSelector((state) => state.auth);
-  const navigate = useNavigate();
+
   const location = useLocation();
-  const path = location?.state?.from;
+  const navigate = useNavigate();
+  // const location = useLocation();
+  // const path = location?.state?.from;
 
   // const handleLogin = (e) => {
   //   e.preventDefault();
-  //   const user = mockUsers?.find(
-  //     (u) => u.email === email && u.password === password
-  //   );
+    // const user = mockUsers?.find(
+    //   (u) => u.email === email && u.password === password
+    // );
 
   //   const moduleName = path && path.split("/").at(-2) || 'login'
   //   console.log("moduleName: ", moduleName)
@@ -42,21 +44,39 @@ const Login = () => {
   //   // if(user?.role) navigate(`{${user?.role}${location.state.from}}`)
   // };
 
-  const handleLogin = async (e) => {
+  // const handleLogin = async (e) => {
+  //   e.preventDefault();
+  //   setError("");
+  //   dispatch(loginUser({ email, password }));
+  // };
+
+  // useEffect(() => {
+  //   if (user && user.role) {
+  //     const moduleName = path?.split("/")?.at(-2) || null;
+  //     const targetPath = moduleName ? `/${user.role}${path}` : `/${user.role}/dashboard`;
+  //     if (window.location.pathname !== targetPath) {
+  //       navigate(targetPath);
+  //     }
+  //   }
+  // }, [user, navigate, path]);
+
+  
+  const handleLogin = (e) => {
     e.preventDefault();
+    // const user = mockUsers?.find(
+    //   (u) => u.email === email && u.password === password
+    // );
     setError("");
     dispatch(loginUser({ email, password }));
-  };
+
+  }
 
   useEffect(() => {
     if (user && user.role) {
-      const moduleName = path?.split("/")?.at(-2) || null;
-      const targetPath = moduleName ? `/${user.role}${path}` : `/${user.role}/dashboard`;
-      if (window.location.pathname !== targetPath) {
-        navigate(targetPath);
-      }
+      const nextRoute = location.state?.nextRoute || "/"; 
+      navigate(nextRoute, { replace: true });
     }
-  }, [user, navigate, path]);
+  }, [user, navigate]);
 
   useEffect(() => {
     if (authError) setError(authError);

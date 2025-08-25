@@ -26,7 +26,6 @@ const UserProfile = () => {
         dispatch(updateUserProfile({ name, token: loggedInUser.token }));
         setOpen(false);
     };
-    console.log("user: ", user);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 text-white">
