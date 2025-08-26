@@ -14,4 +14,6 @@ router.get('/', auth, bookingController.getBookings);
 router.put('/:id/status', auth, bookingController.updateBookingStatus);
 router.delete('/:id', auth, bookingController.cancelBooking);
 
+router.put('/:bookingId/confirm-payment', auth, bookingController.confirmBookingPayment);
+
 module.exports = router;

@@ -4,58 +4,50 @@ import "react-calendar/dist/Calendar.css";
 import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
-import { bookSlot } from "../../features/bookings/bookingSlice";
-import { generateSlots } from "../../utils/slotUtils";
+import { bookSlot, fetchSlotsByVenue } from "../../features/bookings/bookingSlice";
 
-const BookingSidebar = ({ isOpen, onClose, venue, price, bookings, selectedDate, setSelectedDate }) => {
+const BookingSidebar = ({ isOpen, onClose, venue, price, selectedDate, setSelectedDate }) => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
-
   const [slots, setSlots] = useState([]);
-  const [availableSlots, setAvailableSlots] = useState([]);
   const [selectedSlots, setSelectedSlots] = useState([]);
 
   // Prevent past date selection
   const handleDateChange = (date) => {
     const today = new Date();
-    if (date.setHours(0,0,0,0) < today.setHours(0,0,0,0)) {
+    if (date.setHours(0, 0, 0, 0) < today.setHours(0, 0, 0, 0)) {
       toast.error("Cannot select a past date");
       return;
     }
     setSelectedDate(date);
   };
 
-  // Generate slots whenever date or bookings change
+  // Fetch available slots for the venue on the selected date
   useEffect(() => {
-    if (!venue) return;
+    if (!venue || !selectedDate) return;
 
-    // Get booked slots for the selected date
-    const bookedSlots = bookings
-      .filter(b => new Date(b.date).toDateString() === selectedDate.toDateString())
-      .map(b => b.slot.startTime);
+    const fetchSlots = async () => {
+      try {
+        const formattedDate = selectedDate.toISOString().split("T")[0];
+        const response = await dispatch(fetchSlotsByVenue({ venueId: venue._id, date: formattedDate })).unwrap();
+        setSlots(response);
+        setSelectedSlots([]); // reset selection when date changes
+      } catch (err) {
+        toast.error(err.message || "Failed to fetch slots");
+      }
+    };
 
-    const generatedSlots = generateSlots(9, 24, bookedSlots); // 9AM to 12AM
-    // Add unique _id for React keys
-    const slotsWithId = generatedSlots.map((s, idx) => ({
-      ...s,
-      _id: `${selectedDate.toDateString()}-${s.startTime}-${idx}`,
-      isBooked: bookedSlots.includes(s.startTime),
-    }));
-
-    setSlots(slotsWithId);
-    setSelectedSlots([]); // Reset selection when date changes
-  }, [bookings, venue, selectedDate]);
-
-  // Filter available slots
-  useEffect(() => {
-    setAvailableSlots(slots);
-  }, [slots]);
+    fetchSlots();
+  }, [venue, selectedDate, dispatch]);
 
   // Group slots by Morning / Afternoon / Evening
   const groupedSlots = {
-    Morning: availableSlots.filter(s => parseInt(s.startTime.split(":")[0]) < 12),
-    Afternoon: availableSlots.filter(s => parseInt(s.startTime.split(":")[0]) >= 12 && parseInt(s.startTime.split(":")[0]) < 17),
-    Evening: availableSlots.filter(s => parseInt(s.startTime.split(":")[0]) >= 17),
+    Morning: slots.filter(s => new Date(s.startTime).getHours() < 12),
+    Afternoon: slots.filter(s => {
+      const hour = new Date(s.startTime).getHours();
+      return hour >= 12 && hour < 17;
+    }),
+    Evening: slots.filter(s => new Date(s.startTime).getHours() >= 17),
   };
 
   const toggleSlotSelection = (slot) => {
@@ -72,21 +64,24 @@ const BookingSidebar = ({ isOpen, onClose, venue, price, bookings, selectedDate,
     if (selectedSlots.length === 0) return toast.error("Select at least one slot");
 
     try {
-      for (let slot of selectedSlots) {
-        const bookingData = {
-          user: user._id,
-          venue: venue._id,
-          slot: slot._id,
-          date: selectedDate,
-          amount: price,
-        };
-        await dispatch(bookSlot(bookingData)).unwrap();
-      }
+      const slotIds = selectedSlots.map(s => s._id);
+      const bookingData = { slotIds, amount: price * selectedSlots.length };
+
+      await dispatch(bookSlot(bookingData)).unwrap();
+      // const paymentSuccess = await simulatePaymentGateway(booking.amount); 
+
+      // if (paymentSuccess) {
+      //   // 3. Update booking after payment
+      //   await dispatch(handlePayment(bookingData._id)).unwrap();
+      //   toast.success("Booking confirmed and payment updated!");
+      //   setSelectedSlots([]);
+      //   onClose();
+      // }
       toast.success("Slots booked successfully!");
       setSelectedSlots([]);
       onClose();
     } catch (err) {
-      toast.error(err);
+      toast.error(err.message || "Booking failed");
     }
   };
 
@@ -139,10 +134,11 @@ const BookingSidebar = ({ isOpen, onClose, venue, price, bookings, selectedDate,
                             disabled={slot.isBooked}
                             className={`px-3 py-2 rounded-lg border transition-all duration-200
                               ${slot.isBooked ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : ''}
-                              ${isSelected ? 'bg-blue-600 text-white border-blue-600' : 'bg-gray-100 text-gray-800 hover:bg-gray-200 hover:scale-105'}
-                            `}
+                              ${isSelected ? 'bg-blue-600 text-white border-blue-600' : 'bg-gray-100 text-gray-800 hover:bg-gray-200 hover:scale-105'}`}
                           >
-                            {slot.startTime} - {slot.endTime}
+                            {new Date(slot.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            {" - "}
+                            {new Date(slot.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </button>
                         );
                       })
@@ -154,15 +150,14 @@ const BookingSidebar = ({ isOpen, onClose, venue, price, bookings, selectedDate,
 
             {/* Book Button */}
             <button
-                className={`mt-4 w-full py-2 rounded-lg text-white transition-colors duration-200
-                    ${selectedSlots.length === 0 
-                    ? 'bg-gray-400 cursor-not-allowed' 
-                    : 'bg-blue-600 hover:bg-blue-700'}
-                `}
-                onClick={handleBook}
-                disabled={selectedSlots.length === 0} // disable if no slot selected
-                >
-                Book Slot
+              className={`mt-4 w-full py-2 rounded-lg text-white transition-colors duration-200
+                  ${selectedSlots.length === 0 
+                  ? 'bg-gray-400 cursor-not-allowed' 
+                  : 'bg-blue-600 hover:bg-blue-700'}`}
+              onClick={handleBook}
+              disabled={selectedSlots.length === 0}
+            >
+              Book Slot
             </button>
           </motion.div>
         </motion.div>

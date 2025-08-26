@@ -24,7 +24,7 @@ const VenueList = () => {
   }, [dispatch, filters]);
 
   return (
-    <div className="px-24 mt-16">
+    <div className="md:px-24 mt-16">
       <Navbar />
       <HeroSlider />
 
@@ -68,7 +68,7 @@ const VenueList = () => {
       </div>
 
       {/* Venue cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 cursor-pointer">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 cursor-pointer px-4">
         {loading ? (
           <p className="text-gray-500 col-span-full text-center">
             Loading venues...

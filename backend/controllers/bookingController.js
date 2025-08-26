@@ -5,30 +5,38 @@ const Venue = require('../models/Venue');
 // 1️⃣ Create Booking
 exports.createBooking = async (req, res) => {
   try {
-    const { user, venue, slot, coach, amount, date } = req.body;
+    const { user, venue, slots, coach, amount, date } = req.body;
 
-    if (!user || !venue || !slot || !amount || !date) {
-      return res.status(400).json({ message: 'All fields are required' });
+    if (!Array.isArray(slots) || slots.length === 0) {
+      return res.status(400).json({ message: "Send an array of slots" });
     }
 
-    // Check if slot is already booked
-    const existing = await Booking.findOne({ slot, date, status: { $ne: 'cancelled' } });
+    // Check if any slot is already booked
+    const existing = await Booking.findOne({
+      slots: { $in: slots },
+      date,
+      status: { $ne: "cancelled" },
+    });
+
     if (existing) {
-      return res.status(400).json({ message: 'Slot already booked' });
+      return res.status(400).json({ message: "One or more slots already booked" });
     }
 
-    // Mark slot as booked
-    await Slot.findByIdAndUpdate(slot, { isBooked: true });
+    // Mark all selected slots as booked
+    await Slot.updateMany(
+      { _id: { $in: slots } },
+      { $set: { isBooked: true } }
+    );
 
     const booking = await Booking.create({
       user,
       venue,
-      slot,
+      slots, // <-- array
       coach,
       amount,
       date,
-      status: 'pending',
-      paymentStatus: 'unpaid',
+      status: "pending",
+      paymentStatus: "unpaid",
     });
 
     res.status(201).json(booking);
@@ -36,6 +44,7 @@ exports.createBooking = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
 
 // 2️⃣ Get Bookings (user / venue owner / coach)
 exports.getBookings = async (req, res) => {
@@ -53,7 +62,7 @@ exports.getBookings = async (req, res) => {
     const bookings = await Booking.find(filter)
       .populate('user', 'name email')
       .populate({ path: 'venue', populate: { path: 'owner', select: 'name email' } })
-      .populate('slot')
+      .populate('slots')
       .populate('coach', 'name');
 
     res.json(bookings);
@@ -94,6 +103,25 @@ exports.updateBookingStatus = async (req, res) => {
 
     await booking.save();
     res.json(booking);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+exports.confirmBookingPayment = async (req, res) => {
+  try {
+    const { bookingId } = req.params;
+
+    const booking = await Booking.findById(bookingId);
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    booking.paymentStatus = "paid";
+    booking.status = "confirmed"; // if you want auto-confirm after payment
+    await booking.save();
+
+    res.status(200).json({ message: "Payment confirmed", booking });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

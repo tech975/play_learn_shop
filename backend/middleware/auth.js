@@ -15,4 +15,13 @@ module.exports = async (req, res, next) => {
   } catch (err) {
     res.status(401).json({ message: 'Invalid token' });
   }
-}
+};
+
+module.exports.authorize = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({ message: "Not authorized for this action" });
+    }
+    next();
+  };
+};

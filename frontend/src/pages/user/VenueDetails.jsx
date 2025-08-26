@@ -65,7 +65,7 @@ const VenueDetails = () => {
         <p><span className="font-semibold">Sport:</span> {venue.sport}</p>
         <p><span className="font-semibold">Price:</span> ₹{venue.price}</p>
         <p><span className="font-semibold">Status:</span> {venue.status}</p>
-        <p><span className="font-semibold">Created At:</span> {new Date(venue.createdAt).toLocaleDateString()}</p>
+        {/* <p><span className="font-semibold">Created At:</span> {new Date(venue.createdAt).toLocaleDateString()}</p> */}
       </div>
 
       {/* Ratings */}
@@ -74,38 +74,11 @@ const VenueDetails = () => {
         <p className="text-sm text-gray-500">({venue.numReviews} reviews)</p>
       </div>
 
-      {/* Slots */}
-      {/* {venue.slots && venue.slots.length > 0 ? (
-        <div>
-          <h2 className="text-xl font-semibold mb-2">Available Slots</h2>
-          <ul className="list-disc list-inside">
-            {venue.slots.map((slot) => (
-                <li key={slot._id}>
-                {slot.date} — {slot.startTime} to {slot.endTime} 
-                {slot.isBooked ? " (Booked)" : " (Available)"}
-                </li>
-            ))}
-         </ul>
-        </div>
-      ) : (
-        <p className="text-gray-500">No slots available</p>
-      )} */}
-
       {/* Book Button */}
       <button className="mt-6 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700" onClick={() => setIsSidebarOpen(true)}>
         Book Now
       </button>
 
-      {/* Sidebar */}
-      {/* <BookingSidebar
-        isOpen={isSidebarOpen}
-        onClose={() => setIsSidebarOpen(false)}
-        venue={venue}
-        slots={venue?.slots}
-        venueId={venue?._id}
-        price={venue?.price}
-        bookings={bookings}
-      /> */}
       <BookingSidebar
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
@@ -114,6 +87,7 @@ const VenueDetails = () => {
         bookings={bookings}
         selectedDate={selectedDate}
         setSelectedDate={setSelectedDate}
+        // slots={venue.slots}
       />
 
     </div>

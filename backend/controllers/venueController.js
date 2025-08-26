@@ -1,11 +1,11 @@
 // Venue Controller
 const Venue = require('../models/Venue');
 const Slot = require('../models/Slot');
+const { generateSlotsForVenue } = require('../services/slotService');
 
 exports.getVenues = async (req, res) => {
   try {
     const { sport, location, price, search } = req.query;
-    console.log("search: ", search);
     let filter = {};
     if (sport) filter.sport = sport;
     if (location) filter.location = location;
@@ -35,6 +35,20 @@ exports.createVenue = async (req, res) => {
       return res.status(400).json({ message: 'All fields are required' });
     }
     const venue = await Venue.create({ name, location, sport, price, owner });
+
+    const today = new Date();
+    const endDate = new Date();
+    endDate.setDate(today.getDate() + 10);
+
+    await generateSlotsForVenue({
+      venue: venue._id,
+      startDate: today,
+      endDate,
+      startHour: 9,
+      endHour: 12,
+      slotDuration: 60
+    });
+
     res.status(201).json(venue);
   } catch (err) {
     res.status(500).json({ message: err.message });
