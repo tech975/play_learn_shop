@@ -10,6 +10,8 @@ import NotFound from '../pages/NotFound';
 import UserProfile from '../pages/user/UserProfile';
 import VenueList from '../pages/user/VenueList';
 import VenueDetails from '../pages/user/VenueDetails';
+import CoachList from '../pages/user/coach-booking/CoachList';
+import CoachDetails from '../pages/user/coach-booking/CoachDetails';
 // import { useSelector } from 'react-redux';
 
 
@@ -24,7 +26,7 @@ const AppRoutes = () => {
         <Route path="/register" element={<Register />} />
 
 
-        {/* User Dashboard Route (always defined, protected) */}
+        {/* User Dashboard Route */}
         <Route
           path="/user/dashboard"
           element={
@@ -71,6 +73,11 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         />
+
+        {/* Coach Routes for user perspective */}
+        <Route path="/user/bookings/coach" element={ <ProtectedRoute allowedRoles={["user"]}> <CoachList /> </ProtectedRoute> } />
+
+        <Route path="/user/bookings/coach/:id" element={ <ProtectedRoute allowedRoles={["user"]}> <CoachDetails /> </ProtectedRoute> } />
 
         {/* Add more protected routes for other roles here */}
 

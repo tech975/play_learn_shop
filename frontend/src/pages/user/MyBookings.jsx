@@ -22,10 +22,9 @@ const MyBookings = () => {
   }, [dispatch, user]);
 
   return (
-    <div className="p-4 max-w-3xl mx-auto">
+    <div className="mt-24 p-4 max-w-3xl mx-auto">
       <Navbar />
       <HeroSlider />
-      <h2 className="text-2xl font-bold mb-4">My Bookings</h2>
 
       {loading && <p>Loading...</p>}
       {error && <p className="text-red-500">{error}</p>}

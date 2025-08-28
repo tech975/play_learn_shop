@@ -45,7 +45,7 @@ const VenueDetails = () => {
   if (!venue) return null;
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white shadow-md rounded-lg mt-24">
+    <div className="max-w-3xl md:mx-auto p-6 bg-white shadow-md rounded-lg mt-24 mx-2">
         <Navbar /> 
         <HeroSlider />
       {/* Venue Image */}

@@ -8,6 +8,9 @@ const venueRoutes = require('./routes/venueRoutes');
 const slotRoutes = require('./routes/slotRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
 const earningsRoutes = require('./routes/earningsRoutes');
+const coachRoutes = require('./routes/coach/coachRoutes');
+const coachSlots = require('./routes/coach/coachSlotRoutes');
+const coachScheduleRoutes = require('./routes/coach/coachScheduleRoutes');
 
 const app = express();
 
@@ -20,6 +23,11 @@ app.use('/api/venues', venueRoutes);
 app.use('/api/slots', slotRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/earnings', earningsRoutes);
+
+// coach route
+app.use('/api/coaches/schedules', coachScheduleRoutes);
+app.use('/api/coaches/slots', coachSlots);
+app.use('/api/coaches', coachRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {
