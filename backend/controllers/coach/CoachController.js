@@ -41,6 +41,7 @@ exports.createCoach = async (req, res) => {
             pricing, // { type, amount, currency }
             location, // { address, city, state, pincode, coordinates }
             owner: req.user._id,
+            status: "pending"
         });
 
         res.status(201).json(coach);

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { fetchCoaches } from "../../../features/bookings/coachBookingSlice";
+import { fetchCoaches } from "../../../features/coach/coachBookingSlice";
 import Navbar from "../../../components/Navbar";
 import HeroSlider from "../../public/HeroSlider";
 import { sports } from "../../../cluster/sportsData";

@@ -64,7 +64,7 @@ const Home = () => {
       <Navbar scroller={[scrollToPlay, scrollToLearn, scrollToShop]} activeTab={activeTab} />
 
       <div className="w-full h-full flex flex-col items-center justify-center mt-20 mb-12">
-          <div className="w-full sm:w-[60%]">
+          <div className="w-full sm:w-[60%] flex justify-center items-center">
             <Searchbar />
           </div>
           <>

@@ -4,7 +4,7 @@ const slotController = require('../controllers/slotController');
 const auth = require('../middleware/auth');
 const authorize = require('../middleware/auth').authorize;
 
-router.post('/', auth, authorize('owner'), slotController.createSlot);
+router.post('/', auth, authorize('owner', 'user', 'coach'), slotController.createSlot);
 router.get('/', auth, authorize('owner'), slotController.getSlots);
 router.get("/venue/:venueId", auth, slotController.getSlotsByVenue);
 router.get("/available/:venueId", slotController.getAvailableSlots);

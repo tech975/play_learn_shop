@@ -1,5 +1,6 @@
 const CoachSlot = require('../../models/coach/CoachSlot');
 const Coach = require('../../models/coach/Coach');
+const CoachBooking = require('../../models/coach/CoachBooking');
 const moment = require("moment");
 
 exports.getAllSlots = async (req, res) => {
@@ -9,6 +10,8 @@ exports.getAllSlots = async (req, res) => {
     if (coachId) filter.coach = coachId;
     if (date) filter.date = date;
     if (status) filter.status = status;
+
+    console.info(coachId, date)
 
     const slots = await CoachSlot.find(filter).populate("coach");
     res.json(slots);
@@ -27,6 +30,63 @@ exports.getSlotById = async (req, res) => {
   }
 };
 
+exports.bookCoachSlot = async (req, res) => {
+  try {
+    const { slotIds } = req.body;
+    const userId = req.user.id;
+
+    console.log("slotIds: ", slotIds)
+
+    if (!slotIds || slotIds.length === 0) {
+      return res.status(400).json({ message: "At least one slot must be selected" });
+    }
+
+    // Fetch all slots
+    const slots = await CoachSlot.find({ _id: { $in: slotIds } }).populate("coach");
+
+    if (slots.length !== slotIds.length) {
+      return res.status(404).json({ message: "Some slots not found" });
+    }
+
+    // Check if any slot is already booked
+    const alreadyBooked = slots.filter(slot => slot.status === "booked");
+    if (alreadyBooked.length > 0) {
+      return res.status(400).json({
+        message: `${alreadyBooked.length} slot(s) are already booked`,
+        bookedSlots: alreadyBooked.map(s => s._id)
+      });
+    }
+
+    // Mark slots as booked
+    await CoachSlot.updateMany(
+      { _id: { $in: slotIds } },
+      { $set: { status: "booked" } }
+    );
+
+    // Create bookings
+    const bookings = await Promise.all(
+      slots.map(slot =>
+        CoachBooking.create({
+          user: userId,
+          coach: slot.coach._id,
+          slot: slot._id,
+          amount: slot.price,
+          status: "confirmed",
+          payment: { status: "created", provider: "razorpay" }
+        })
+      )
+    );
+
+    res.status(201).json({
+      message: `${bookings.length} slot(s) booked successfully`,
+      bookings
+    });
+
+  } catch (error) {
+    console.error("Error booking coach slot:", error);
+    res.status(500).json({ message: "Error booking coach slot", error: error.message });
+  }
+};
 
 exports.createSlot = async (req, res) => {
   try {
