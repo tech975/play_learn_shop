@@ -1,4 +1,4 @@
-# Khelomore Clone (MERN)
+# Play Learn & Shop (MERN)
 
 ## Setup Instructions
 
@@ -11,7 +11,7 @@
 3. Start MongoDB locally or update `MONGO_URI` in `.env` for your DB.
 4. Start the backend server:
    ```bash
-   npm start
+   node server.js
    ```
 5. For the frontend, follow similar steps in the `frontend` folder.
 
