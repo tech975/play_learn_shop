@@ -9,12 +9,13 @@ export const navConfig = {
   ],
 
   user: [
-    { id: 1, text: "Dashboard", type: "route", path: "/user/dashboard" },
-    { id: 2, text: "Book Turf", type: "route", path: "/user/bookings/turf" },
-    { id: 3, text: "Join Coaching", type: "route", path: "/user/bookings/coach" },
-    { id: 4, text: "Bookings", type: "route", path: "/user/bookings" },
+    { id: 1, text: "Home", type: "route", path: "/user" },
+    { id: 2, text: "Dashboard", type: "route", path: "/user/dashboard" },
+    { id: 3, text: "Book Turf", type: "route", path: "/user/bookings/turf" },
+    { id: 4, text: "Join Coaching", type: "route", path: "/user/bookings/coach" },
+    { id: 5, text: "Bookings", type: "route", path: "/user/bookings" },
     // { id: 5, text: <AccountMenu />, type: "route"},
-    { id: 5, text: "Profile", type: "route", path: "/user/profile" },
+    { id: 6, text: "Profile", type: "route", path: "/user/profile" },
     // { id: 6, text: "Logout", type: "logout", path: "/" },
   ],
 
@@ -33,7 +34,7 @@ export const navConfig = {
     { id: 3, text: "Add Ground", type: "route", path: "/owner/add-ground" },
     { id: 4, text: "Bookings", type: "route", path: "/owner/bookings" },
     { id: 5, text: "Profile", type: "route", path: "/owner/profile" },
-    { id: 6, text: "Logout", type: "logout" },
+    // { id: 6, text: "Logout", type: "logout" },
   ],
 
   coach: [

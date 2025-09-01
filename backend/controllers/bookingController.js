@@ -74,7 +74,7 @@ exports.getBookings = async (req, res) => {
 // 3️⃣ Cancel Booking
 exports.cancelBooking = async (req, res) => {
   try {
-    const booking = await Booking.findById(req.params.id);
+    const booking = await Booking.findById(req.params.id).populate('venue');
     if (!booking) return res.status(404).json({ message: 'Booking not found' });
 
     booking.status = 'cancelled';

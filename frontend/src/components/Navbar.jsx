@@ -39,12 +39,12 @@ const Navbar = ({ scroller }) => {
         REACT.
       </h1>
       {/* Desktop Navigation */}
-      <ul className="hidden md:flex justify-center items-center gap-5 m-2">
+      <ul className="hidden md:flex justify-center items-center sm:gap-5 m-2">
         {navItems.map((item) => (
           <li
             key={item.id}
             onClick={() => handleItemClick(item)}
-            className={`px-8 py-2 rounded-xl whitespace-nowrap cursor-pointer duration-300 
+            className={`px-2 sm:px-8 py-2 rounded-xl whitespace-nowrap cursor-pointer duration-300 
               ${
                 activeTab === item.text
                   ? "bg-[#00df9a] text-black from-neutral-50"

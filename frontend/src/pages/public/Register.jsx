@@ -74,9 +74,9 @@ const Register = () => {
             onChange={(e) => setRole(e.target.value)}
           >
             <option value="user">User</option>
-            <option value="coach">Coach</option>
-            <option value="owner">Owner</option>
-            <option value="admin">Admin</option>
+            {/* <option value="coach">Coach</option> */}
+            {/* <option value="owner">Owner</option> */}
+            {/* <option value="admin">Admin</option> */}
           </select>
           <button
             type="submit"

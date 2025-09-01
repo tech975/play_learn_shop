@@ -28,6 +28,17 @@ exports.getVenueById = async (req, res) => {
   }
 };
 
+exports.getOwnerVenues = async (req, res) => {
+  const { ownerId } = req.params;
+
+  try {
+    const venues = await Venue.find({ owner: ownerId }).populate('owner', 'name email').populate('slots');
+    res.json(venues);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
 exports.createVenue = async (req, res) => {
   try {
     const { name, location, sport, price, owner } = req.body;
@@ -57,13 +68,32 @@ exports.createVenue = async (req, res) => {
 
 exports.updateVenue = async (req, res) => {
   try {
-    const venue = await Venue.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!venue) return res.status(404).json({ message: 'Venue not found' });
-    res.json(venue);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+    const venue = await Venue.findOne({
+      _id: req.params.id,
+      // ownerId: req.user._id
+    });
+
+
+    if (!venue) {
+      return res.status(404).json({ message: "Venue not found or not yours" });
+    }
+
+    const { name, location, sport, price, image, status } = req.body;
+    if (name) venue.name = name;
+    if (location) venue.location = location;
+    if (sport) venue.sport = sport;
+    if (price) venue.price = price;
+    if (image) venue.image = image;
+    if (status) venue.status = status;
+
+    await venue.save();
+
+    res.status(200).json({ message: "Venue updated successfully", venue });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating venue", error: error.message });
   }
 };
+
 
 exports.deleteVenue = async (req, res) => {
   try {

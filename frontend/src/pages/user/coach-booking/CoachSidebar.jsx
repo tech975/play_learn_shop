@@ -105,7 +105,7 @@ useEffect(() => {
                   }`}
                 >
                   {slot.startISO?.slice(11,16)} - {slot.endISO?.slice(11,16)}
-                  {isBooked && " (Booked)"}
+                  {/* {isBooked && " (Booked)"} */}
                 </button>
               );
             })}

@@ -10,9 +10,8 @@ const venueSchema = new mongoose.Schema({
   slots: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Slot' }],
   image: { type: String, default: "" },
   rating: { type: Number, default: 0 },
-  numReviews: { type: Number, default: 0 },
-  createdAt: { type: Date, default: Date.now },
+  numReviews: { type: Number, default: 0 }
   // Add more fields as needed
-});
+}, { timestamps: true });
 
 module.exports = mongoose.model('Venue', venueSchema);

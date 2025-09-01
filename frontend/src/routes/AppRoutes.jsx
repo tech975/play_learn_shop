@@ -12,11 +12,13 @@ import VenueList from '../pages/user/VenueList';
 import VenueDetails from '../pages/user/VenueDetails';
 import CoachList from '../pages/user/coach-booking/CoachList';
 import CoachDetails from '../pages/user/coach-booking/CoachDetails';
-// import { useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 
 const AppRoutes = () => {
-  // const user = useSelector((state) => state.auth.user);
+  const user = useSelector((state) => state.auth.user);
+
+  console.log("Current User in AppRoutes:", user);
 
   return (
     <Router>
@@ -27,16 +29,24 @@ const AppRoutes = () => {
 
 
         {/* User Dashboard Route */}
+
+        <Route
+          path="/user"
+          element={
+            <ProtectedRoute allowedRoles={["user"]}>
+              <Home />
+            </ProtectedRoute>
+          }
+        />
+
         <Route
           path="/user/dashboard"
           element={
             <ProtectedRoute allowedRoles={["user"]}>
-              <UserLayout />
+              <UserDashboard />
             </ProtectedRoute>
           }
-        >
-          <Route index element={<UserDashboard />} />
-        </Route>
+        />
 
         <Route
           path='/user/bookings/turf'
