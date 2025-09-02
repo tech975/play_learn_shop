@@ -29,11 +29,11 @@ export const loginUser = createAsyncThunk(
 
 export const updateUserProfile = createAsyncThunk(
   "auth/updateUserProfile",
-  async ({ name, token }, { rejectWithValue }) => {
+  async ({ name, email, token }, { rejectWithValue }) => {
     try {
       const response = await axios.put(
         "/api/auth/user/update",
-        { name },
+        { name, email },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 

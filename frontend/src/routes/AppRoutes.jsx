@@ -16,10 +16,7 @@ import { useSelector } from 'react-redux';
 
 
 const AppRoutes = () => {
-  const user = useSelector((state) => state.auth.user);
-
-  console.log("Current User in AppRoutes:", user);
-
+  // const user = useSelector((state) => state.auth.user);
   return (
     <Router>
       <Routes>

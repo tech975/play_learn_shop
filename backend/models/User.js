@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema({
   profilePic: { type: String , default: '' },
   preferredSports: { type: [String], default: [] },
   mybookings: { type: mongoose.Schema.Types.ObjectId, ref: 'Booking' },
-  mysessions: { type: mongoose.Schema.Types.ObjectId, ref: 'Session' },
+  mysessions: { type: mongoose.Schema.Types.ObjectId, ref: 'Coach' },
   wallet: { type: Number, default: 0 }
 }, { timestamps: true });
 
