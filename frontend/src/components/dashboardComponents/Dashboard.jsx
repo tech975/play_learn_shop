@@ -10,7 +10,7 @@ const Dashboard = () => {
   const user = JSON.parse(localStorage.getItem("user")) || { name: "Guest", role: "user" };
   const [viewType, setViewType] = useState("turf");
 
-  // Dummy activity data
+  // Dummy activity dataa
   const activityData = [
     { name: "Turf Booking 1", date: "2025-08-20", status: "Completed" },
     { name: "Turf Booking 2", date: "2025-08-22", status: "Upcoming" },
