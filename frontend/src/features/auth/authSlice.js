@@ -31,17 +31,39 @@ export const updateUserProfile = createAsyncThunk(
   "auth/updateUserProfile",
   async ({ name, token }, { rejectWithValue }) => {
     try {
-      const response = await axios.put(
+      const response = await axios.post(
         "/api/auth/updateUserProfile",
         { name },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      console.log("response: ", response.data);
 
       return response.data;
     } catch (err) {
       return rejectWithValue(
         err.response?.data?.message || "User Profile Update failed"
+      );
+    }
+  }
+);
+
+export const uploadProfilePic = createAsyncThunk(
+  "auth/uploadProfilePic",
+  async ({ file, token }, { rejectWithValue }) => {
+    try {
+      const formData = new FormData();
+      formData.append("profilePic", file);
+
+      const response = await axios.put("/api/auth/profile", formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || "Profile Picture Upload failed"
       );
     }
   }
@@ -113,6 +135,19 @@ const authSlice = createSlice({
         // localStorage.setItem('user', JSON.stringify(state.user));
       })
       .addCase(updateUserProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(uploadProfilePic.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(uploadProfilePic.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = { ...state.user, profilePic: action.payload.profilePic };
+        localStorage.setItem('user', JSON.stringify(state.user));
+      })
+      .addCase(uploadProfilePic.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

@@ -1,10 +1,10 @@
-const Slot = require('../models/Slot');
-const Booking = require("../models/Booking");
+const Slot = require('../../models/Slot');
+const Booking = require("../../models/Booking");
 
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
 const timezone = require("dayjs/plugin/timezone");
-const { generateSlotsForVenue } = require('../services/slotService');
+const { generateSlotsForVenue } = require('../../services/slotService');
 
 dayjs.extend(utc);
 dayjs.extend(timezone);

@@ -1,31 +1,47 @@
-import React from "react";
+import React, { useState } from "react";
 import Navbar from "../../components/Navbar";
-import { Avatar, Button, Card, CardContent, Typography, Divider, Grid, Dialog, DialogTitle, DialogContent, TextField, DialogActions } from "@mui/material";
-import { useDispatch, useSelector } from 'react-redux';
-import { logout, updateUserProfile } from "../../features/auth/authSlice";
+import {
+  Avatar,
+  Button,
+  Card,
+  CardContent,
+  Typography,
+  Divider,
+  Grid,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  TextField,
+  DialogActions,
+  IconButton,
+} from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import { logout, updateUserProfile, uploadProfilePic } from "../../features/auth/authSlice"; 
 import HeroSlider from "../public/HeroSlider";
-import { useState } from "react";
+import { PhotoCamera } from "@mui/icons-material";
 
 const UserProfile = () => {
-    const dispatch = useDispatch();
-//   const user = JSON.parse(localStorage.getItem("user")) || {
-//     name: "Guest",
-//     email: "guest@example.com",
-//     role: "user",
-//   };
-    const loggedInUser = useSelector((state) => state.auth.user);
+  const dispatch = useDispatch();
+  const loggedInUser = useSelector((state) => state.auth.user);
 
-    const [user, setUser] = useState(loggedInUser);
-    const [open, setOpen] = useState(false);
-    const [name, setName] = useState(user?.name);
+  const [user, setUser] = useState(loggedInUser);
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState(user?.name);
 
-    const handleSave = () => {
-        const updatedUser = { ...user, name };
-        setUser(updatedUser);
-        // localStorage.setItem("user", JSON.stringify(updatedUser));
-        dispatch(updateUserProfile({ name, token: loggedInUser.token }));
-        setOpen(false);
-    };
+  // ✅ Save Name Only
+  const handleSave = () => {
+    dispatch(updateUserProfile({ name, token: loggedInUser.token }));
+    setUser({ ...user, name });
+    setOpen(false);
+  };
+
+  // ✅ Upload Profile Pic via Redux Thunk
+  const handleProfilePicUpload = (e) => {
+    const file = e.target.files[0];
+    console.log("File: ", file)
+    if (!file) return;
+    dispatch(uploadProfilePic({ file, token: loggedInUser.token }));
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 text-white">
@@ -45,23 +61,47 @@ const UserProfile = () => {
         >
           <CardContent>
             <div className="flex flex-col items-center text-center gap-4">
-              <Avatar
-                sx={{ width: 100, height: 100, bgcolor: "#22c55e", fontSize: 32 }}
-              >
-                {user.name?.charAt(0).toUpperCase()}
-              </Avatar>
+              <div className="relative">
+                <Avatar
+                  src={loggedInUser?.profilePic}
+                  sx={{ width: 100, height: 100, bgcolor: "#22c55e", fontSize: 32 }}
+                >
+                  {loggedInUser?.name?.charAt(0).toUpperCase()}
+                </Avatar>
+
+                {/* Upload button overlay */}
+                <IconButton
+                  component="label"
+                  sx={{
+                    position: "absolute",
+                    bottom: 0,
+                    right: 0,
+                    bgcolor: "rgba(0,0,0,0.6)",
+                    color: "white",
+                    "&:hover": { bgcolor: "rgba(0,0,0,0.8)" },
+                  }}
+                >
+                  <PhotoCamera />
+                  <input
+                    hidden
+                    accept="image/*"
+                    type="file"
+                    onChange={handleProfilePicUpload}
+                  />
+                </IconButton>
+              </div>
 
               <Typography variant="h5" fontWeight="bold">
-                {user.name}
+                {loggedInUser?.name}
               </Typography>
               <Typography variant="body1" color="gray">
-                {user.email}
+                {loggedInUser?.email}
               </Typography>
               <Typography
                 variant="body2"
                 sx={{ bgcolor: "#22c55e", px: 2, py: 0.5, borderRadius: "8px", mt: 1 }}
               >
-                Role: {user.role}
+                Role: {loggedInUser?.role}
               </Typography>
 
               <Divider sx={{ width: "100%", my: 2, borderColor: "rgba(255,255,255,0.2)" }} />

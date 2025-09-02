@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const slotController = require('../controllers/slotController');
+const slotController = require('../controllers/venue/slotController');
 const auth = require('../middleware/auth');
 const authorize = require('../middleware/auth').authorize;
 

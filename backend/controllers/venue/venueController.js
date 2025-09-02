@@ -1,7 +1,7 @@
 // Venue Controller
-const Venue = require('../models/Venue');
-const Slot = require('../models/Slot');
-const { generateSlotsForVenue } = require('../services/slotService');
+const Venue = require('../../models/Venue');
+const Slot = require('../../models/Slot');
+const { generateSlotsForVenue } = require('../../services/slotService');
 
 exports.getVenues = async (req, res) => {
   try {

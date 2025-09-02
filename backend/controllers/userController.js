@@ -42,21 +42,22 @@ exports.login = async (req, res) => {
     if (!user) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
-    if (user.isSuspended) {
-      return res.status(403).json({ message: 'User is suspended' });
-    }
+    // if (user.isSuspended) {
+    //   return res.status(403).json({ message: 'User is suspended' });
+    // }
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
-    const token = generateToken(user._id, user.role);
+    // const token = generateToken(user._id, user.role);
     res.json({
       _id: user._id,
       name: user.name,
       email: user.email,
       role: user.role,
-      token
+      profilePic: user.profilePic,
     });
+
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -81,15 +82,24 @@ exports.getUserById = async (req, res) => {
   }
 };
 
-exports.suspendUser = async (req, res) => {
+exports.uploadProfilePic = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id);
-    if (!user) return res.status(404).json({ message: 'User not found' });
-    user.isSuspended = true;
-    await user.save();
-    res.json({ message: 'User suspended' });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    const imageUrl = req.file.path;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user.id,
+      { profilePic: imageUrl },
+      { new: true }
+    );
+
+    res.json({ message: "Profile picture updated", user: updatedUser });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error", error });
   }
 };
 
@@ -98,17 +108,28 @@ exports.updateUserProfile = async (req, res) => {
     const user = await User.findById(req.user.id);
     if (!user) return res.status(404).json({ message: 'User not found' });
 
-    const { name } = req.body;
+    const { name, email, phone, address, dob, gender, preferredSports } = req.body;
     if (name) user.name = name;
+    if (email) user.email = email;
+    if (phone) user.phone = phone;
+    if (address) user.address = address;
+    if (dob) user.dob = dob;
+    if (gender) user.gender = gender;
+    if (preferredSports) user.preferredSports = preferredSports;
 
     await user.save();
 
-    // ✅ Return updated user
     res.json({
       _id: user._id,
       name: user.name,
       email: user.email,
       role: user.role,
+      phone: user.phone,
+      address: user.address,
+      dob: user.dob,
+      gender: user.gender,
+      profilePic: user.profilePic,
+      preferredSports: user.preferredSports,
     });
   } catch (err) {
     res.status(500).json({ message: err.message });

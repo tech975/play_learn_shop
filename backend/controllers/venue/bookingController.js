@@ -1,6 +1,6 @@
-const Booking = require('../models/Booking');
-const Slot = require('../models/Slot');
-const Venue = require('../models/Venue');
+const Booking = require('../../models/Booking');
+const Slot = require('../../models/Slot');
+const Venue = require('../../models/Venue');
 
 // 1️⃣ Create Booking
 exports.createBooking = async (req, res) => {

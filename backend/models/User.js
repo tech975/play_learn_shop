@@ -6,9 +6,14 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   role: { type: String, enum: ['user', 'owner', 'coach', 'admin'], default: 'user' },
   phone: String,
-  isSuspended: { type: Boolean, default: false },
-  createdAt: { type: Date, default: Date.now },
-  // Add more fields as needed
-});
+  address: String,
+  dob: Date,
+  gender: { type: String, enum: ['male', 'female', 'other'], default: 'other' },
+  profilePic: { type: String , default: '' },
+  preferredSports: { type: [String], default: [] },
+  mybookings: { type: mongoose.Schema.Types.ObjectId, ref: 'Booking' },
+  mysessions: { type: mongoose.Schema.Types.ObjectId, ref: 'Session' },
+  wallet: { type: Number, default: 0 }
+}, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);
