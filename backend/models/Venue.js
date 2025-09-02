@@ -6,7 +6,7 @@ const venueSchema = new mongoose.Schema({
   sport: { type: String, required: true },
   price: { type: Number, required: true },
   owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  status: { type: String, enum: ['open', 'close'], default: 'open' },
+  status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
   slots: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Slot' }],
   image: { type: String, default: "" },
   rating: { type: Number, default: 0 },

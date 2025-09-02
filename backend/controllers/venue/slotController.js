@@ -40,7 +40,6 @@ exports.createSlot = async (req, res) => {
 exports.bookSlots = async (req, res) => {
   try {
     const { slotIds, amount } = req.body;
-    console.log("slotIds: ", slotIds)
     const userId = req.user.id;
 
     if (!Array.isArray(slotIds) || slotIds.length === 0) {

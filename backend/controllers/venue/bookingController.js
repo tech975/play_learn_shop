@@ -5,7 +5,7 @@ const Venue = require('../../models/Venue');
 // 1️⃣ Create Booking
 exports.createBooking = async (req, res) => {
   try {
-    const { user, venue, slots, coach, amount, date } = req.body;
+    const { user, venue, slots, amount, date } = req.body;
 
     if (!Array.isArray(slots) || slots.length === 0) {
       return res.status(400).json({ message: "Send an array of slots" });
@@ -31,8 +31,7 @@ exports.createBooking = async (req, res) => {
     const booking = await Booking.create({
       user,
       venue,
-      slots, // <-- array
-      coach,
+      slots,
       amount,
       date,
       status: "pending",

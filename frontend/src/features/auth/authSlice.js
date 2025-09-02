@@ -31,8 +31,8 @@ export const updateUserProfile = createAsyncThunk(
   "auth/updateUserProfile",
   async ({ name, token }, { rejectWithValue }) => {
     try {
-      const response = await axios.post(
-        "/api/auth/updateUserProfile",
+      const response = await axios.put(
+        "/api/auth/user/update",
         { name },
         { headers: { Authorization: `Bearer ${token}` } }
       );

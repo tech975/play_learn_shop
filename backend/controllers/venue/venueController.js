@@ -3,6 +3,33 @@ const Venue = require('../../models/Venue');
 const Slot = require('../../models/Slot');
 const { generateSlotsForVenue } = require('../../services/slotService');
 
+exports.createVenue = async (req, res) => {
+  try {
+    const { name, location, sport, price, owner } = req.body;
+    if (!name || !location || !sport || !price || !owner) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+    const venue = await Venue.create({ name, location, sport, price, owner });
+
+    const today = new Date();
+    const endDate = new Date();
+    endDate.setDate(today.getDate() + 10);
+
+    await generateSlotsForVenue({
+      venue: venue._id,
+      startDate: today,
+      endDate,
+      startHour: 9,
+      endHour: 12,
+      slotDuration: 60
+    });
+
+    res.status(201).json(venue);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 exports.getVenues = async (req, res) => {
   try {
     const { sport, location, price, search } = req.query;
@@ -39,30 +66,12 @@ exports.getOwnerVenues = async (req, res) => {
   }
 }
 
-exports.createVenue = async (req, res) => {
+exports.getApprovedVenues = async (req, res) => {
   try {
-    const { name, location, sport, price, owner } = req.body;
-    if (!name || !location || !sport || !price || !owner) {
-      return res.status(400).json({ message: 'All fields are required' });
-    }
-    const venue = await Venue.create({ name, location, sport, price, owner });
-
-    const today = new Date();
-    const endDate = new Date();
-    endDate.setDate(today.getDate() + 10);
-
-    await generateSlotsForVenue({
-      venue: venue._id,
-      startDate: today,
-      endDate,
-      startHour: 9,
-      endHour: 12,
-      slotDuration: 60
-    });
-
-    res.status(201).json(venue);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+    const venues = await Venue.find({ status: "approved" }).populate("owner", "name email");
+    res.status(200).json(venues);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching venues", error: error.message });
   }
 };
 

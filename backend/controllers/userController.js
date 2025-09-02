@@ -49,13 +49,18 @@ exports.login = async (req, res) => {
     if (!isMatch) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
-    // const token = generateToken(user._id, user.role);
+    const token = generateToken(user._id, user.role);
     res.json({
       _id: user._id,
       name: user.name,
       email: user.email,
       role: user.role,
+      phone: user.phone,
+      address: user.address,
+      dob: user.dob,
+      gender: user.gender,
       profilePic: user.profilePic,
+      token
     });
 
   } catch (err) {

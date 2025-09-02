@@ -34,7 +34,7 @@ export const navConfig = {
     { id: 3, text: "Add Ground", type: "route", path: "/owner/add-ground" },
     { id: 4, text: "Bookings", type: "route", path: "/owner/bookings" },
     { id: 5, text: "Profile", type: "route", path: "/owner/profile" },
-    // { id: 6, text: "Logout", type: "logout" },
+    { id: 6, text: "Logout", type: "logout", path: '/' },
   ],
 
   coach: [
