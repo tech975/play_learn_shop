@@ -67,15 +67,8 @@ const Login = () => {
 
   useEffect(() => {
     if (user && user.role) {
-      // Check if there's a redirect path stored in sessionStorage
-      const redirectPath = sessionStorage.getItem('redirectAfterLogin');
-      if (redirectPath) {
-        sessionStorage.removeItem('redirectAfterLogin');
-        navigate(redirectPath, { replace: true });
-      } else {
-        const nextRoute = location.state?.nextRoute || "/user";
-        navigate(nextRoute, { replace: true });
-      }
+      const nextRoute = location.state?.nextRoute || "/user";
+      navigate(nextRoute, { replace: true });
     }
   }, [user, navigate, location.state]);
 
@@ -244,7 +237,7 @@ const Login = () => {
               </div>
 
               {/* Role Selection (Register Only) */}
-              {!isLogin && (
+              {/* {!isLogin && (
                 <div className="relative">
                   <select
                     name="role"
@@ -255,10 +248,9 @@ const Login = () => {
                     <option value="user">User</option>
                     <option value="coach">Coach</option>
                     <option value="owner">Venue Owner</option>
-                    <option value="admin">Administrator</option>
                   </select>
                 </div>
-              )}
+              )} */}
 
               {/* Error Message */}
               {error && (
