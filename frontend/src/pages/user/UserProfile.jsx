@@ -1,175 +1,821 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "../../components/Navbar";
-import {
-  Avatar,
-  Button,
-  Card,
-  CardContent,
-  Typography,
-  Divider,
-  Grid,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  TextField,
+import { 
+  Avatar, 
+  Button, 
+  Card, 
+  CardContent, 
+  Typography, 
+  Dialog, 
+  DialogTitle, 
+  DialogContent, 
+  TextField, 
   DialogActions,
+  Box,
+  Chip,
   IconButton,
+  Badge,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemAvatar,
+  Skeleton,
+  Container,
+  Stack,
+  Tab,
+  Tabs,
+  Grid
 } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
-import { logout, updateUserProfile, uploadProfilePic } from "../../features/auth/authSlice"; 
-import HeroSlider from "../public/HeroSlider";
-import { PhotoCamera } from "@mui/icons-material";
+import { 
+  Edit as EditIcon, 
+  LocationOn as LocationIcon,
+  Phone as PhoneIcon,
+  Email as EmailIcon,
+  CalendarToday as CalendarIcon,
+  SportsTennis as SportsIcon,
+  CameraAlt as CameraIcon,
+  Close as CloseIcon,
+  Visibility as ViewIcon,
+  EmojiEvents as TrophyIcon,
+  Star as StarIcon
+} from "@mui/icons-material";
+import { useDispatch, useSelector } from 'react-redux';
+import { logout, updateUserProfile } from "../../features/auth/authSlice";
+import { fetchUserBookings } from "../../features/bookings/bookingSlice";
 
 const UserProfile = () => {
-  const dispatch = useDispatch();
-  const loggedInUser = useSelector((state) => state.auth.user);
+    const dispatch = useDispatch();
+    const loggedInUser = useSelector((state) => state.auth.user);
+    const bookings = useSelector((state) => state.bookings.bookings);
+    const bookingsLoading = useSelector((state) => state.bookings.loading);
+    
+    const [user, setUser] = useState(loggedInUser);
+    const [open, setOpen] = useState(false);
+    const [activeTab, setActiveTab] = useState(0);
+    const [detailsDialog, setDetailsDialog] = useState({ open: false, type: '', data: [] });
+    const [profilePicture, setProfilePicture] = useState(user?.profilePicture || null);
+    const [coachingSessions, setCoachingSessions] = useState([]);
+    const [userStats, setUserStats] = useState({
+        totalBookings: 0,
+        coachingSessions: 0,
+        points: 0,
+        achievements: []
+    });
+    const [favoritesSports, setFavoritesSports] = useState([]);
+    const [recentActivity, setRecentActivity] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [editData, setEditData] = useState({
+        name: user?.name || '',
+        phone: user?.phone || '',
+        location: user?.location || '',
+        profilePicture: null
+    });
 
-  const [user, setUser] = useState(loggedInUser);
-  const [open, setOpen] = useState(false);
-  const [name, setName] = useState(user?.name);
+    useEffect(() => {
+        if (user?._id) {
+            fetchUserData();
+        }
+    }, [dispatch, user?._id]);
 
-  // ✅ Save Name Only
-  const handleSave = () => {
-    dispatch(updateUserProfile({ name, token: loggedInUser.token }));
-    setUser({ ...user, name });
-    setOpen(false);
-  };
+    useEffect(() => {
+        if (user) {
+            setEditData({
+                name: user.name || '',
+                phone: user.phone || '',
+                location: user.location || '',
+                profilePicture: null
+            });
+            // Set profile picture from user data (Cloudinary URL)
+            setProfilePicture(user.profilePicture || null);
+        }
+    }, [user]);
 
-  // ✅ Upload Profile Pic via Redux Thunk
-  const handleProfilePicUpload = (e) => {
-    const file = e.target.files[0];
-    console.log("File: ", file)
-    if (!file) return;
-    dispatch(uploadProfilePic({ file, token: loggedInUser.token }));
-  };
+    const fetchUserData = async () => {
+        setLoading(true);
+        try {
+            // Fetch bookings
+            dispatch(fetchUserBookings(user._id));
+            
+            // Fetch coaching sessions - replace with actual API call
+            // const coachingResponse = await fetch(`/api/user/${user._id}/coaching-sessions`);
+            // const coachingData = await coachingResponse.json();
+            // setCoachingSessions(coachingData);
+            
+            // Fetch user stats - replace with actual API call
+            // const statsResponse = await fetch(`/api/user/${user._id}/stats`);
+            // const statsData = await statsResponse.json();
+            // setUserStats(statsData);
+            
+            // Fetch favorite sports - replace with actual API call
+            // const sportsResponse = await fetch(`/api/user/${user._id}/favorite-sports`);
+            // const sportsData = await sportsResponse.json();
+            // setFavoritesSports(sportsData);
+            
+            // Fetch recent activity - replace with actual API call
+            // const activityResponse = await fetch(`/api/user/${user._id}/recent-activity`);
+            // const activityData = await activityResponse.json();
+            // setRecentActivity(activityData);
+            
+            // For now, set empty arrays
+            setCoachingSessions([]);
+            setFavoritesSports([]);
+            setRecentActivity([]);
+            
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleSave = async () => {
+        try {
+            console.log('Saving profile with data:', editData);
+            
+            const result = await dispatch(updateUserProfile({ 
+                name: editData.name, 
+                phone: editData.phone,
+                location: editData.location,
+                profilePicture: editData.profilePicture,
+                token: loggedInUser.token 
+            }));
+            
+            if (updateUserProfile.fulfilled.match(result)) {
+                console.log('Profile updated successfully:', result.payload);
+                setUser(result.payload);
+                setOpen(false);
+            } else {
+                console.error('Profile update failed:', result.payload);
+            }
+        } catch (error) {
+            console.error('Error updating profile:', error);
+        }
+    };
+
+    const handleTabChange = (event, newValue) => {
+        setActiveTab(newValue);
+    };
+
+    const handleProfilePictureChange = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                alert('Please select an image file');
+                return;
+            }
+            
+            // Validate file size (5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('File size must be less than 5MB');
+                return;
+            }
+            
+            setEditData({...editData, profilePicture: file});
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                setProfilePicture(e.target.result);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleStatClick = (type) => {
+        let data = [];
+        let title = '';
+        
+        switch(type) {
+            case 'bookings':
+                data = bookings || [];
+                title = 'My Bookings';
+                break;
+            case 'coaching':
+                data = coachingSessions || [];
+                title = 'Coaching Sessions';
+                break;
+            default:
+                return;
+        }
+        
+        setDetailsDialog({ open: true, type, data, title });
+    };
+
+    const closeDetailsDialog = () => {
+        setDetailsDialog({ open: false, type: '', data: [], title: '' });
+    };
+
+    const formatJoinDate = (dateString) => {
+        if (!dateString) return 'Recently';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+    };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 text-white">
+    <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <HeroSlider />
-
-      <div className="pt-20 px-4 md:px-10">
-        {/* Profile Card */}
-        <Card
-          sx={{
-            maxWidth: 600,
-            margin: "auto",
-            bgcolor: "rgba(30,41,59,0.8)",
-            color: "white",
-            borderRadius: "16px",
-          }}
-        >
-          <CardContent>
-            <div className="flex flex-col items-center text-center gap-4">
-              <div className="relative">
-                <Avatar
-                  src={loggedInUser?.profilePic}
-                  sx={{ width: 100, height: 100, bgcolor: "#22c55e", fontSize: 32 }}
+      
+      <Container maxWidth="lg" sx={{ pt: { xs: 12, md: 15 }, pb: 4 }}>
+        {/* Profile Header Card */}
+        <Card sx={{ mb: 3, borderRadius: 3, overflow: 'hidden' }}>
+          {/* Cover Photo */}
+          <Box sx={{ 
+            height: { xs: 140, md: 180 }, 
+            background: 'linear-gradient(135deg, #22c55e 0%, #3b82f6 50%, #8b5cf6 100%)' 
+          }} />
+          
+          {/* Profile Content */}
+          <CardContent sx={{ px: { xs: 3, md: 4 }, pb: 4 }}>
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: { xs: 'column', md: 'row' },
+              alignItems: { xs: 'flex-start', md: 'flex-end' },
+              gap: { xs: 3, md: 4 },
+              mt: { xs: -10, md: -12 }
+            }}>
+              {/* Avatar Section */}
+              <Box sx={{ position: 'relative', alignSelf: { xs: 'center', md: 'flex-start' } }}>
+                <Badge
+                  overlap="circular"
+                  anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                  badgeContent={
+                    <IconButton
+                      size="small"
+                      onClick={() => setOpen(true)}
+                      sx={{ 
+                        bgcolor: '#22c55e', 
+                        color: 'white',
+                        '&:hover': { bgcolor: '#16a34a' },
+                        width: 40,
+                        height: 40
+                      }}
+                    >
+                      <CameraIcon fontSize="small" />
+                    </IconButton>
+                  }
                 >
-                  {loggedInUser?.name?.charAt(0).toUpperCase()}
-                </Avatar>
-
-                {/* Upload button overlay */}
-                <IconButton
-                  component="label"
-                  sx={{
-                    position: "absolute",
-                    bottom: 0,
-                    right: 0,
-                    bgcolor: "rgba(0,0,0,0.6)",
-                    color: "white",
-                    "&:hover": { bgcolor: "rgba(0,0,0,0.8)" },
+                  <Avatar
+                    src={profilePicture || user?.profilePicture}
+                    sx={{ 
+                      width: { xs: 120, md: 140 }, 
+                      height: { xs: 120, md: 140 }, 
+                      bgcolor: "#22c55e", 
+                      fontSize: { xs: 48, md: 56 },
+                      border: '5px solid white',
+                      boxShadow: '0 8px 32px rgba(0,0,0,0.12)'
+                    }}
+                  >
+                    {!profilePicture && !user?.profilePicture && user?.name?.charAt(0)?.toUpperCase()}
+                  </Avatar>
+                </Badge>
+              </Box>
+              
+              {/* User Info */}
+              <Box sx={{ 
+                flex: 1, 
+                ml: { md: 3 },
+                mb: { md: 3 }
+              }}>
+                <Typography 
+                  variant="h3" 
+                  fontWeight="bold" 
+                  sx={{ 
+                    mb: 0.5, 
+                    fontSize: { xs: '2rem', md: '2.75rem' },
+                    color: 'text.primary',
+                    lineHeight: 1.2
                   }}
                 >
-                  <PhotoCamera />
-                  <input
-                    hidden
-                    accept="image/*"
-                    type="file"
-                    onChange={handleProfilePicUpload}
-                  />
-                </IconButton>
-              </div>
-
-              <Typography variant="h5" fontWeight="bold">
-                {loggedInUser?.name}
-              </Typography>
-              <Typography variant="body1" color="gray">
-                {loggedInUser?.email}
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{ bgcolor: "#22c55e", px: 2, py: 0.5, borderRadius: "8px", mt: 1 }}
-              >
-                Role: {loggedInUser?.role}
-              </Typography>
-
-              <Divider sx={{ width: "100%", my: 2, borderColor: "rgba(255,255,255,0.2)" }} />
-
-              {/* Details Section */}
-              <Grid container spacing={2}>
-                <Grid item xs={6}>
-                  <Typography variant="subtitle2" color="gray">
-                    Joined
+                  {user?.name}
+                </Typography>
+                
+                <Box sx={{ 
+                  display: 'flex', 
+                  alignItems: 'center',
+                  mb: 3
+                }}>
+                  <EmailIcon sx={{ fontSize: 18, color: 'text.secondary', mr: 1 }} />
+                  <Typography variant="body1" color="text.secondary" sx={{ fontSize: '1rem' }}>
+                    {user?.email}
                   </Typography>
-                  <Typography variant="body1">Jan 2024</Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography variant="subtitle2" color="gray">
-                    Bookings
-                  </Typography>
-                  <Typography variant="body1">12</Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography variant="subtitle2" color="gray">
-                    Coaching Sessions
-                  </Typography>
-                  <Typography variant="body1">5</Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography variant="subtitle2" color="gray">
-                    Points
-                  </Typography>
-                  <Typography variant="body1">150</Typography>
-                </Grid>
-              </Grid>
+                </Box>
+                
+                <Stack 
+                  direction={{ xs: 'column', sm: 'row' }} 
+                  spacing={{ xs: 1, sm: 3 }}
+                  alignItems={{ xs: 'flex-start', sm: 'center' }}
+                  sx={{ mb: 2 }}
+                >
+                  {user?.phone && (
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <PhoneIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+                      <Typography variant="body2" color="text.secondary">{user.phone}</Typography>
+                    </Box>
+                  )}
+                  {user?.location && (
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <LocationIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+                      <Typography variant="body2" color="text.secondary">{user.location}</Typography>
+                    </Box>
+                  )}
+                </Stack>
+                
 
-              <div className="flex gap-4 mt-4">
+              </Box>
+              
+              {/* Action Buttons */}
+              <Box sx={{ 
+                display: 'flex', 
+                gap: 1, 
+                alignSelf: { xs: 'center', md: 'flex-end' },
+                mt: { xs: 2, md: 0 }
+              }}>
                 <Button
                   variant="contained"
-                  sx={{ bgcolor: "#22c55e", "&:hover": { bgcolor: "#16a34a" } }}
+                  startIcon={<EditIcon />}
                   onClick={() => setOpen(true)}
+                  sx={{ 
+                    bgcolor: "#22c55e", 
+                    "&:hover": { bgcolor: "#16a34a" },
+                    borderRadius: 3,
+                    textTransform: 'none',
+                    fontWeight: 'bold',
+                    px: 4,
+                    py: 1.5,
+                    fontSize: '1rem'
+                  }}
                 >
                   Edit Profile
                 </Button>
-                <Button variant="outlined" color="error" onClick={() => dispatch(logout())}>
-                  Logout
-                </Button>
-              </div>
-            </div>
+              </Box>
+            </Box>
           </CardContent>
         </Card>
-      </div>
 
-      {/* ✨ Edit Profile Modal */}
+        {/* Stats Cards */}
+        <Card sx={{ borderRadius: 3, mb: 4, overflow: 'hidden' }}>
+          <Box sx={{ 
+            display: 'grid', 
+            gridTemplateColumns: { xs: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' },
+            '& > *': {
+              borderRight: { xs: 'none', md: '1px solid' },
+              borderBottom: { xs: '1px solid', md: 'none' },
+              borderColor: 'divider',
+              '&:nth-of-type(2n)': {
+                borderRight: { xs: '0', md: '1px solid' },
+                borderColor: 'divider'
+              },
+              '&:nth-of-type(n+3)': {
+                borderBottom: { xs: '0', md: 'none' }
+              },
+              '&:last-child': {
+                borderRight: '0',
+                borderBottom: '0'
+              }
+            }
+          }}>
+            <Box 
+              onClick={() => handleStatClick('bookings')}
+              sx={{ 
+                textAlign: 'center',
+                py: { xs: 3, md: 4 },
+                px: { xs: 1, md: 2 },
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                '&:hover': {
+                  bgcolor: 'grey.50',
+                  transform: 'translateY(-2px)'
+                },
+                minHeight: { xs: 140, md: 160 },
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
+            >
+              <CalendarIcon sx={{ fontSize: { xs: 36, md: 48 }, color: '#22c55e', mb: 1 }} />
+              <Typography variant="h4" fontWeight="bold" sx={{ mb: 0.5, fontSize: { xs: '1.5rem', md: '2rem' } }}>
+                {bookingsLoading ? <Skeleton width={40} /> : (bookings?.length || 0)}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5, fontSize: { xs: '0.75rem', md: '0.875rem' } }}>
+                Total Bookings
+              </Typography>
+              <ViewIcon sx={{ fontSize: { xs: 16, md: 18 }, color: '#22c55e' }} />
+            </Box>
+            
+            <Box 
+              onClick={() => handleStatClick('coaching')}
+              sx={{ 
+                textAlign: 'center',
+                py: { xs: 3, md: 4 },
+                px: { xs: 1, md: 2 },
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                '&:hover': {
+                  bgcolor: 'grey.50',
+                  transform: 'translateY(-2px)'
+                },
+                minHeight: { xs: 140, md: 160 },
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
+            >
+              <SportsIcon sx={{ fontSize: { xs: 36, md: 48 }, color: '#3b82f6', mb: 1 }} />
+              <Typography variant="h4" fontWeight="bold" sx={{ mb: 0.5, fontSize: { xs: '1.5rem', md: '2rem' } }}>
+                {loading ? <Skeleton width={40} /> : (coachingSessions?.length || 0)}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5, fontSize: { xs: '0.75rem', md: '0.875rem' } }}>
+                Coaching Sessions
+              </Typography>
+              <ViewIcon sx={{ fontSize: { xs: 16, md: 18 }, color: '#3b82f6' }} />
+            </Box>
+            
+            <Box sx={{ 
+              textAlign: 'center',
+              py: { xs: 3, md: 4 },
+              px: { xs: 1, md: 2 },
+              minHeight: { xs: 140, md: 160 },
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}>
+              <StarIcon sx={{ fontSize: { xs: 36, md: 48 }, color: '#f59e0b', mb: 1 }} />
+              <Typography variant="h4" fontWeight="bold" sx={{ mb: 0.5, fontSize: { xs: '1.5rem', md: '2rem' } }}>
+                {loading ? <Skeleton width={40} /> : (userStats.points || 0)}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: '0.75rem', md: '0.875rem' } }}>
+                Points Earned
+              </Typography>
+            </Box>
+            
+            <Box sx={{ 
+              textAlign: 'center',
+              py: { xs: 3, md: 4 },
+              px: { xs: 1, md: 2 },
+              minHeight: { xs: 140, md: 160 },
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}>
+              <TrophyIcon sx={{ fontSize: { xs: 36, md: 48 }, color: '#8b5cf6', mb: 1 }} />
+              <Typography variant="h4" fontWeight="bold" sx={{ mb: 0.5, fontSize: { xs: '1.5rem', md: '2rem' } }}>
+                {loading ? <Skeleton width={40} /> : (userStats.achievements?.length || 0)}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: '0.75rem', md: '0.875rem' } }}>
+                Achievements
+              </Typography>
+            </Box>
+          </Box>
+        </Card>
+
+        {/* Tabbed Content */}
+        <Card sx={{ borderRadius: 3, mb: 4 }}>
+          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <Tabs 
+              value={activeTab} 
+              onChange={handleTabChange} 
+              sx={{ px: 3 }}
+              variant="scrollable"
+              scrollButtons="auto"
+            >
+              <Tab label="Recent Activity" />
+              <Tab label="Achievements" />
+              <Tab label="Favorite Sports" />
+            </Tabs>
+          </Box>
+          
+          <CardContent sx={{ p: 4 }}>
+            {activeTab === 0 && (
+              <Box>
+                <Typography variant="h6" fontWeight="bold" sx={{ mb: 3 }}>
+                  Recent Activity
+                </Typography>
+                {bookings && bookings.length > 0 ? (
+                  <Stack spacing={2}>
+                    {bookings.slice(0, 5).map((booking, index) => (
+                      <Box 
+                        key={booking._id || index}
+                        sx={{ 
+                          p: 3, 
+                          bgcolor: 'grey.50', 
+                          borderRadius: 2,
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center'
+                        }}
+                      >
+                        <Box>
+                          <Typography variant="body1" fontWeight="medium" sx={{ mb: 0.5 }}>
+                            Booked {booking.venue?.name || 'Venue'}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            {new Date(booking.date).toLocaleDateString()} • {booking.timeSlot || 'Time slot'}
+                          </Typography>
+                        </Box>
+                        <Chip 
+                          label={booking.status} 
+                          size="small" 
+                          color={booking.status === 'confirmed' ? 'success' : 'warning'}
+                        />
+                      </Box>
+                    ))}
+                  </Stack>
+                ) : (
+                  <Box sx={{ textAlign: 'center', py: 6 }}>
+                    <CalendarIcon sx={{ fontSize: 64, color: 'grey.300', mb: 2 }} />
+                    <Typography variant="body1" color="text.secondary">
+                      No recent activity
+                    </Typography>
+                  </Box>
+                )}
+              </Box>
+            )}
+            
+            {activeTab === 1 && (
+              <Box>
+                <Typography variant="h6" fontWeight="bold" sx={{ mb: 3 }}>
+                  Achievements
+                </Typography>
+                {userStats.achievements && userStats.achievements.length > 0 ? (
+                  <Grid container spacing={3}>
+                    {userStats.achievements.map((achievement, index) => (
+                      <Grid item xs={12} md={6} key={index}>
+                        <Box sx={{ 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          gap: 2, 
+                          p: 3, 
+                          bgcolor: 'grey.50', 
+                          borderRadius: 2 
+                        }}>
+                          <Box sx={{ fontSize: '2rem' }}>{achievement.icon}</Box>
+                          <Box>
+                            <Typography variant="body1" fontWeight="medium">
+                              {achievement.title}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              {achievement.date}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </Grid>
+                    ))}
+                  </Grid>
+                ) : (
+                  <Box sx={{ textAlign: 'center', py: 6 }}>
+                    <TrophyIcon sx={{ fontSize: 64, color: 'grey.300', mb: 2 }} />
+                    <Typography variant="body1" color="text.secondary">
+                      No achievements yet
+                    </Typography>
+                  </Box>
+                )}
+              </Box>
+            )}
+            
+            {activeTab === 2 && (
+              <Box>
+                <Typography variant="h6" fontWeight="bold" sx={{ mb: 3 }}>
+                  Favorite Sports
+                </Typography>
+                {favoritesSports && favoritesSports.length > 0 ? (
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+                    {favoritesSports.map((sport, index) => (
+                      <Chip 
+                        key={index} 
+                        label={sport} 
+                        sx={{ 
+                          bgcolor: '#22c55e', 
+                          color: 'white',
+                          fontWeight: 'medium',
+                          fontSize: '0.9rem',
+                          py: 2,
+                          px: 1
+                        }} 
+                      />
+                    ))}
+                  </Box>
+                ) : (
+                  <Box sx={{ textAlign: 'center', py: 6 }}>
+                    <SportsIcon sx={{ fontSize: 64, color: 'grey.300', mb: 2 }} />
+                    <Typography variant="body1" color="text.secondary">
+                      No favorite sports selected
+                    </Typography>
+                  </Box>
+                )}
+              </Box>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Logout Button */}
+        <Box sx={{ textAlign: 'center', mt: 4 }}>
+          <Button 
+            variant="outlined" 
+            color="error" 
+            onClick={() => dispatch(logout())}
+            sx={{ 
+              borderRadius: 2,
+              textTransform: 'none',
+              fontWeight: 'bold',
+              px: 4,
+              py: 1
+            }}
+          >
+            Logout
+          </Button>
+        </Box>
+      </Container>
+
+      {/* Edit Profile Modal */}
       <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>Edit Profile</DialogTitle>
-        <DialogContent sx={{ mt: 2 }}>
-          <TextField
-            label="Full Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            fullWidth
-          />
+        <DialogTitle sx={{ fontWeight: 'bold' }}>Edit Profile</DialogTitle>
+        <DialogContent sx={{ mt: 1 }}>
+          <div className="space-y-4">
+            {/* Profile Picture Upload */}
+            <div className="flex flex-col items-center gap-3 mb-4">
+              <Avatar
+                src={profilePicture || user?.profilePicture}
+                sx={{ width: 80, height: 80, bgcolor: "#22c55e", fontSize: 32 }}
+              >
+                {!profilePicture && !user?.profilePicture && user?.name?.charAt(0).toUpperCase()}
+              </Avatar>
+              <input
+                accept="image/*"
+                style={{ display: 'none' }}
+                id="profile-picture-upload"
+                type="file"
+                onChange={handleProfilePictureChange}
+              />
+              <label htmlFor="profile-picture-upload">
+                <Button
+                  variant="outlined"
+                  component="span"
+                  startIcon={<CameraIcon />}
+                  sx={{ textTransform: 'none' }}
+                >
+                  Change Picture
+                </Button>
+              </label>
+            </div>
+            
+            <TextField
+              label="Full Name"
+              value={editData.name}
+              onChange={(e) => setEditData({...editData, name: e.target.value})}
+              fullWidth
+              variant="outlined"
+              required
+            />
+            <TextField
+              label="Phone Number"
+              value={editData.phone}
+              onChange={(e) => setEditData({...editData, phone: e.target.value})}
+              fullWidth
+              variant="outlined"
+              placeholder="Enter your phone number"
+            />
+            <TextField
+              label="Location"
+              value={editData.location}
+              onChange={(e) => setEditData({...editData, location: e.target.value})}
+              fullWidth
+              variant="outlined"
+              placeholder="Enter your location"
+            />
+          </div>
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={{ p: 3 }}>
           <Button onClick={() => setOpen(false)} color="secondary">
             Cancel
           </Button>
-          <Button onClick={handleSave} variant="contained" sx={{ bgcolor: "#22c55e" }}>
-            Save
+          <Button 
+            onClick={handleSave} 
+            variant="contained" 
+            sx={{ 
+              bgcolor: "#22c55e", 
+              "&:hover": { bgcolor: "#16a34a" },
+              borderRadius: '8px',
+              textTransform: 'none',
+              fontWeight: 'bold'
+            }}
+          >
+            Save Changes
           </Button>
         </DialogActions>
+      </Dialog>
+
+      {/* Details Dialog for Bookings/Coaching */}
+      <Dialog 
+        open={detailsDialog.open} 
+        onClose={closeDetailsDialog} 
+        maxWidth="sm" 
+        fullWidth
+        PaperProps={{
+          sx: { borderRadius: 3, m: 2 }
+        }}
+      >
+        <DialogTitle sx={{ 
+          fontWeight: 'bold', 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center',
+          pb: 1
+        }}>
+          {detailsDialog.title}
+          <IconButton onClick={closeDetailsDialog} size="small">
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent sx={{ px: 3 }}>
+          {detailsDialog.type === 'bookings' && (
+            <Box>
+              {detailsDialog.data.length === 0 ? (
+                <Box sx={{ textAlign: 'center', py: 6 }}>
+                  <CalendarIcon sx={{ fontSize: 48, color: 'grey.300', mb: 2 }} />
+                  <Typography variant="body1" color="text.secondary">
+                    No bookings found
+                  </Typography>
+                </Box>
+              ) : (
+                <Stack spacing={2}>
+                  {detailsDialog.data.map((booking, index) => (
+                    <Card key={booking._id || index} variant="outlined" sx={{ borderRadius: 2 }}>
+                      <CardContent sx={{ p: 2 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                          <Avatar sx={{ bgcolor: '#22c55e' }}>
+                            <CalendarIcon />
+                          </Avatar>
+                          <Box sx={{ flex: 1 }}>
+                            <Typography variant="subtitle1" fontWeight="medium">
+                              {booking.venue?.name || 'Venue Name'}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              {new Date(booking.date).toLocaleDateString()}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              {booking.timeSlot || 'Time slot not specified'}
+                            </Typography>
+                          </Box>
+                          <Chip 
+                            label={booking.status} 
+                            size="small" 
+                            color={booking.status === 'confirmed' ? 'success' : 'warning'}
+                          />
+                        </Box>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </Stack>
+              )}
+            </Box>
+          )}
+          
+          {detailsDialog.type === 'coaching' && (
+            <Box>
+              {detailsDialog.data.length === 0 ? (
+                <Box sx={{ textAlign: 'center', py: 6 }}>
+                  <SportsIcon sx={{ fontSize: 48, color: 'grey.300', mb: 2 }} />
+                  <Typography variant="body1" color="text.secondary">
+                    No coaching sessions found
+                  </Typography>
+                </Box>
+              ) : (
+                <Stack spacing={2}>
+                  {detailsDialog.data.map((session, index) => (
+                    <Card key={session.id || index} variant="outlined" sx={{ borderRadius: 2 }}>
+                      <CardContent sx={{ p: 2 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                          <Avatar sx={{ bgcolor: '#3b82f6' }}>
+                            <SportsIcon />
+                          </Avatar>
+                          <Box sx={{ flex: 1 }}>
+                            <Typography variant="subtitle1" fontWeight="medium">
+                              Coach: {session.coach}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              Sport: {session.sport}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              Date: {session.date}
+                            </Typography>
+                          </Box>
+                          <Chip 
+                            label={session.status} 
+                            size="small" 
+                            color={session.status === 'completed' ? 'success' : 'primary'}
+                          />
+                        </Box>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </Stack>
+              )}
+            </Box>
+          )}
+        </DialogContent>
       </Dialog>
     </div>
   );
