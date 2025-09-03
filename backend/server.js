@@ -4,6 +4,7 @@ const cors = require('cors');
 require('dotenv').config();
 
 const userRoutes = require('./routes/userRoutes');
+const adminRoutes = require('./routes/admin/adminVenueRoutes');
 const venueRoutes = require('./routes/venueRoutes');
 const slotRoutes = require('./routes/slotRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
@@ -20,6 +21,7 @@ app.use(express.json());
 // API routes
 app.use('/api/auth', userRoutes);
 app.use('/api/venues', venueRoutes);
+app.use('/api/admin', adminRoutes);
 app.use('/api/slots', slotRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/earnings', earningsRoutes);

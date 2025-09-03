@@ -5,24 +5,26 @@ const { generateSlotsForVenue } = require('../../services/slotService');
 
 exports.createVenue = async (req, res) => {
   try {
-    const { name, location, sport, price, owner } = req.body;
-    if (!name || !location || !sport || !price || !owner) {
+    const { name, location, sport, price } = req.body;
+    if (!name || !location || !sport || !price) {
       return res.status(400).json({ message: 'All fields are required' });
     }
-    const venue = await Venue.create({ name, location, sport, price, owner });
+    const venue = await Venue.create({ name, location, sport, price, owner: req.user._id });
 
-    const today = new Date();
-    const endDate = new Date();
-    endDate.setDate(today.getDate() + 10);
+    if (status === 'approved') {
+      const today = new Date();
+      const endDate = new Date();
+      endDate.setDate(today.getDate() + 10);
 
-    await generateSlotsForVenue({
-      venue: venue._id,
-      startDate: today,
-      endDate,
-      startHour: 9,
-      endHour: 12,
-      slotDuration: 60
-    });
+      await generateSlotsForVenue({
+        venue: venue._id,
+        startDate: today,
+        endDate,
+        startHour: 9,
+        endHour: 12,
+        slotDuration: 60
+      });
+    }
 
     res.status(201).json(venue);
   } catch (err) {
