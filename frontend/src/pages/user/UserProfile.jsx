@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../../components/Navbar";
-import { 
-  Avatar, 
-  Button, 
-  Card, 
-  CardContent, 
-  Typography, 
-  Dialog, 
-  DialogTitle, 
-  DialogContent, 
-  TextField, 
+import {
+  Avatar,
+  Button,
+  Card,
+  CardContent,
+  Typography,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  TextField,
   DialogActions,
   Box,
   Chip,
@@ -26,8 +26,8 @@ import {
   Tabs,
   Grid
 } from "@mui/material";
-import { 
-  Edit as EditIcon, 
+import {
+  Edit as EditIcon,
   LocationOn as LocationIcon,
   Phone as PhoneIcon,
   Email as EmailIcon,
@@ -40,199 +40,146 @@ import {
   Star as StarIcon
 } from "@mui/icons-material";
 import { useDispatch, useSelector } from 'react-redux';
-import { logout, updateUserProfile } from "../../features/auth/authSlice";
+import { logout, updateUserProfile, uploadProfilePic } from "../../features/auth/authSlice";
 import { fetchUserBookings } from "../../features/bookings/bookingSlice";
 
 const UserProfile = () => {
-    const dispatch = useDispatch();
-    const loggedInUser = useSelector((state) => state.auth.user);
-    const bookings = useSelector((state) => state.bookings.bookings);
-    const bookingsLoading = useSelector((state) => state.bookings.loading);
-    
-    const [user, setUser] = useState(loggedInUser);
-    const [open, setOpen] = useState(false);
-    const [activeTab, setActiveTab] = useState(0);
-    const [detailsDialog, setDetailsDialog] = useState({ open: false, type: '', data: [] });
-    const [profilePicture, setProfilePicture] = useState(user?.profilePicture || null);
-    const [coachingSessions, setCoachingSessions] = useState([]);
-    const [userStats, setUserStats] = useState({
-        totalBookings: 0,
-        coachingSessions: 0,
-        points: 0,
-        achievements: []
-    });
-    const [favoritesSports, setFavoritesSports] = useState([]);
-    const [recentActivity, setRecentActivity] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [editData, setEditData] = useState({
-        name: user?.name || '',
-        phone: user?.phone || '',
-        location: user?.location || '',
-        profilePicture: null
-    });
+  const dispatch = useDispatch();
+  const loggedInUser = useSelector((state) => state.auth.user);
+  const bookings = useSelector((state) => state.bookings.bookings);
+  const bookingsLoading = useSelector((state) => state.bookings.loading);
 
-    useEffect(() => {
-        if (user?._id) {
-            fetchUserData();
-        }
-    }, [dispatch, user?._id]);
+  const [user, setUser] = useState(loggedInUser);
+  const [open, setOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState(0);
+  const [detailsDialog, setDetailsDialog] = useState({ open: false, type: '', data: [] });
+  const [profilePic, setProfilePicture] = useState(user?.profilePic || null);
+  const [coachingSessions, setCoachingSessions] = useState([]);
+  const [userStats, setUserStats] = useState({
+    totalBookings: 0,
+    coachingSessions: 0,
+    points: 0,
+    achievements: []
+  });
+  const [favoritesSports, setFavoritesSports] = useState([]);
+  const [recentActivity, setRecentActivity] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [editData, setEditData] = useState({
+    name: user?.name || '',
+    phone: user?.phone || '',
+    location: user?.location || '',
+    profilePic: null
+  });
 
-    useEffect(() => {
-        if (user) {
-            setEditData({
-                name: user.name || '',
-                phone: user.phone || '',
-                location: user.location || '',
-                profilePicture: null
-            });
-            // Set profile picture from user data (Cloudinary URL)
-            setProfilePicture(user.profilePicture || null);
-        }
-    }, [user]);
 
-    const fetchUserData = async () => {
-        setLoading(true);
-        try {
-            // Fetch bookings
-            dispatch(fetchUserBookings(user._id));
-            
-            // Fetch coaching sessions - replace with actual API call
-            // const coachingResponse = await fetch(`/api/user/${user._id}/coaching-sessions`);
-            // const coachingData = await coachingResponse.json();
-            // setCoachingSessions(coachingData);
-            
-            // Fetch user stats - replace with actual API call
-            // const statsResponse = await fetch(`/api/user/${user._id}/stats`);
-            // const statsData = await statsResponse.json();
-            // setUserStats(statsData);
-            
-            // Fetch favorite sports - replace with actual API call
-            // const sportsResponse = await fetch(`/api/user/${user._id}/favorite-sports`);
-            // const sportsData = await sportsResponse.json();
-            // setFavoritesSports(sportsData);
-            
-            // Fetch recent activity - replace with actual API call
-            // const activityResponse = await fetch(`/api/user/${user._id}/recent-activity`);
-            // const activityData = await activityResponse.json();
-            // setRecentActivity(activityData);
-            
-            // For now, set empty arrays
-            setCoachingSessions([]);
-            setFavoritesSports([]);
-            setRecentActivity([]);
-            
-        } catch (error) {
-            console.error('Error fetching user data:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
+  useEffect(() => {
+    if (user?._id) {
+      fetchUserData();
+    }
+  }, [user?._id]);
 
-    const handleSave = async () => {
-        try {
-            console.log('Saving profile with data:', editData);
-            
-            const result = await dispatch(updateUserProfile({ 
-                name: editData.name, 
-                phone: editData.phone,
-                location: editData.location,
-                profilePicture: editData.profilePicture,
-                token: loggedInUser.token 
-            }));
-            
-            if (updateUserProfile.fulfilled.match(result)) {
-                console.log('Profile updated successfully:', result.payload);
-                setUser(result.payload);
-                setOpen(false);
-            } else {
-                console.error('Profile update failed:', result.payload);
-            }
-        } catch (error) {
-            console.error('Error updating profile:', error);
-        }
-    };
+  useEffect(() => {
+    if (user) {
+      setEditData({
+        name: user.name || '',
+        phone: user.phone || '',
+        location: user.location || '',
+        profilePic: null
+      });
+      setProfilePicture(user.profilePic || null);
+    }
+  }, [user]);
 
-    const handleTabChange = (event, newValue) => {
-        setActiveTab(newValue);
-    };
+  const fetchUserData = async () => {
+    setLoading(true);
+    try {
+      dispatch(fetchUserBookings(user._id));
+      setCoachingSessions([]);
+      setFavoritesSports([]);
+      setRecentActivity([]);
 
-    const handleProfilePictureChange = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            // Validate file type
-            if (!file.type.startsWith('image/')) {
-                alert('Please select an image file');
-                return;
-            }
-            
-            // Validate file size (5MB)
-            if (file.size > 5 * 1024 * 1024) {
-                alert('File size must be less than 5MB');
-                return;
-            }
-            
-            setEditData({...editData, profilePicture: file});
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                setProfilePicture(e.target.result);
-            };
-            reader.readAsDataURL(file);
-        }
-    };
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const handleStatClick = (type) => {
-        let data = [];
-        let title = '';
-        
-        switch(type) {
-            case 'bookings':
-                data = bookings || [];
-                title = 'My Bookings';
-                break;
-            case 'coaching':
-                data = coachingSessions || [];
-                title = 'Coaching Sessions';
-                break;
-            default:
-                return;
-        }
-        
-        setDetailsDialog({ open: true, type, data, title });
-    };
+  const handleSave = async () => {
+    try {
+      const result = await dispatch(updateUserProfile({
+        name: editData.name,
+        phone: editData.phone,
+        location: editData.location,
+        profilePic: editData.profilePic,
+        token: loggedInUser.token
+      }));
 
-    const closeDetailsDialog = () => {
-        setDetailsDialog({ open: false, type: '', data: [], title: '' });
-    };
+      if (updateUserProfile.fulfilled.match(result)) {
+        console.log('Profile updated successfully:', result.payload);
+        setUser(result.payload);
+        setOpen(false);
+      } else {
+        console.error('Profile update failed:', result.payload);
+      }
+    } catch (error) {
+      console.error('Error updating profile:', error);
+    }
+  };
 
-    const formatJoinDate = (dateString) => {
-        if (!dateString) return 'Recently';
-        const date = new Date(dateString);
-        return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-    };
+  const handleTabChange = (event, newValue) => {
+    setActiveTab(newValue);
+  };
+
+  const handleProfilePictureChange = (event) => {
+    const file = event.target.files[0];
+
+    file && dispatch(uploadProfilePic({ file, token: loggedInUser.token }));
+  };
+
+  const handleStatClick = (type) => {
+    let data = [];
+    let title = '';
+
+    switch (type) {
+      case 'bookings':
+        data = bookings || [];
+        title = 'My Bookings';
+        break;
+      case 'coaching':
+        data = coachingSessions || [];
+        title = 'Coaching Sessions';
+        break;
+      default:
+        return;
+    }
+
+    setDetailsDialog({ open: true, type, data, title });
+  };
+
+  const closeDetailsDialog = () => {
+    setDetailsDialog({ open: false, type: '', data: [], title: '' });
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      
+
       <Container maxWidth="lg" sx={{ pt: { xs: 12, md: 15 }, pb: 4 }}>
-        {/* Profile Header Card */}
         <Card sx={{ mb: 3, borderRadius: 3, overflow: 'hidden' }}>
-          {/* Cover Photo */}
-          <Box sx={{ 
-            height: { xs: 140, md: 180 }, 
-            background: 'linear-gradient(135deg, #22c55e 0%, #3b82f6 50%, #8b5cf6 100%)' 
+          <Box sx={{
+            height: { xs: 140, md: 180 },
+            background: 'linear-gradient(135deg, #22c55e 0%, #3b82f6 50%, #8b5cf6 100%)'
           }} />
-          
-          {/* Profile Content */}
+
           <CardContent sx={{ px: { xs: 3, md: 4 }, pb: 4 }}>
-            <Box sx={{ 
-              display: 'flex', 
+            <Box sx={{
+              display: 'flex',
               flexDirection: { xs: 'column', md: 'row' },
               alignItems: { xs: 'flex-start', md: 'flex-end' },
               gap: { xs: 3, md: 4 },
               mt: { xs: -10, md: -12 }
             }}>
-              {/* Avatar Section */}
               <Box sx={{ position: 'relative', alignSelf: { xs: 'center', md: 'flex-start' } }}>
                 <Badge
                   overlap="circular"
@@ -241,8 +188,8 @@ const UserProfile = () => {
                     <IconButton
                       size="small"
                       onClick={() => setOpen(true)}
-                      sx={{ 
-                        bgcolor: '#22c55e', 
+                      sx={{
+                        bgcolor: '#22c55e',
                         color: 'white',
                         '&:hover': { bgcolor: '#16a34a' },
                         width: 40,
@@ -254,32 +201,32 @@ const UserProfile = () => {
                   }
                 >
                   <Avatar
-                    src={profilePicture || user?.profilePicture}
-                    sx={{ 
-                      width: { xs: 120, md: 140 }, 
-                      height: { xs: 120, md: 140 }, 
-                      bgcolor: "#22c55e", 
+                    src={ loggedInUser?.profilePic || profilePic }
+                    sx={{
+                      width: { xs: 120, md: 140 },
+                      height: { xs: 120, md: 140 },
+                      bgcolor: "#22c55e",
                       fontSize: { xs: 48, md: 56 },
                       border: '5px solid white',
                       boxShadow: '0 8px 32px rgba(0,0,0,0.12)'
                     }}
                   >
-                    {!profilePicture && !user?.profilePicture && user?.name?.charAt(0)?.toUpperCase()}
+                    {!profilePic && !loggedInUser?.profilePic && user?.name?.charAt(0)?.toUpperCase()}
                   </Avatar>
                 </Badge>
               </Box>
-              
+
               {/* User Info */}
-              <Box sx={{ 
-                flex: 1, 
+              <Box sx={{
+                flex: 1,
                 ml: { md: 3 },
                 mb: { md: 3 }
               }}>
-                <Typography 
-                  variant="h3" 
-                  fontWeight="bold" 
-                  sx={{ 
-                    mb: 0.5, 
+                <Typography
+                  variant="h3"
+                  fontWeight="bold"
+                  sx={{
+                    mb: 0.5,
                     fontSize: { xs: '2rem', md: '2.75rem' },
                     color: 'text.primary',
                     lineHeight: 1.2
@@ -287,9 +234,9 @@ const UserProfile = () => {
                 >
                   {user?.name}
                 </Typography>
-                
-                <Box sx={{ 
-                  display: 'flex', 
+
+                <Box sx={{
+                  display: 'flex',
                   alignItems: 'center',
                   mb: 3
                 }}>
@@ -298,9 +245,9 @@ const UserProfile = () => {
                     {user?.email}
                   </Typography>
                 </Box>
-                
-                <Stack 
-                  direction={{ xs: 'column', sm: 'row' }} 
+
+                <Stack
+                  direction={{ xs: 'column', sm: 'row' }}
                   spacing={{ xs: 1, sm: 3 }}
                   alignItems={{ xs: 'flex-start', sm: 'center' }}
                   sx={{ mb: 2 }}
@@ -318,14 +265,11 @@ const UserProfile = () => {
                     </Box>
                   )}
                 </Stack>
-                
-
               </Box>
-              
-              {/* Action Buttons */}
-              <Box sx={{ 
-                display: 'flex', 
-                gap: 1, 
+
+              <Box sx={{
+                display: 'flex',
+                gap: 1,
                 alignSelf: { xs: 'center', md: 'flex-end' },
                 mt: { xs: 2, md: 0 }
               }}>
@@ -333,8 +277,8 @@ const UserProfile = () => {
                   variant="contained"
                   startIcon={<EditIcon />}
                   onClick={() => setOpen(true)}
-                  sx={{ 
-                    bgcolor: "#22c55e", 
+                  sx={{
+                    bgcolor: "#22c55e",
                     "&:hover": { bgcolor: "#16a34a" },
                     borderRadius: 3,
                     textTransform: 'none',
@@ -351,10 +295,9 @@ const UserProfile = () => {
           </CardContent>
         </Card>
 
-        {/* Stats Cards */}
         <Card sx={{ borderRadius: 3, mb: 4, overflow: 'hidden' }}>
-          <Box sx={{ 
-            display: 'grid', 
+          <Box sx={{
+            display: 'grid',
             gridTemplateColumns: { xs: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' },
             '& > *': {
               borderRight: { xs: 'none', md: '1px solid' },
@@ -373,9 +316,9 @@ const UserProfile = () => {
               }
             }
           }}>
-            <Box 
+            <Box
               onClick={() => handleStatClick('bookings')}
-              sx={{ 
+              sx={{
                 textAlign: 'center',
                 py: { xs: 3, md: 4 },
                 px: { xs: 1, md: 2 },
@@ -401,10 +344,10 @@ const UserProfile = () => {
               </Typography>
               <ViewIcon sx={{ fontSize: { xs: 16, md: 18 }, color: '#22c55e' }} />
             </Box>
-            
-            <Box 
+
+            <Box
               onClick={() => handleStatClick('coaching')}
-              sx={{ 
+              sx={{
                 textAlign: 'center',
                 py: { xs: 3, md: 4 },
                 px: { xs: 1, md: 2 },
@@ -430,8 +373,8 @@ const UserProfile = () => {
               </Typography>
               <ViewIcon sx={{ fontSize: { xs: 16, md: 18 }, color: '#3b82f6' }} />
             </Box>
-            
-            <Box sx={{ 
+
+            <Box sx={{
               textAlign: 'center',
               py: { xs: 3, md: 4 },
               px: { xs: 1, md: 2 },
@@ -449,8 +392,8 @@ const UserProfile = () => {
                 Points Earned
               </Typography>
             </Box>
-            
-            <Box sx={{ 
+
+            <Box sx={{
               textAlign: 'center',
               py: { xs: 3, md: 4 },
               px: { xs: 1, md: 2 },
@@ -471,12 +414,11 @@ const UserProfile = () => {
           </Box>
         </Card>
 
-        {/* Tabbed Content */}
         <Card sx={{ borderRadius: 3, mb: 4 }}>
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <Tabs 
-              value={activeTab} 
-              onChange={handleTabChange} 
+            <Tabs
+              value={activeTab}
+              onChange={handleTabChange}
               sx={{ px: 3 }}
               variant="scrollable"
               scrollButtons="auto"
@@ -486,7 +428,7 @@ const UserProfile = () => {
               <Tab label="Favorite Sports" />
             </Tabs>
           </Box>
-          
+
           <CardContent sx={{ p: 4 }}>
             {activeTab === 0 && (
               <Box>
@@ -496,11 +438,11 @@ const UserProfile = () => {
                 {bookings && bookings.length > 0 ? (
                   <Stack spacing={2}>
                     {bookings.slice(0, 5).map((booking, index) => (
-                      <Box 
+                      <Box
                         key={booking._id || index}
-                        sx={{ 
-                          p: 3, 
-                          bgcolor: 'grey.50', 
+                        sx={{
+                          p: 3,
+                          bgcolor: 'grey.50',
                           borderRadius: 2,
                           display: 'flex',
                           justifyContent: 'space-between',
@@ -515,9 +457,9 @@ const UserProfile = () => {
                             {new Date(booking.date).toLocaleDateString()} • {booking.timeSlot || 'Time slot'}
                           </Typography>
                         </Box>
-                        <Chip 
-                          label={booking.status} 
-                          size="small" 
+                        <Chip
+                          label={booking.status}
+                          size="small"
                           color={booking.status === 'confirmed' ? 'success' : 'warning'}
                         />
                       </Box>
@@ -533,7 +475,7 @@ const UserProfile = () => {
                 )}
               </Box>
             )}
-            
+
             {activeTab === 1 && (
               <Box>
                 <Typography variant="h6" fontWeight="bold" sx={{ mb: 3 }}>
@@ -543,13 +485,13 @@ const UserProfile = () => {
                   <Grid container spacing={3}>
                     {userStats.achievements.map((achievement, index) => (
                       <Grid item xs={12} md={6} key={index}>
-                        <Box sx={{ 
-                          display: 'flex', 
-                          alignItems: 'center', 
-                          gap: 2, 
-                          p: 3, 
-                          bgcolor: 'grey.50', 
-                          borderRadius: 2 
+                        <Box sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 2,
+                          p: 3,
+                          bgcolor: 'grey.50',
+                          borderRadius: 2
                         }}>
                           <Box sx={{ fontSize: '2rem' }}>{achievement.icon}</Box>
                           <Box>
@@ -574,7 +516,7 @@ const UserProfile = () => {
                 )}
               </Box>
             )}
-            
+
             {activeTab === 2 && (
               <Box>
                 <Typography variant="h6" fontWeight="bold" sx={{ mb: 3 }}>
@@ -583,17 +525,17 @@ const UserProfile = () => {
                 {favoritesSports && favoritesSports.length > 0 ? (
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
                     {favoritesSports.map((sport, index) => (
-                      <Chip 
-                        key={index} 
-                        label={sport} 
-                        sx={{ 
-                          bgcolor: '#22c55e', 
+                      <Chip
+                        key={index}
+                        label={sport}
+                        sx={{
+                          bgcolor: '#22c55e',
                           color: 'white',
                           fontWeight: 'medium',
                           fontSize: '0.9rem',
                           py: 2,
                           px: 1
-                        }} 
+                        }}
                       />
                     ))}
                   </Box>
@@ -612,11 +554,11 @@ const UserProfile = () => {
 
         {/* Logout Button */}
         <Box sx={{ textAlign: 'center', mt: 4 }}>
-          <Button 
-            variant="outlined" 
-            color="error" 
+          <Button
+            variant="outlined"
+            color="error"
             onClick={() => dispatch(logout())}
-            sx={{ 
+            sx={{
               borderRadius: 2,
               textTransform: 'none',
               fontWeight: 'bold',
@@ -629,18 +571,16 @@ const UserProfile = () => {
         </Box>
       </Container>
 
-      {/* Edit Profile Modal */}
       <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle sx={{ fontWeight: 'bold' }}>Edit Profile</DialogTitle>
         <DialogContent sx={{ mt: 1 }}>
           <div className="space-y-4">
-            {/* Profile Picture Upload */}
             <div className="flex flex-col items-center gap-3 mb-4">
               <Avatar
-                src={profilePicture || user?.profilePicture}
+                src={profilePic || loggedInUser?.profilePic}
                 sx={{ width: 80, height: 80, bgcolor: "#22c55e", fontSize: 32 }}
               >
-                {!profilePicture && !user?.profilePicture && user?.name?.charAt(0).toUpperCase()}
+                {!profilePic && !loggedInUser?.profilePic && loggedInUser?.name?.charAt(0).toUpperCase()}
               </Avatar>
               <input
                 accept="image/*"
@@ -660,11 +600,11 @@ const UserProfile = () => {
                 </Button>
               </label>
             </div>
-            
+
             <TextField
               label="Full Name"
               value={editData.name}
-              onChange={(e) => setEditData({...editData, name: e.target.value})}
+              onChange={(e) => setEditData({ ...editData, name: e.target.value })}
               fullWidth
               variant="outlined"
               required
@@ -672,7 +612,7 @@ const UserProfile = () => {
             <TextField
               label="Phone Number"
               value={editData.phone}
-              onChange={(e) => setEditData({...editData, phone: e.target.value})}
+              onChange={(e) => setEditData({ ...editData, phone: e.target.value })}
               fullWidth
               variant="outlined"
               placeholder="Enter your phone number"
@@ -680,7 +620,7 @@ const UserProfile = () => {
             <TextField
               label="Location"
               value={editData.location}
-              onChange={(e) => setEditData({...editData, location: e.target.value})}
+              onChange={(e) => setEditData({ ...editData, location: e.target.value })}
               fullWidth
               variant="outlined"
               placeholder="Enter your location"
@@ -691,11 +631,11 @@ const UserProfile = () => {
           <Button onClick={() => setOpen(false)} color="secondary">
             Cancel
           </Button>
-          <Button 
-            onClick={handleSave} 
-            variant="contained" 
-            sx={{ 
-              bgcolor: "#22c55e", 
+          <Button
+            onClick={handleSave}
+            variant="contained"
+            sx={{
+              bgcolor: "#22c55e",
               "&:hover": { bgcolor: "#16a34a" },
               borderRadius: '8px',
               textTransform: 'none',
@@ -707,20 +647,19 @@ const UserProfile = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Details Dialog for Bookings/Coaching */}
-      <Dialog 
-        open={detailsDialog.open} 
-        onClose={closeDetailsDialog} 
-        maxWidth="sm" 
+      <Dialog
+        open={detailsDialog.open}
+        onClose={closeDetailsDialog}
+        maxWidth="sm"
         fullWidth
         PaperProps={{
           sx: { borderRadius: 3, m: 2 }
         }}
       >
-        <DialogTitle sx={{ 
-          fontWeight: 'bold', 
-          display: 'flex', 
-          justifyContent: 'space-between', 
+        <DialogTitle sx={{
+          fontWeight: 'bold',
+          display: 'flex',
+          justifyContent: 'space-between',
           alignItems: 'center',
           pb: 1
         }}>
@@ -759,9 +698,9 @@ const UserProfile = () => {
                               {booking.timeSlot || 'Time slot not specified'}
                             </Typography>
                           </Box>
-                          <Chip 
-                            label={booking.status} 
-                            size="small" 
+                          <Chip
+                            label={booking.status}
+                            size="small"
                             color={booking.status === 'confirmed' ? 'success' : 'warning'}
                           />
                         </Box>
@@ -772,7 +711,7 @@ const UserProfile = () => {
               )}
             </Box>
           )}
-          
+
           {detailsDialog.type === 'coaching' && (
             <Box>
               {detailsDialog.data.length === 0 ? (
@@ -802,9 +741,9 @@ const UserProfile = () => {
                               Date: {session.date}
                             </Typography>
                           </Box>
-                          <Chip 
-                            label={session.status} 
-                            size="small" 
+                          <Chip
+                            label={session.status}
+                            size="small"
                             color={session.status === 'completed' ? 'success' : 'primary'}
                           />
                         </Box>

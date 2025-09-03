@@ -56,7 +56,7 @@ exports.login = async (req, res) => {
       email: user.email,
       role: user.role,
       phone: user.phone,
-      address: user.address,
+      location: user.location,
       dob: user.dob,
       gender: user.gender,
       profilePic: user.profilePic,
@@ -113,11 +113,11 @@ exports.updateUserProfile = async (req, res) => {
     const user = await User.findById(req.user.id);
     if (!user) return res.status(404).json({ message: 'User not found' });
 
-    const { name, email, phone, address, dob, gender, preferredSports } = req.body;
+    const { name, email, phone, location, dob, gender, preferredSports } = req.body;
     if (name) user.name = name;
     if (email) user.email = email;
     if (phone) user.phone = phone;
-    if (address) user.address = address;
+    if (location) user.location = location;
     if (dob) user.dob = dob;
     if (gender) user.gender = gender;
     if (preferredSports) user.preferredSports = preferredSports;
@@ -130,7 +130,7 @@ exports.updateUserProfile = async (req, res) => {
       email: user.email,
       role: user.role,
       phone: user.phone,
-      address: user.address,
+      location: user.location,
       dob: user.dob,
       gender: user.gender,
       profilePic: user.profilePic,
