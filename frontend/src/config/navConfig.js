@@ -5,36 +5,69 @@ export const navConfig = {
     { id: 1, text: "Play", type: "scroll", key: 0 },
     { id: 2, text: "Learn", type: "scroll", key: 1 },
     { id: 3, text: "Shop", type: "scroll", key: 2 },
-    { id: 4, text: "Login", type: "route", path: "/login" },
+    { 
+      id: 4, 
+      text: "Partner with Us", 
+      type: "dropdown",
+      items: [
+        { id: 41, text: "Become an Owner", type: "route", path: "/partner/owner" },
+        { id: 42, text: "Join as a Coach", type: "route", path: "/partner/coach" }
+      ]
+    },
+    { id: 5, text: "Login", type: "route", path: "/login" },
   ],
 
   user: [
-    { id: 1, text: "Home", type: "route", path: "/user" },
-    { id: 2, text: "Dashboard", type: "route", path: "/user/dashboard" },
-    { id: 3, text: "Book Turf", type: "route", path: "/user/bookings/turf" },
-    { id: 4, text: "Join Coaching", type: "route", path: "/user/bookings/coach" },
-    { id: 5, text: "Bookings", type: "route", path: "/user/bookings" },
-    // { id: 5, text: <AccountMenu />, type: "route"},
-    { id: 6, text: "Profile", type: "route", path: "/user/profile" },
-    // { id: 6, text: "Logout", type: "logout", path: "/" },
+    { id: 1, text: "Book Turf", type: "route", path: "/user/bookings/turf" },
+    { id: 2, text: "Join Coaching", type: "route", path: "/user/bookings/coach" },
+    { 
+      id: 3, 
+      text: "Partner with Us", 
+      type: "dropdown",
+      items: [
+        { id: 31, text: "Become an Owner", type: "route", path: "/partner/owner" },
+        { id: 32, text: "Join as a Coach", type: "route", path: "/partner/coach" }
+      ]
+    },
+    { id: 4, text: "Profile", type: "route", path: "/user/profile" },
   ],
 
   admin: [
     { id: 1, text: "Dashboard", type: "route", path: "/admin/dashboard" },
-    { id: 2, text: "Manage Users", type: "route", path: "/admin/users" },
-    { id: 3, text: "Manage Grounds", type: "route", path: "/admin/grounds" },
-    { id: 4, text: "Reports", type: "route", path: "/admin/reports" },
-    { id: 5, text: "Settings", type: "route", path: "/admin/settings" },
-    { id: 6, text: "Logout", type: "logout", path: "/" },
+    { id: 2, text: "Users", type: "route", path: "/admin/users" },
+    { id: 3, text: "Owners", type: "route", path: "/admin/owners" },
+    { id: 4, text: "Venues", type: "route", path: "/admin/venues" },
+    { id: 5, text: "Applications", type: "route", path: "/admin/applications" },
+    { 
+      id: 6, 
+      text: "Partner with Us", 
+      type: "dropdown",
+      items: [
+        { id: 61, text: "Become an Owner", type: "route", path: "/partner/owner" },
+        { id: 62, text: "Join as a Coach", type: "route", path: "/partner/coach" }
+      ]
+    },
+    { id: 7, text: "Settings", type: "route", path: "/admin/settings" },
+    { id: 8, text: "Logout", type: "logout", path: "/" },
   ],
 
   owner: [
     { id: 1, text: "Dashboard", type: "route", path: "/owner/dashboard" },
-    { id: 2, text: "My Grounds", type: "route", path: "/owner/grounds" },
-    { id: 3, text: "Add Ground", type: "route", path: "/owner/add-ground" },
-    { id: 4, text: "Bookings", type: "route", path: "/owner/bookings" },
-    { id: 5, text: "Profile", type: "route", path: "/owner/profile" },
-    { id: 6, text: "Logout", type: "logout", path: '/' },
+    { id: 2, text: "My Venues", type: "route", path: "/owner/venues" },
+    { id: 3, text: "Bookings", type: "route", path: "/owner/bookings" },
+    { id: 4, text: "Calendar", type: "route", path: "/owner/calendar" },
+    { id: 5, text: "Revenue", type: "route", path: "/owner/revenue" },
+    { 
+      id: 6, 
+      text: "Partner with Us", 
+      type: "dropdown",
+      items: [
+        { id: 61, text: "Become an Owner", type: "route", path: "/partner/owner" },
+        { id: 62, text: "Join as a Coach", type: "route", path: "/partner/coach" }
+      ]
+    },
+    { id: 7, text: "Profile", type: "route", path: "/user/profile" },
+    { id: 8, text: "Logout", type: "logout", path: '/' },
   ],
 
   coach: [
