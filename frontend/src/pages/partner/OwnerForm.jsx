@@ -53,7 +53,7 @@ const OwnerForm = () => {
       };
 
       console.log("Submitting coach application:", applicationData);
-      
+
       await dispatch(getApplyAsOwner(applicationData));
       reset();
       setShowSuccessModal(true);
@@ -104,51 +104,51 @@ const OwnerForm = () => {
       /> */}
 
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4">
-      <div className="max-w-6xl mx-auto">
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-          <div className="grid lg:grid-cols-2 gap-0">
-            {/* Left Side - Image/Video */}
-            <div className="bg-gradient-to-br from-[#00df9a] to-[#00b87a] p-8 lg:p-12 flex flex-col justify-center items-center text-white">
-              <div className="text-center">
-                <h2 className="text-3xl lg:text-4xl font-bold mb-6">
-                  Become a Ground Owner
-                </h2>
-                <p className="text-lg lg:text-xl mb-8 opacity-90">
-                  Join our network of successful ground owners and start earning from your sports facility
-                </p>
-                <div className="w-full max-w-md mx-auto">
-                  <img 
-                    src="https://images.unsplash.com/photo-1546608235-3310a2494cdf?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGZvb3RiYWxsfGVufDB8fDB8fHww" 
-                    alt="Sports Ground" 
-                    className="w-full h-64 object-cover rounded-lg shadow-lg"
-                  />
-                </div>
-                <div className="mt-8 space-y-4">
-                  <div className="flex items-center justify-center space-x-3">
-                    <div className="w-2 h-2 bg-white rounded-full"></div>
-                    <span>Easy registration process</span>
+        <div className="max-w-6xl mx-auto">
+          <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+            <div className="grid lg:grid-cols-2 gap-0">
+              {/* Left Side - Image/Video */}
+              <div className="bg-gradient-to-br from-[#00df9a] to-[#00b87a] p-8 lg:p-12 flex flex-col justify-center items-center text-white">
+                <div className="text-center">
+                  <h2 className="text-3xl lg:text-4xl font-bold mb-6">
+                    Become a Ground Owner
+                  </h2>
+                  <p className="text-lg lg:text-xl mb-8 opacity-90">
+                    Join our network of successful ground owners and start earning from your sports facility
+                  </p>
+                  <div className="w-full max-w-md mx-auto">
+                    <img
+                      src="https://images.unsplash.com/photo-1546608235-3310a2494cdf?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGZvb3RiYWxsfGVufDB8fDB8fHww"
+                      alt="Sports Ground"
+                      className="w-full h-64 object-cover rounded-lg shadow-lg"
+                    />
                   </div>
-                  <div className="flex items-center justify-center space-x-3">
-                    <div className="w-2 h-2 bg-white rounded-full"></div>
-                    <span>Maximize your ground utilization</span>
-                  </div>
-                  <div className="flex items-center justify-center space-x-3">
-                    <div className="w-2 h-2 bg-white rounded-full"></div>
-                    <span>24/7 support and management</span>
+                  <div className="mt-8 space-y-4">
+                    <div className="flex items-center justify-center space-x-3">
+                      <div className="w-2 h-2 bg-white rounded-full"></div>
+                      <span>Easy registration process</span>
+                    </div>
+                    <div className="flex items-center justify-center space-x-3">
+                      <div className="w-2 h-2 bg-white rounded-full"></div>
+                      <span>Maximize your ground utilization</span>
+                    </div>
+                    <div className="flex items-center justify-center space-x-3">
+                      <div className="w-2 h-2 bg-white rounded-full"></div>
+                      <span>24/7 support and management</span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Right Side - Form */}
-            <div className="p-8 lg:p-12">
-              <div className="max-w-md mx-auto">
-                <h3 className="text-2xl font-bold text-gray-800 mb-2">
-                  Owner Registration
-                </h3>
-                <p className="text-gray-600 mb-8">
-                  Fill out the form below to get started
-                </p>
+              {/* Right Side - Form */}
+              <div className="p-8 lg:p-12">
+                <div className="max-w-md mx-auto">
+                  <h3 className="text-2xl font-bold text-gray-800 mb-2">
+                    Owner Registration
+                  </h3>
+                  <p className="text-gray-600 mb-8">
+                    Fill out the form below to get started
+                  </p>
 
                   <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                     {/* Name */}
@@ -338,7 +338,6 @@ const OwnerForm = () => {
           </div>
         </div>
       </div>
-    </div>
     </>
   );
 };
