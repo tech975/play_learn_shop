@@ -6,7 +6,7 @@ const CoachCard = ({ coach, onClick }) => {
       onClick={onClick}
       className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:scale-105 overflow-hidden"
     >
-      {/* Image */}
+      {/* Images */}
       <div className="relative h-48 overflow-hidden">
         {coach.media?.gallery?.length > 0 ? (
           <img
