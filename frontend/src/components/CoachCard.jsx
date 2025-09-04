@@ -20,7 +20,7 @@ const CoachCard = ({ coach, onClick }) => {
           </div>
         )}
         
-        {/* Rating Badge */}
+        {/* Rating Badgeee */}
         {coach.rating && (
           <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1 flex items-center space-x-1">
             <Star size={14} className="text-yellow-500 fill-current" />
