@@ -18,7 +18,7 @@ const CoachForm = () => {
     reset,
   } = useForm();
 
-  // Check if user is authenticated
+  // Check if user is authenticate
   useEffect(() => {
     if (!isAuthenticated) {
       // Store the current path to redirect back after login
