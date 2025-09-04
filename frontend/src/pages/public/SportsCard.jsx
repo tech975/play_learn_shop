@@ -1,7 +1,10 @@
-const SportsCard = ({ name, img }) => {
+const SportsCard = ({ name, img, onClick }) => {
 
   return (
-    <div className="bg-white rounded-xl shadow-md hover:scale-105 duration-300 cursor-pointer">
+    <div 
+      onClick={onClick}
+      className="bg-white rounded-xl shadow-md hover:scale-105 duration-300 cursor-pointer hover:shadow-lg transition-all"
+    >
       <img
         src={img}
         alt={name}
