@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
+import React, { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from "react-toastify";
@@ -8,7 +8,7 @@ import { getApplyAsOwner } from "../../features/adminApprovalRequest/adminApprov
 // import { submitCoachApplication } from "../../services/partnerService";
 // import SuccessModal from "../../components/SuccessModal";
 
-const CoachForm = () => {
+const OwnerForm = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
@@ -18,14 +18,14 @@ const CoachForm = () => {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-    reset,
+    reset
   } = useForm();
 
-  // Check if user is authenticate
+  // Check if user is authenticated
   useEffect(() => {
     if (!user && !user?.token) {
       // Store the current path to redirect back after login
-      sessionStorage.setItem('redirectAfterLogin', '/partner/coach');
+      sessionStorage.setItem('redirectAfterLogin', '/partner/owner');
     }
   }, [user]);
 
@@ -58,10 +58,8 @@ const CoachForm = () => {
       reset();
       setShowSuccessModal(true);
     } catch (error) {
-      console.error("Error submitting coach application:", error);
-      toast.error(
-        error.message || "Failed to submit application. Please try again."
-      );
+      console.error('Error submitting owner application:', error);
+      toast.error(error.message || 'Failed to submit application. Please try again.');
     }
   };
 
@@ -75,7 +73,7 @@ const CoachForm = () => {
           </div>
           <h2 className="text-2xl font-bold text-gray-800 mb-4">Login Required</h2>
           <p className="text-gray-600 mb-6">
-            You need to be logged in to submit a coach application. Please login or create an account to continue.
+            You need to be logged in to submit a ground owner application. Please login or create an account to continue.
           </p>
           <button
             onClick={() => navigate('/login')}
@@ -106,99 +104,88 @@ const CoachForm = () => {
       /> */}
 
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-            <div className="grid lg:grid-cols-2 gap-0">
-              {/* Left Side - Image/Video */}
-              <div className="bg-gradient-to-br from-[#00df9a] to-[#00b87a] p-8 lg:p-12 flex flex-col justify-center items-center text-white">
-                <div className="text-center">
-                  <h2 className="text-3xl lg:text-4xl font-bold mb-6">
-                    Join as a Coach
-                  </h2>
-                  <p className="text-lg lg:text-xl mb-8 opacity-90">
-                    Share your expertise and help aspiring athletes achieve
-                    their dreams
-                  </p>
-                  <div className="w-full max-w-md mx-auto">
-                    <img
-                      src="https://images.unsplash.com/photo-1585757318177-0570a997dc3a?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Y29hY2h8ZW58MHx8MHx8fDA%3D"
-                      alt="Sports Coach"
-                      className="w-full h-64 object-cover rounded-lg shadow-lg"
-                    />
+      <div className="max-w-6xl mx-auto">
+        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+          <div className="grid lg:grid-cols-2 gap-0">
+            {/* Left Side - Image/Video */}
+            <div className="bg-gradient-to-br from-[#00df9a] to-[#00b87a] p-8 lg:p-12 flex flex-col justify-center items-center text-white">
+              <div className="text-center">
+                <h2 className="text-3xl lg:text-4xl font-bold mb-6">
+                  Become a Ground Owner
+                </h2>
+                <p className="text-lg lg:text-xl mb-8 opacity-90">
+                  Join our network of successful ground owners and start earning from your sports facility
+                </p>
+                <div className="w-full max-w-md mx-auto">
+                  <img 
+                    src="https://images.unsplash.com/photo-1546608235-3310a2494cdf?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGZvb3RiYWxsfGVufDB8fDB8fHww" 
+                    alt="Sports Ground" 
+                    className="w-full h-64 object-cover rounded-lg shadow-lg"
+                  />
+                </div>
+                <div className="mt-8 space-y-4">
+                  <div className="flex items-center justify-center space-x-3">
+                    <div className="w-2 h-2 bg-white rounded-full"></div>
+                    <span>Easy registration process</span>
                   </div>
-                  <div className="mt-8 space-y-4">
-                    <div className="flex items-center justify-center space-x-3">
-                      <div className="w-2 h-2 bg-white rounded-full"></div>
-                      <span>Flexible coaching schedules</span>
-                    </div>
-                    <div className="flex items-center justify-center space-x-3">
-                      <div className="w-2 h-2 bg-white rounded-full"></div>
-                      <span>Connect with passionate athletes</span>
-                    </div>
-                    <div className="flex items-center justify-center space-x-3">
-                      <div className="w-2 h-2 bg-white rounded-full"></div>
-                      <span>Competitive compensation</span>
-                    </div>
+                  <div className="flex items-center justify-center space-x-3">
+                    <div className="w-2 h-2 bg-white rounded-full"></div>
+                    <span>Maximize your ground utilization</span>
+                  </div>
+                  <div className="flex items-center justify-center space-x-3">
+                    <div className="w-2 h-2 bg-white rounded-full"></div>
+                    <span>24/7 support and management</span>
                   </div>
                 </div>
               </div>
+            </div>
 
-              {/* Right Side - Form */}
-              <div className="p-8 lg:p-12">
-                <div className="max-w-md mx-auto">
-                  <h3 className="text-2xl font-bold text-gray-800 mb-2">
-                    Coach Registration
-                  </h3>
-                  <p className="text-gray-600 mb-8">
-                    Fill out the form below to get started
-                  </p>
+            {/* Right Side - Form */}
+            <div className="p-8 lg:p-12">
+              <div className="max-w-md mx-auto">
+                <h3 className="text-2xl font-bold text-gray-800 mb-2">
+                  Owner Registration
+                </h3>
+                <p className="text-gray-600 mb-8">
+                  Fill out the form below to get started
+                </p>
 
                   <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                     {/* Name */}
                     {/* <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Full Name *
+                        City *
                       </label>
                       <input
                         type="text"
-                        {...register("name", {
-                          required: "Name is required",
-                          minLength: {
-                            value: 2,
-                            message: "Name must be at least 2 characters",
-                          },
+                        {...register('city', { 
+                          required: 'City is required',
+                          minLength: { value: 2, message: 'City must be at least 2 characters' }
                         })}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00df9a] focus:border-transparent transition-all duration-200"
-                        placeholder="Enter your full name"
+                        placeholder="City"
                       />
-                      {errors.name && (
-                        <p className="mt-1 text-sm text-red-600">
-                          {errors.name.message}
-                        </p>
+                      {errors.city && (
+                        <p className="mt-1 text-sm text-red-600">{errors.city.message}</p>
                       )}
                     </div> */}
 
                     {/* Email */}
                     {/* <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Email Address *
+                        State *
                       </label>
                       <input
-                        type="email"
-                        {...register("email", {
-                          required: "Email is required",
-                          pattern: {
-                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                            message: "Invalid email address",
-                          },
+                        type="text"
+                        {...register('state', { 
+                          required: 'State is required',
+                          minLength: { value: 2, message: 'State must be at least 2 characters' }
                         })}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00df9a] focus:border-transparent transition-all duration-200"
-                        placeholder="Enter your email"
+                        placeholder="State"
                       />
-                      {errors.email && (
-                        <p className="mt-1 text-sm text-red-600">
-                          {errors.email.message}
-                        </p>
+                      {errors.state && (
+                        <p className="mt-1 text-sm text-red-600">{errors.state.message}</p>
                       )}
                     </div> */}
 
@@ -351,8 +338,9 @@ const CoachForm = () => {
           </div>
         </div>
       </div>
+    </div>
     </>
   );
 };
 
-export default CoachForm;
+export default OwnerForm;
