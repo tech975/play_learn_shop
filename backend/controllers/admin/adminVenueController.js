@@ -4,28 +4,24 @@ const User = require("../../models/User");
 
 exports.applyAsOwner = async (req, res) => {
   try {
-    const { name, email, phone, role, groundName, groundAddress } = req.body;
+    let { groundName, groundAddress } = req.body;
 
-    console.info(req.body)
+    const validGroundName = groundName.trim().toLowerCase();
+    const validGroundAddress = groundAddress.trim().toLowerCase();
 
-    if (!name || !email || !phone || !role || !groundName || !groundAddress) {
+    if (!validGroundName || !validGroundAddress) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    // prevent duplicate pending request
-    const existing = await OwnerRequest.findOne({ user: req.user._id, status: "pending" });
+    const existing = await OwnerRequest.findOne({ user: req.user._id, groundAddress: validGroundAddress, groundName: validGroundName, status: { $in: ["pending", "approved"] } });
     if (existing) {
       return res.status(400).json({ message: "You already have a pending request" });
     }
 
     const request = await OwnerRequest.create({
       user: req.user._id,
-      name,
-      email,
-      phone,
-      role,
-      groundName,
-      groundAddress
+      groundName: validGroundName,
+      groundAddress: validGroundAddress
     });
 
     res.status(201).json({ message: "Request submitted", request });
@@ -48,7 +44,7 @@ exports.updateRequestStatus = async (req, res) => {
     const { requestId } = req.params;
     const { status } = req.body;
 
-    if (!["approved", "rejected"].includes(status)) {
+    if (!["approved", "rejected", "pending"].includes(status)) {
       return res.status(400).json({ message: "Invalid status" });
     }
 

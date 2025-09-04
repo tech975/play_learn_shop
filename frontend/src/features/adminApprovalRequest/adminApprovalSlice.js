@@ -21,6 +21,37 @@ export const getApplyAsOwner = createAsyncThunk(
     }
 );
 
+export const fetchPendingOwnerRequests = createAsyncThunk(
+    "adminApproval/fetchPendingOwnerRequests",
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await axios.get("api/admin/venue-request");
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data);
+        }
+    }
+);
+
+export const updateOwnerRequestStatus = createAsyncThunk(
+    "adminApproval/updateOwnerRequestStatus",
+    async ({ requestId, status }, { dispatch, rejectWithValue }) => {
+        try {
+            const response = await axios.put(`api/admin/venue-request/status/${requestId}`, { status });
+            dispatch(showMessage({ message: "Venue Status Updated Successfully" }));
+            return response.data;
+        } catch (error) {
+            dispatch(
+                showMessage({
+                    message: error.response?.data?.message || "Something went wrong",
+                    type: "error",
+                })
+            );
+            return rejectWithValue(error.response?.data);
+        }
+    }
+);
+
 const adminApprovalSlice = createSlice({
     name: "adminApproval",
     initialState: {
@@ -45,6 +76,28 @@ const adminApprovalSlice = createSlice({
                 state.success = true;
             })
             .addCase(getApplyAsOwner.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(updateOwnerRequestStatus.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(updateOwnerRequestStatus.fulfilled, (state) => {
+                state.loading = false;
+                state.success = true;
+            })
+            .addCase(updateOwnerRequestStatus.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(fetchPendingOwnerRequests.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(fetchPendingOwnerRequests.fulfilled, (state) => {
+                state.loading = false;
+                state.success = true;
+            })
+            .addCase(fetchPendingOwnerRequests.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             });
