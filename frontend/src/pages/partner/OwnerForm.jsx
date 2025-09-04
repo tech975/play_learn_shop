@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from "react-toastify";
 import { Lock, LogIn } from 'lucide-react';
-import { submitCoachApplication } from "../../services/partnerService";
-import SuccessModal from "../../components/SuccessModal";
+import { getApplyAsOwner } from "../../features/adminApprovalRequest/adminApprovalSlice";
+// import { submitCoachApplication } from "../../services/partnerService";
+// import SuccessModal from "../../components/SuccessModal";
 
 const CoachForm = () => {
   const navigate = useNavigate();
-  const { user, isAuthenticated } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -20,14 +23,17 @@ const CoachForm = () => {
 
   // Check if user is authenticated
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!user && !user?.token) {
       // Store the current path to redirect back after login
       sessionStorage.setItem('redirectAfterLogin', '/partner/coach');
     }
-  }, [isAuthenticated]);
+  }, [user]);
 
   const onSubmit = async (data) => {
-    if (!isAuthenticated) {
+
+    console.log("user Data:", user);
+
+    if (!user && !user?.token) {
       toast.error('Please login first to submit your application');
       navigate('/login');
       return;
@@ -37,12 +43,18 @@ const CoachForm = () => {
       // Include user ID in the application data
       const applicationData = {
         ...data,
-        userId: user.id,
-        userEmail: user.email,
-        userName: user.name
+        userId: user?._id,
+        email: user?.email,
+        name: user?.name,
+        phone: user?.phone,
+        turfLocation: data?.turfLocation,
+        experience: data?.experience,
+        expertise: data?.expertise,
       };
+
+      console.log("Submitting coach application:", applicationData);
       
-      const response = await submitCoachApplication(applicationData);
+      await dispatch(getApplyAsOwner(applicationData));
       reset();
       setShowSuccessModal(true);
     } catch (error) {
@@ -54,7 +66,7 @@ const CoachForm = () => {
   };
 
   // If user is not authenticated, show login prompt
-  if (!isAuthenticated) {
+  if (!user?.token) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4 flex items-center justify-center">
         <div className="max-w-md mx-auto bg-white rounded-2xl shadow-xl p-8 text-center">
@@ -85,13 +97,13 @@ const CoachForm = () => {
 
   return (
     <>
-      <SuccessModal
+      {/* <SuccessModal
         isOpen={showSuccessModal}
         onClose={() => setShowSuccessModal(false)}
         title="Coach Application Submitted!"
         message="Thank you for your interest in becoming a coach! We've received your application and our team will review it within 2-3 business days. Once approved, your account will be upgraded to Coach status and you can access coaching features with the same login credentials."
         type="coach"
-      />
+      /> */}
 
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4">
         <div className="max-w-6xl mx-auto">
@@ -143,7 +155,7 @@ const CoachForm = () => {
 
                   <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                     {/* Name */}
-                    <div>
+                    {/* <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Full Name *
                       </label>
@@ -164,10 +176,10 @@ const CoachForm = () => {
                           {errors.name.message}
                         </p>
                       )}
-                    </div>
+                    </div> */}
 
                     {/* Email */}
-                    <div>
+                    {/* <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Email Address *
                       </label>
@@ -188,10 +200,10 @@ const CoachForm = () => {
                           {errors.email.message}
                         </p>
                       )}
-                    </div>
+                    </div> */}
 
                     {/* Phone */}
-                    <div>
+                    {/* <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Phone Number *
                       </label>
@@ -213,7 +225,7 @@ const CoachForm = () => {
                           {errors.phone.message}
                         </p>
                       )}
-                    </div>
+                    </div> */}
 
                     {/* Expertise */}
                     <div>
@@ -303,23 +315,23 @@ const CoachForm = () => {
                     {/* Address */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Address *
+                        Turf Location *
                       </label>
                       <textarea
-                        {...register("address", {
-                          required: "Address is required",
+                        {...register("turfLocation", {
+                          required: "Turf Location is required",
                           minLength: {
                             value: 10,
-                            message: "Address must be at least 10 characters",
+                            message: "Turf Location must be at least 10 characters",
                           },
                         })}
                         rows="3"
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00df9a] focus:border-transparent transition-all duration-200 resize-none"
-                        placeholder="Enter your complete address"
+                        placeholder="Enter your complete turf location"
                       />
-                      {errors.address && (
+                      {errors.turfLocation && (
                         <p className="mt-1 text-sm text-red-600">
-                          {errors.address.message}
+                          {errors.turfLocation.message}
                         </p>
                       )}
                     </div>

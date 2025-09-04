@@ -4,9 +4,11 @@ const User = require("../../models/User");
 
 exports.applyAsOwner = async (req, res) => {
   try {
-    const { name, email, phone, address } = req.body;
+    const { name, email, phone, experience, expertise, turfLocation } = req.body;
 
-    if (!name || !email || !phone || !address) {
+    console.info(req.body)
+
+    if (!name || !email || !phone || !experience || !expertise || !turfLocation) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
@@ -21,7 +23,9 @@ exports.applyAsOwner = async (req, res) => {
       name,
       email,
       phone,
-      address
+      experience,
+      expertise,
+      turfLocation
     });
 
     res.status(201).json({ message: "Request submitted", request });
@@ -32,7 +36,7 @@ exports.applyAsOwner = async (req, res) => {
 
 exports.getPendingRequests = async (req, res) => {
   try {
-    const requests = await OwnerRequest.find({ status: "pending" }).populate("user", "name email");
+    const requests = await OwnerRequest.find({ status: "pending" }).populate("user", "name email phone");
     res.json(requests);
   } catch (err) {
     res.status(500).json({ message: err.message });

@@ -12,7 +12,8 @@ import VenueList from '../pages/user/VenueList';
 import VenueDetails from '../pages/user/VenueDetails';
 import CoachList from '../pages/user/coach-booking/CoachList';
 import CoachDetails from '../pages/user/coach-booking/CoachDetails';
-import { useSelector } from 'react-redux';
+import OwnerForm from '../pages/partner/OwnerForm';
+// import { useSelector } from 'react-redux';
 
 
 const AppRoutes = () => {
@@ -24,6 +25,7 @@ const AppRoutes = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
+        <Route path='/partner/owner' element={<OwnerForm />} />
 
         {/* User Dashboard Route */}
 
