@@ -1,0 +1,110 @@
+export const sportsEquipment = [
+  {
+    id: 1,
+    name: "Professional Football",
+    category: "Football",
+    price: 1299,
+    originalPrice: 1599,
+    rating: 4.8,
+    reviews: 245,
+    image: "https://images.unsplash.com/photo-1486286701208-1d58e9338013?q=80&w=1170&auto=format&fit=crop",
+    brand: "Nike",
+    inStock: true
+  },
+  {
+    id: 2,
+    name: "Cricket Bat - Professional",
+    category: "Cricket",
+    price: 2499,
+    originalPrice: 2999,
+    rating: 4.9,
+    reviews: 189,
+    image: "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=1105&auto=format&fit=crop",
+    brand: "MRF",
+    inStock: true
+  },
+  {
+    id: 3,
+    name: "Basketball - Official Size",
+    category: "Basketball",
+    price: 899,
+    originalPrice: 1199,
+    rating: 4.7,
+    reviews: 156,
+    image: "https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=1190&auto=format&fit=crop",
+    brand: "Spalding",
+    inStock: true
+  },
+  {
+    id: 4,
+    name: "Badminton Racket Set",
+    category: "Badminton",
+    price: 1899,
+    originalPrice: 2299,
+    rating: 4.6,
+    reviews: 98,
+    image: "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?q=80&w=1170&auto=format&fit=crop",
+    brand: "Yonex",
+    inStock: true
+  },
+  {
+    id: 5,
+    name: "Tennis Racket - Carbon Fiber",
+    category: "Tennis",
+    price: 3499,
+    originalPrice: 3999,
+    rating: 4.8,
+    reviews: 134,
+    image: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?q=80&w=1170&auto=format&fit=crop",
+    brand: "Wilson",
+    inStock: true
+  },
+  {
+    id: 6,
+    name: "Hockey Stick - Composite",
+    category: "Hockey",
+    price: 2199,
+    originalPrice: 2599,
+    rating: 4.5,
+    reviews: 87,
+    image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?q=80&w=1170&auto=format&fit=crop",
+    brand: "Adidas",
+    inStock: false
+  },
+  {
+    id: 7,
+    name: "Swimming Goggles Pro",
+    category: "Swimming",
+    price: 799,
+    originalPrice: 999,
+    rating: 4.7,
+    reviews: 203,
+    image: "https://images.unsplash.com/photo-1530549387789-4c1017266635?q=80&w=1170&auto=format&fit=crop",
+    brand: "Speedo",
+    inStock: true
+  },
+  {
+    id: 8,
+    name: "Volleyball - Official",
+    category: "Volleyball",
+    price: 699,
+    originalPrice: 899,
+    rating: 4.6,
+    reviews: 112,
+    image: "https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?q=80&w=1107&auto=format&fit=crop",
+    brand: "Mikasa",
+    inStock: true
+  },
+  {
+    id: 9,
+    name: "Table Tennis Paddle Set",
+    category: "Table Tennis",
+    price: 1299,
+    originalPrice: 1599,
+    rating: 4.4,
+    reviews: 76,
+    image: "https://images.unsplash.com/photo-1609710228159-0fa9bd7c0827?q=80&w=1170&auto=format&fit=crop",
+    brand: "Butterfly",
+    inStock: true
+  }
+];
