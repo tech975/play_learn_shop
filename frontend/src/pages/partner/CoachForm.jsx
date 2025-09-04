@@ -4,8 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { toast } from "react-toastify";
 import { Lock, LogIn } from 'lucide-react';
-import { submitCoachApplication } from "../../services/partnerService";
-import SuccessModal from "../../components/SuccessModal";
+// import { submitCoachApplication } from "../../services/partnerService";
+// import SuccessModal from "../../components/SuccessModal";
 
 const CoachForm = () => {
   const navigate = useNavigate();
@@ -42,7 +42,7 @@ const CoachForm = () => {
         userName: user.name
       };
       
-      const response = await submitCoachApplication(applicationData);
+      // const response = await submitCoachApplication(applicationData);
       reset();
       setShowSuccessModal(true);
     } catch (error) {
@@ -85,13 +85,13 @@ const CoachForm = () => {
 
   return (
     <>
-      <SuccessModal
+      {/* <SuccessModal
         isOpen={showSuccessModal}
         onClose={() => setShowSuccessModal(false)}
         title="Coach Application Submitted!"
         message="Thank you for your interest in becoming a coach! We've received your application and our team will review it within 2-3 business days. Once approved, your account will be upgraded to Coach status and you can access coaching features with the same login credentials."
         type="coach"
-      />
+      /> */}
 
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4">
         <div className="max-w-6xl mx-auto">

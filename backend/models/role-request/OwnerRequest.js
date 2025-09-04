@@ -7,9 +7,9 @@ const ownerRequestSchema = new mongoose.Schema(
     name: { type: String, required: true },
     email: { type: String, required: true },
     phone: { type: String, required: true },
-    turfLocation: { type: String, required: true },
-    experience: { type: Number, default: 0 },
-    expertise: { type: String, default: "" },
+    role: { type: String, default: "user" },
+    groundAddress: { type: String, required: true },
+    groundName: { type: String, default: "" },
     status: {
       type: String,
       enum: ["pending", "approved", "rejected"],

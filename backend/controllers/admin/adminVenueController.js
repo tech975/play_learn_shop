@@ -4,11 +4,11 @@ const User = require("../../models/User");
 
 exports.applyAsOwner = async (req, res) => {
   try {
-    const { name, email, phone, experience, expertise, turfLocation } = req.body;
+    const { name, email, phone, role, groundName, groundAddress } = req.body;
 
     console.info(req.body)
 
-    if (!name || !email || !phone || !experience || !expertise || !turfLocation) {
+    if (!name || !email || !phone || !role || !groundName || !groundAddress) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
@@ -23,9 +23,9 @@ exports.applyAsOwner = async (req, res) => {
       name,
       email,
       phone,
-      experience,
-      expertise,
-      turfLocation
+      role,
+      groundName,
+      groundAddress
     });
 
     res.status(201).json({ message: "Request submitted", request });
