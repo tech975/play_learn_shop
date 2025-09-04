@@ -52,6 +52,7 @@ export const updateOwnerRequestStatus = createAsyncThunk(
     }
 );
 
+// Slice for admin approval requests
 const adminApprovalSlice = createSlice({
     name: "adminApproval",
     initialState: {
