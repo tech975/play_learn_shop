@@ -67,8 +67,12 @@ const Login = () => {
 
   useEffect(() => {
     if (user && user.role) {
-      const nextRoute = location.state?.nextRoute || "/user";
-      navigate(nextRoute, { replace: true });
+      if (user.role === 'admin') {
+        navigate('/admin/dashboard', { replace: true });
+      } else {
+        const nextRoute = location.state?.nextRoute || "/user";
+        navigate(nextRoute, { replace: true });
+      }
     }
   }, [user, navigate, location.state]);
 

@@ -120,7 +120,7 @@ const Home = () => {
   return (
     <>
       {/* Hero Section with Background */}
-      <div className="relative min-h-screen">
+      <div className="relative min-h-screen overflow-hidden">
         <HeroSlider />
         <Navbar scroller={[scrollToPlay, scrollToLearn, scrollToShop]} />
 

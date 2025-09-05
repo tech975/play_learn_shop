@@ -14,6 +14,7 @@ import CoachList from '../pages/user/coach-booking/CoachList';
 import CoachDetails from '../pages/user/coach-booking/CoachDetails';
 import OwnerForm from '../pages/partner/OwnerForm';
 import CoachForm from '../pages/partner/CoachForm';
+import AdminRoutes from './AdminRoutes';
 // import { useSelector } from 'react-redux';
 
 
@@ -89,6 +90,16 @@ const AppRoutes = () => {
         <Route path="/user/bookings/coach" element={ <ProtectedRoute allowedRoles={["user"]}> <CoachList /> </ProtectedRoute> } />
 
         <Route path="/user/bookings/coach/:id" element={ <ProtectedRoute allowedRoles={["user"]}> <CoachDetails /> </ProtectedRoute> } />
+
+        {/* Admin Routes */}
+        <Route
+          path="/admin/*"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <AdminRoutes />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Add more protected routes for other roles here */}
 
