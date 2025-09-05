@@ -36,7 +36,7 @@ const CoachCard = ({ coach, onClick }) => {
           <h3 className="font-bold text-lg text-gray-800 line-clamp-1">{coach.name}</h3>
           <div className="text-right">
             <p className="text-[#00df9a] font-bold text-lg">₹{coach.pricing?.amount}</p>
-            <p className="text-gray-500 text-xs">per {coach.pricing?.type}</p>
+            <p className="text-gray-500 text-xs">{coach.pricing?.type}</p>
           </div>
         </div>
 

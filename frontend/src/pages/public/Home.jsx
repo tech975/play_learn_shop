@@ -38,6 +38,7 @@ const Home = () => {
     loading: venuesLoading,
     error: venuesError,
   } = useSelector((state) => state.venues);
+
   const {
     coaches,
     loading: coachesLoading,

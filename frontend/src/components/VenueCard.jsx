@@ -35,8 +35,8 @@ const VenueCard = ({ venue, onClick }) => {
         <div className="flex justify-between items-start mb-2">
           <h3 className="font-bold text-lg text-gray-800 line-clamp-1">{venue.name}</h3>
           <div className="text-right">
-            <p className="text-[#00df9a] font-bold text-lg">₹{venue.pricing?.amount}</p>
-            <p className="text-gray-500 text-xs">per {venue.pricing?.type}</p>
+            <p className="text-[#00df9a] font-bold text-lg">₹{venue.price}/hr</p>
+            {/* <p className="text-gray-500 text-xs">per {venue.pricing?.type}</p> */}
           </div>
         </div>
 
@@ -44,7 +44,7 @@ const VenueCard = ({ venue, onClick }) => {
         <div className="flex items-center text-gray-600 mb-2">
           <MapPin size={14} className="mr-1" />
           <span className="text-sm line-clamp-1">
-            {venue.location?.address}, {venue.location?.city}
+            {venue.location}
           </span>
         </div>
 
