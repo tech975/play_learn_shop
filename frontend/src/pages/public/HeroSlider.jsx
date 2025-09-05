@@ -11,7 +11,7 @@ const HeroSlider = () => {
   ];
 
   return (
-    <div className="fixed inset-0 -z-10">
+    <div className="absolute inset-0 -z-10">
       <Swiper
         modules={[Autoplay]}
         autoplay={{ delay: 3000, disableOnInteraction: false }}

@@ -1,0 +1,242 @@
+/* Admin Dashboard CSS Overrides */
+
+/* Only target containers within main content area, not sidebar */
+main .MuiContainer-root,
+main .MuiContainer-maxWidthLg,
+main .MuiContainer-maxWidthMd,
+main .MuiContainer-maxWidthSm,
+main .MuiContainer-maxWidthXl,
+main .MuiContainer-maxWidthXs {
+  max-width: none !important;
+  width: 100% !important;
+}
+
+/* Force full width only for dashboard content, not sidebar */
+.admin-full-width {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+/* Dashboard specific overrides - only target main content area */
+main .admin-dashboard-grid.MuiGrid-container {
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+main .admin-dashboard-grid .MuiGrid-item {
+  width: 100% !important;
+  max-width: none !important;
+  flex-basis: auto !important;
+  padding-left: 1px !important;
+  padding-right: 1px !important;
+}
+
+/* Specific grid breakpoint overrides - only for dashboard content */
+main .admin-dashboard-grid .MuiGrid-grid-xs-12 {
+  width: 100% !important;
+  flex-basis: 100% !important;
+  max-width: 100% !important;
+}
+
+main .admin-dashboard-grid .MuiGrid-grid-sm-6 {
+  width: 50% !important;
+  flex-basis: 50% !important;
+  max-width: 50% !important;
+}
+
+main .admin-dashboard-grid .MuiGrid-grid-lg-3 {
+  width: 25% !important;
+  flex-basis: 25% !important;
+  max-width: 25% !important;
+}
+
+main .admin-dashboard-grid .MuiGrid-grid-lg-4 {
+  width: 33.333333% !important;
+  flex-basis: 33.333333% !important;
+  max-width: 33.333333% !important;
+}
+
+main .admin-dashboard-grid .MuiGrid-grid-lg-8 {
+  width: 66.666667% !important;
+  flex-basis: 66.666667% !important;
+  max-width: 66.666667% !important;
+}
+
+/* Dashboard cards take complete width with minimal gaps - only in main content */
+main .admin-dashboard-container .MuiCard-root {
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+}
+
+/* Reduce spacing between cards to minimal - only for dashboard */
+main .admin-dashboard-grid.MuiGrid-spacing-xs-0\.5 > .MuiGrid-item,
+main .admin-dashboard-grid[class*="MuiGrid-spacing"] > .MuiGrid-item {
+  padding: 1px !important;
+}
+
+/* Force minimal gaps for dashboard grid */
+.admin-dashboard-grid .MuiGrid-item {
+  padding: 1px !important;
+}
+
+/* Remove any default margins and paddings - only for dashboard container */
+.admin-dashboard-container {
+  padding: 2px !important;
+}
+
+.admin-dashboard-container .MuiBox-root {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Ensure cards fill complete width with minimal gaps */
+.admin-dashboard-grid {
+  width: 100% !important;
+  margin: 0 !important;
+}
+
+.admin-dashboard-grid > .MuiGrid-item {
+  padding: 1px !important;
+  margin: 0 !important;
+}
+
+/* Force card content to use full width - only in dashboard */
+main .admin-dashboard-container .MuiCardContent-root {
+  width: 100% !important;
+  padding: 16px !important;
+}
+
+/* Table responsive improvements */
+.admin-table-container {
+  width: 100% !important;
+  overflow-x: auto !important;
+}
+
+/* Mobile responsive adjustments - only for dashboard content */
+@media (max-width: 768px) {
+  .admin-dashboard-container {
+    padding: 4px !important;
+  }
+  
+  .admin-stats-grid {
+    gap: 4px !important;
+  }
+
+  main .admin-dashboard-grid .MuiGrid-grid-sm-6,
+  main .admin-dashboard-grid .MuiGrid-grid-lg-3,
+  main .admin-dashboard-grid .MuiGrid-grid-lg-4,
+  main .admin-dashboard-grid .MuiGrid-grid-lg-8 {
+    width: 100% !important;
+    flex-basis: 100% !important;
+    max-width: 100% !important;
+  }
+
+  main .admin-dashboard-grid .MuiGrid-item {
+    padding-left: 2px !important;
+    padding-right: 2px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-dashboard-container {
+    padding: 2px !important;
+  }
+
+  main .admin-dashboard-grid .MuiGrid-item {
+    padding-left: 1px !important;
+    padding-right: 1px !important;
+  }
+}
+
+/* Ensure sidebar maintains proper width */
+nav .MuiDrawer-paper {
+  width: 240px !important;
+  max-width: 240px !important;
+  flex-shrink: 0 !important;
+}
+
+/* Ensure main content area uses full available width */
+main {
+  width: 100% !important;
+  margin-left: 0 !important;
+}
+
+/* Dashboard cards should take complete width */
+.admin-dashboard-container {
+  width: 100% !important;
+  max-width: none !important;
+  padding: 4px !important;
+}
+
+/* Force dashboard grid to use complete width */
+.admin-dashboard-grid {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+}
+
+/* Make dashboard stat cards take complete width */
+.admin-dashboard-grid .MuiGrid-item {
+  padding: 2px !important;
+  margin: 0 !important;
+}
+
+/* Charts section should also take complete width */
+.admin-charts-grid {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+}
+
+.admin-charts-grid .MuiGrid-item {
+  padding: 2px !important;
+  margin: 0 !important;
+}
+
+/* Invoice summary cards - increase size */
+.invoice-summary-cards .MuiPaper-root {
+  padding: 24px !important;
+  min-height: 140px !important;
+}
+
+.invoice-summary-cards .MuiGrid-item {
+  padding: 8px !important;
+}
+
+/* Force all dashboard elements to use complete width */
+.admin-dashboard-container,
+.admin-dashboard-grid,
+.admin-charts-grid {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+/* Override any MUI spacing that might limit width */
+.admin-dashboard-container .MuiGrid-container,
+.admin-dashboard-container .MuiGrid-item,
+.admin-dashboard-container .MuiCard-root,
+.admin-dashboard-container .MuiPaper-root {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+/* Ensure charts take complete width */
+.admin-charts-grid .MuiPaper-root {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+/* Remove any container constraints */
+.admin-dashboard-container .MuiContainer-root {
+  max-width: none !important;
+  width: 100% !important;
+  padding: 0 !important;
+}
+
+/* Force responsive container to full width */
+.recharts-responsive-container {
+  width: 100% !important;
+  max-width: none !important;
+}
