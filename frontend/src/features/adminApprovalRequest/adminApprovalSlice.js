@@ -25,7 +25,7 @@ export const fetchPendingOwnerRequests = createAsyncThunk(
     "adminApproval/fetchPendingOwnerRequests",
     async (_, { rejectWithValue }) => {
         try {
-            const response = await axios.get("api/admin/venue-request");
+            const response = await axios.get("api/admin/venue-request/pending");
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data);

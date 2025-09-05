@@ -3,7 +3,7 @@ const router = express.Router();
 const auth = require('../../middleware/auth');
 const coachController = require('../../controllers/coach/CoachController');
 
-router.get('/', auth, coachController.getCoaches);
+router.get('/', coachController.getCoaches);
 router.post('/create', auth, auth.authorize('admin', 'coach'), coachController.createCoach);
 router.get('/:id', auth, coachController.getCoachById);
 router.put('/:id', auth, auth.authorize('admin', 'coach'), coachController.updateCoach);

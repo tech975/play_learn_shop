@@ -56,16 +56,16 @@ const AppRoutes = () => {
               <VenueList />
             </ProtectedRoute>
           }
-          />
+        />
 
-          <Route
+        <Route
           path='/user/bookings/turf/:id'
           element={
             <ProtectedRoute allowedRoles={["user"]}>
               <VenueDetails />
             </ProtectedRoute>
           }
-          />
+        />
 
         <Route
           path="/user/bookings"
@@ -86,9 +86,9 @@ const AppRoutes = () => {
         />
 
         {/* Coach Routes for user perspective */}
-        <Route path="/user/bookings/coach" element={ <ProtectedRoute allowedRoles={["user"]}> <CoachList /> </ProtectedRoute> } />
+        <Route path="/user/bookings/coach" element={<ProtectedRoute allowedRoles={["user"]}> <CoachList /> </ProtectedRoute>} />
 
-        <Route path="/user/bookings/coach/:id" element={ <ProtectedRoute allowedRoles={["user"]}> <CoachDetails /> </ProtectedRoute> } />
+        <Route path="/user/bookings/coach/:id" element={<ProtectedRoute allowedRoles={["user"]}> <CoachDetails /> </ProtectedRoute>} />
 
         {/* Add more protected routes for other roles here */}
 
