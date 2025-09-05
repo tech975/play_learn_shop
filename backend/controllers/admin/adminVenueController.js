@@ -1,38 +1,11 @@
 // controllers/admin/ownerRequestController.js
 const OwnerRequest = require("../../models/role-request/OwnerRequest");
 const User = require("../../models/User");
-
-exports.applyAsOwner = async (req, res) => {
-  try {
-    let { groundName, groundAddress } = req.body;
-
-    const validGroundName = groundName.trim().toLowerCase();
-    const validGroundAddress = groundAddress.trim().toLowerCase();
-
-    if (!validGroundName || !validGroundAddress) {
-      return res.status(400).json({ message: "All fields are required" });
-    }
-
-    const existing = await OwnerRequest.findOne({ user: req.user._id, groundAddress: validGroundAddress, groundName: validGroundName, status: { $in: ["pending", "approved"] } });
-    if (existing) {
-      return res.status(400).json({ message: "You already have a pending request" });
-    }
-
-    const request = await OwnerRequest.create({
-      user: req.user._id,
-      groundName: validGroundName,
-      groundAddress: validGroundAddress
-    });
-
-    res.status(201).json({ message: "Request submitted", request });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
+const Venue = require("../../models/Venue");
 
 exports.getPendingRequests = async (req, res) => {
   try {
-    const requests = await OwnerRequest.find({ status: "pending" }).populate("user", "name email phone");
+    const requests = await Venue.find({ status: "pending" });
     res.json(requests);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -41,22 +14,24 @@ exports.getPendingRequests = async (req, res) => {
 
 exports.updateRequestStatus = async (req, res) => {
   try {
-    const { requestId } = req.params;
+    const { id } = req.params;
     const { status } = req.body;
 
     if (!["approved", "rejected", "pending"].includes(status)) {
       return res.status(400).json({ message: "Invalid status" });
     }
 
-    const request = await OwnerRequest.findById(requestId).populate("user");
-    if (!request) return res.status(404).json({ message: "Request not found" });
+    const request = await Venue.findById(id).populate("owner");
+    if (!request) return res.status(404).json({ message: "Venue request not found" });
+
+    console.log("request", request);
 
     request.status = status;
     await request.save();
 
     if (status === "approved") {
-      request.user.role = "owner";
-      await request.user.save();
+      request.owner.role = "owner";
+      await request.owner.save();
     }
 
     res.json({ message: `Request ${status}`, request });

@@ -10,6 +10,6 @@ router.post('/login', userController.login);
 router.get('/users', auth, userController.getAllUsers);
 router.get('/user/:id', auth, userController.getUserById);
 router.put('/user/update', auth, userController.updateUserProfile);
-router.put('/profile', auth, upload.single('profilePic'), userController.uploadProfilePic);
+router.put('/profile', auth, upload.uploadProfile.single('profilePic'), userController.uploadProfilePic);
 
 module.exports = router;

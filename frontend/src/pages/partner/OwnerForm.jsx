@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { Lock, LogIn } from 'lucide-react';
-import { getApplyAsOwner } from '../../features/adminApprovalRequest/adminApprovalSlice';
+import { getApplyAsOwner } from '../../features/venues/venueSlice';
 // import { submitOwnerApplication } from '../../services/partnerService';
 // import SuccessModal from '../../components/SuccessModal';
 
@@ -44,6 +44,9 @@ const OwnerForm = () => {
         name: user?.name,
         phone: user?.phone,
         role: user?.role,
+        price: data?.price,
+        priceType: data?.priceType || 'hourly',
+        sports: ['Football', 'Cricket', 'Badminton', 'Tennis'],
         groundName: data?.groundName,
         groundAddress: data?.address
       };
@@ -251,43 +254,43 @@ const OwnerForm = () => {
                       )}
                     </div>
 
-                    {/* City and State */}
-                    {/* <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        City *
-                      </label>
-                      <input
-                        type="text"
-                        {...register('city', { 
-                          required: 'City is required',
-                          minLength: { value: 2, message: 'City must be at least 2 characters' }
-                        })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00df9a] focus:border-transparent transition-all duration-200"
-                        placeholder="City"
-                      />
-                      {errors.city && (
-                        <p className="mt-1 text-sm text-red-600">{errors.city.message}</p>
-                      )}
+                    {/* Price and Price Type */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Price *
+                        </label>
+                        <input
+                          type="text"
+                          {...register('price', {
+                            required: 'Price is required',
+                            minLength: { value: 1, message: 'Price must be at least 1 character' }
+                          })}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00df9a] focus:border-transparent transition-all duration-200"
+                          placeholder="Price"
+                        />
+                        {errors.price && (
+                          <p className="mt-1 text-sm text-red-600">{errors.price.message}</p>
+                        )}
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Price Type
+                        </label>
+                        <input
+                          type="text"
+                          {...register('priceType', {
+                            required: 'Price Type is required',
+                            minLength: { value: 2, message: 'Price Type must be at least 2 characters' }
+                          })}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00df9a] focus:border-transparent transition-all duration-200"
+                          placeholder="hourly"
+                        />
+                        {errors.state && (
+                          <p className="mt-1 text-sm text-red-600">{errors.state.message}</p>
+                        )}
+                      </div>
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        State *
-                      </label>
-                      <input
-                        type="text"
-                        {...register('state', { 
-                          required: 'State is required',
-                          minLength: { value: 2, message: 'State must be at least 2 characters' }
-                        })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00df9a] focus:border-transparent transition-all duration-200"
-                        placeholder="State"
-                      />
-                      {errors.state && (
-                        <p className="mt-1 text-sm text-red-600">{errors.state.message}</p>
-                      )}
-                    </div>
-                  </div> */}
 
                     {/* Submit Button */}
                     <button

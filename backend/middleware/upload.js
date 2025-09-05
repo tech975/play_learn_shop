@@ -2,14 +2,23 @@ const multer = require("multer");
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const cloudinary = require("../config/cloudinary");
 
-const storage = new CloudinaryStorage({
+const profileStorage = new CloudinaryStorage({
   cloudinary,
   params: {
-    folder: "user_profiles", // Cloudinary folder name
+    folder: "user_profiles",
     allowed_formats: ["jpg", "png", "jpeg"],
   },
 });
 
-const upload = multer({ storage });
+const uploadProfile = multer({ storage: profileStorage });
 
-module.exports = upload;
+const venueStorage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: "venues",
+    allowed_formats: ["jpg", "png", "jpeg"],
+  },
+});
+const uploadVenue = multer({ storage: venueStorage });
+
+module.exports = { uploadProfile, uploadVenue };
