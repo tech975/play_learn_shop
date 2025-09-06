@@ -13,4 +13,5 @@ router.put('/owner/:id', auth, auth.authorize('owner'), venueController.updateVe
 router.delete('/owner/:id', auth, auth.authorize('admin'), venueController.deleteVenue);
 router.post('/upload-images/:requestId', auth, auth.authorize('owner'), uploadVenue.array('images', 3), venueController.uploadVenueImages);
 router.post('/venue-request', auth, venueController.applyAsOwner);
+router.get('/allOwnerVenues/:ownerIds', auth, auth.authorize('admin'), venueController.getAllOwnerVenues);
 module.exports = router;

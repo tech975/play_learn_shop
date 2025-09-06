@@ -28,6 +28,8 @@ import {
   Logout
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { logout } from '../../features/auth/authSlice';
 
 const drawerWidth = 240;
 
@@ -36,6 +38,9 @@ const AdminLayout = ({ children }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
+
+  const { user } = useSelector((state) => state.auth);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -51,8 +56,9 @@ const AdminLayout = ({ children }) => {
 
   const handleLogout = () => {
     // Add logout logic here
-    localStorage.removeItem('token');
-    navigate('/login');
+    // localStorage.removeItem('token');
+    dispatch(logout())
+    // navigate('/login');
   };
 
   const menuItems = [
@@ -84,7 +90,7 @@ const AdminLayout = ({ children }) => {
             color: 'white'
           }}
         >
-          PlayLearn Admin
+          Admin
         </Typography>
       </Toolbar>
       
@@ -103,15 +109,17 @@ const AdminLayout = ({ children }) => {
             height: 40,
             background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
             mr: 2
-          }}>
-            A
+          }}
+          src={user?.profilePic}
+          >
+            {!user?.profilePic && user?.name?.charAt(0)?.toUpperCase()}
           </Avatar>
           <Box sx={{ flex: 1, minWidth: 0 }}>
             <Typography variant="body2" sx={{ fontWeight: 600, color: 'white' }}>
-              Admin User
+              {user?.name}
             </Typography>
             <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
-              admin@playlearn.com
+              {user?.email}
             </Typography>
           </Box>
         </Box>

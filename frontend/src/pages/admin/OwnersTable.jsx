@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   Paper,
@@ -10,7 +10,6 @@ import {
   TablePagination,
   TableRow,
   Typography,
-  Container,
   Chip,
   Button,
   Box,
@@ -23,107 +22,98 @@ import {
   DialogActions,
   CircularProgress,
   Alert,
-  InputAdornment
+  InputAdornment,
 } from '@mui/material';
-import { Check, Close, Visibility, Search, FilterList } from '@mui/icons-material';
-import { fetchOwnerRequests, updateOwnerRequestStatus } from '../../features/admin/adminSlice';
+import { Check, Close, Search, FilterList } from '@mui/icons-material';
+import { getAllOwnerVenues, updateOwnerRequestStatus } from '../../features/admin/adminSlice';
 import ActionButtons from '../../components/admin/ActionButtons';
+import { useEffect } from 'react';
+import { fetchVenues } from '../../features/venues/venueSlice';
+
+// Utility Functions
+const formatDate = (dateString) => new Date(dateString).toLocaleDateString();
+
+const getStatusColor = (status) => {
+  switch (status) {
+    case 'approved': return 'success';
+    case 'rejected': return 'error';
+    case 'pending': return 'warning';
+    default: return 'default';
+  }
+};
+
+const columns = [
+  { id: 'ownerName', label: 'Owner Name', minWidth: 150 },
+  { id: 'email', label: 'Email', minWidth: 200 },
+  { id: 'phone', label: 'Phone', minWidth: 130 },
+  { id: 'groundName', label: 'Ground Name', minWidth: 150 },
+  { id: 'address', label: 'Address', minWidth: 200 },
+  { id: 'status', label: 'Status', minWidth: 120 },
+  { id: 'actions', label: 'Actions', minWidth: 200 },
+];
 
 const OwnersTable = () => {
   const dispatch = useDispatch();
   const { ownerRequests, ownersLoading, loading, error } = useSelector((state) => state.admin);
-  const [filteredOwners, setFilteredOwners] = useState([]);
+  const { venues } = useSelector((state) => state?.venues);
+  const { usersData } = useSelector((state) => state.auth);
+
+  const ownerIds = usersData?.filter((item) => item?.role === 'owner').map(ownerId => ownerId?._id);
+
+  console.log("venuesData: ", venues)
+
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [statusFilter, setStatusFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedOwner, setSelectedOwner] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+   const [statusUpdated, setStatusUpdated] = useState(false);
 
-  useEffect(() => {
-    dispatch(fetchOwnerRequests());
-  }, [dispatch]);
+   useEffect(() => {
+    dispatch(getAllOwnerVenues(ownerIds));
+  }, [dispatch, ownerIds]);
 
-  useEffect(() => {
-    filterOwners();
-  }, [ownerRequests, statusFilter, searchTerm]);
-
-  const filterOwners = () => {
+  // Filter logic with useMemo
+  const filteredOwners = useMemo(() => {
     let filtered = ownerRequests || [];
-
     if (statusFilter !== 'all') {
-      filtered = filtered.filter(owner => owner.status === statusFilter);
+      filtered = filtered.filter((o) => o.status === statusFilter);
     }
-
     if (searchTerm) {
-      filtered = filtered.filter(owner =>
-        owner.user?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        owner.user?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        owner.groundName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        owner.groundAddress?.toLowerCase().includes(searchTerm.toLowerCase())
+      const term = searchTerm.toLowerCase();
+      filtered = filtered.filter(
+        (o) =>
+          o.user?.name?.toLowerCase().includes(term) ||
+          o.user?.email?.toLowerCase().includes(term) ||
+          o.groundName?.toLowerCase().includes(term) ||
+          o.groundAddress?.toLowerCase().includes(term)
       );
     }
+    return filtered;
+  }, [ownerRequests, statusFilter, searchTerm]);
 
-    setFilteredOwners(filtered);
-    setPage(0);
-  };
+  useEffect(() => {
+    if (statusUpdated) {
+      dispatch(fetchOwnerRequests());
+      setStatusUpdated(false); // reset flag
+    }
+  }, [statusUpdated, dispatch]);
 
   const handleStatusUpdate = async (requestId, newStatus) => {
     try {
       await dispatch(updateOwnerRequestStatus({ requestId, status: newStatus })).unwrap();
+      setStatusUpdated(true);   // ✅ trigger reload via useEffect
       setDialogOpen(false);
-    } catch (error) {
-      console.error('Error updating status:', error);
+    } catch (err) {
+      console.error('Error updating status:', err);
     }
   };
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString();
-  };
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'approved':
-        return 'success';
-      case 'rejected':
-        return 'error';
-      case 'pending':
-        return 'warning';
-      default:
-        return 'default';
-    }
-  };
-
-  const handleViewDetails = (owner) => {
-    setSelectedOwner(owner);
-    setDialogOpen(true);
-  };
-
-  const columns = [
-    { id: 'ownerName', label: 'Owner Name', minWidth: 150 },
-    { id: 'email', label: 'Email', minWidth: 200 },
-    { id: 'phone', label: 'Phone', minWidth: 130 },
-    { id: 'groundName', label: 'Ground Name', minWidth: 150 },
-    { id: 'address', label: 'Address', minWidth: 200 },
-    { id: 'status', label: 'Status', minWidth: 120 },
-    { id: 'actions', label: 'Actions', minWidth: 200 }
-  ];
 
   if (error) {
     return (
       <Box sx={{ width: '100%', px: { xs: 2, sm: 3 }, mt: 4, mb: 4 }}>
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {error}
-        </Alert>
+        <Alert severity="error">{error}</Alert>
       </Box>
     );
   }
@@ -131,15 +121,7 @@ const OwnersTable = () => {
   return (
     <Box sx={{ width: '100%', px: { xs: 2, sm: 3 }, mt: 2, mb: 4 }}>
       {/* Filters */}
-      <Paper 
-        sx={{ 
-          p: 3, 
-          mb: 3,
-          borderRadius: 2,
-          border: '1px solid #e2e8f0',
-          background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)'
-        }}
-      >
+      <Paper sx={{ p: 3, mb: 3, borderRadius: 2, border: '1px solid #e2e8f0', background: 'linear-gradient(135deg, #fff 0%, #f8fafc 100%)' }}>
         <Grid container spacing={3} alignItems="center">
           <Grid item xs={12} sm={6} md={5}>
             <TextField
@@ -154,11 +136,7 @@ const OwnersTable = () => {
                   </InputAdornment>
                 ),
               }}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: 2,
-                }
-              }}
+              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
             />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
@@ -175,11 +153,7 @@ const OwnersTable = () => {
                   </InputAdornment>
                 ),
               }}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: 2,
-                }
-              }}
+              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
             >
               <MenuItem value="all">All Status</MenuItem>
               <MenuItem value="pending">Pending</MenuItem>
@@ -189,14 +163,10 @@ const OwnersTable = () => {
           </Grid>
           <Grid item xs={12} md={4}>
             <Box display="flex" justifyContent="flex-end" gap={1}>
-              <Chip 
-                label={`Total: ${filteredOwners.length}`} 
-                color="primary" 
-                variant="outlined"
-              />
-              <Chip 
-                label={`Pending: ${filteredOwners.filter(o => o.status === 'pending').length}`} 
-                color="warning" 
+              <Chip label={`Total: ${filteredOwners.length}`} color="primary" variant="outlined" />
+              <Chip
+                label={`Pending: ${filteredOwners.filter((o) => o.status === 'pending').length}`}
+                color="warning"
                 variant="outlined"
               />
             </Box>
@@ -204,45 +174,28 @@ const OwnersTable = () => {
         </Grid>
       </Paper>
 
-      <Paper 
-        sx={{ 
-          width: '100%', 
-          overflow: 'hidden',
-          borderRadius: 2,
-          border: '1px solid #e2e8f0'
-        }}
-      >
+      {/* Table */}
+      <Paper sx={{ width: '100%', overflow: 'hidden', borderRadius: 2, border: '1px solid #e2e8f0' }}>
         <TableContainer sx={{ maxHeight: 440 }}>
-          <Table stickyHeader aria-label="owners table">
+          <Table stickyHeader>
             <TableHead>
-              <TableRow sx={{ '& .MuiTableCell-head': { backgroundColor: '#f8fafc' } }}>
-                {columns.map((column) => (
-                  <TableCell
-                    key={column.id}
-                    style={{ 
-                      minWidth: column.minWidth, 
-                      fontWeight: 600,
-                      color: '#374151'
-                    }}
-                  >
-                    {column.label}
-                  </TableCell>
+              <TableRow sx={{ '& .MuiTableCell-head': { backgroundColor: '#f8fafc', fontWeight: 600, color: '#374151' } }}>
+                {columns.map((col) => (
+                  <TableCell key={col.id} style={{ minWidth: col.minWidth }}>{col.label}</TableCell>
                 ))}
               </TableRow>
             </TableHead>
             <TableBody>
               {ownersLoading ? (
                 <TableRow>
-                  <TableCell colSpan={columns.length} align="center" sx={{ py: 4 }}>
-                    <CircularProgress />
-                  </TableCell>
+                  <TableCell colSpan={columns.length} align="center"><CircularProgress /></TableCell>
                 </TableRow>
               ) : filteredOwners.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={columns.length} align="center" sx={{ py: 4 }}>
+                  <TableCell colSpan={columns.length} align="center">
                     <Typography color="textSecondary">
-                      {searchTerm || statusFilter !== 'all' 
-                        ? 'No owner applications found matching your criteria' 
+                      {searchTerm || statusFilter !== 'all'
+                        ? 'No owner applications found matching your criteria'
                         : 'No owner applications found'}
                     </Typography>
                   </TableCell>
@@ -250,48 +203,24 @@ const OwnersTable = () => {
               ) : (
                 filteredOwners
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((owner) => (
-                    <TableRow 
-                      hover 
-                      role="checkbox" 
-                      tabIndex={-1} 
-                      key={owner._id}
-                      sx={{ 
-                        '&:hover': { 
-                          backgroundColor: '#f8fafc' 
-                        }
-                      }}
-                    >
-                      <TableCell sx={{ fontWeight: 500 }}>
-                        {owner.user?.name || 'N/A'}
-                      </TableCell>
-                      <TableCell>{owner.user?.email || 'N/A'}</TableCell>
-                      <TableCell>{owner.user?.phone || 'N/A'}</TableCell>
-                      <TableCell sx={{ fontWeight: 500 }}>
-                        {owner.groundName || 'N/A'}
-                      </TableCell>
+                  .map((o) => (
+                    <TableRow key={o._id} hover sx={{ '&:hover': { backgroundColor: '#f8fafc' } }}>
+                      <TableCell sx={{ fontWeight: 500 }}>{o?.name || 'N/A'}</TableCell>
+                      <TableCell>{o?.email || 'N/A'}</TableCell>
+                      <TableCell>{o?.phone || 'N/A'}</TableCell>
+                      <TableCell sx={{ fontWeight: 500 }}>{o?.groundName || 'N/A'}</TableCell>
                       <TableCell sx={{ maxWidth: 200 }}>
-                        <Typography variant="body2" noWrap>
-                          {owner.groundAddress}
-                        </Typography>
+                        <Typography noWrap variant="body2">{o?.groundAddress || o?.location}</Typography>
                       </TableCell>
                       <TableCell>
-                        <Chip
-                          label={owner.status.toUpperCase()}
-                          color={getStatusColor(owner.status)}
-                          size="small"
-                          sx={{ 
-                            fontWeight: 600,
-                            minWidth: 80
-                          }}
-                        />
+                        <Chip label={o?.status.toUpperCase()} color={getStatusColor(o.status)} size="small" sx={{ fontWeight: 600, minWidth: 80 }} />
                       </TableCell>
                       <TableCell>
                         <ActionButtons
-                          onView={() => handleViewDetails(owner)}
-                          onAccept={() => handleStatusUpdate(owner._id, 'approved')}
-                          onReject={() => handleStatusUpdate(owner._id, 'rejected')}
-                          showAcceptReject={owner.status === 'pending'}
+                          onView={() => { setSelectedOwner(o); setDialogOpen(true); }}
+                          onAccept={() => handleStatusUpdate(o._id, 'approved')}
+                          onReject={() => handleStatusUpdate(o._id, 'rejected')}
+                          showAcceptReject={o.status === 'pending'}
                           disabled={loading}
                         />
                       </TableCell>
@@ -307,12 +236,9 @@ const OwnersTable = () => {
           count={filteredOwners.length}
           rowsPerPage={rowsPerPage}
           page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-          sx={{
-            borderTop: '1px solid #e2e8f0',
-            backgroundColor: '#f8fafc'
-          }}
+          onPageChange={(_, newPage) => setPage(newPage)}
+          onRowsPerPageChange={(e) => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); }}
+          sx={{ borderTop: '1px solid #e2e8f0', backgroundColor: '#f8fafc' }}
         />
       </Paper>
 
@@ -323,64 +249,20 @@ const OwnersTable = () => {
           {selectedOwner && (
             <Box sx={{ pt: 2 }}>
               <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="subtitle2" color="textSecondary">
-                    Owner Name
-                  </Typography>
-                  <Typography variant="body1" gutterBottom>
-                    {selectedOwner.user?.name || 'N/A'}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="subtitle2" color="textSecondary">
-                    Email
-                  </Typography>
-                  <Typography variant="body1" gutterBottom>
-                    {selectedOwner.user?.email || 'N/A'}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="subtitle2" color="textSecondary">
-                    Phone
-                  </Typography>
-                  <Typography variant="body1" gutterBottom>
-                    {selectedOwner.user?.phone || 'N/A'}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="subtitle2" color="textSecondary">
-                    Ground Name
-                  </Typography>
-                  <Typography variant="body1" gutterBottom>
-                    {selectedOwner.groundName || 'N/A'}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12}>
-                  <Typography variant="subtitle2" color="textSecondary">
-                    Ground Address
-                  </Typography>
-                  <Typography variant="body1" gutterBottom>
-                    {selectedOwner.groundAddress}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="subtitle2" color="textSecondary">
-                    Status
-                  </Typography>
-                  <Chip
-                    label={selectedOwner.status}
-                    color={getStatusColor(selectedOwner.status)}
-                    size="small"
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="subtitle2" color="textSecondary">
-                    Applied Date
-                  </Typography>
-                  <Typography variant="body1" gutterBottom>
-                    {formatDate(selectedOwner.createdAt)}
-                  </Typography>
-                </Grid>
+                {[
+                  { label: 'Owner Name', value: selectedOwner.user?.name },
+                  { label: 'Email', value: selectedOwner.user?.email },
+                  { label: 'Phone', value: selectedOwner.user?.phone },
+                  { label: 'Ground Name', value: selectedOwner.groundName },
+                  { label: 'Ground Address', value: selectedOwner.groundAddress },
+                  { label: 'Status', value: <Chip label={selectedOwner.status} color={getStatusColor(selectedOwner.status)} size="small" /> },
+                  { label: 'Applied Date', value: formatDate(selectedOwner.createdAt) },
+                ].map((item, idx) => (
+                  <Grid item xs={12} sm={6} key={idx}>
+                    <Typography variant="subtitle2" color="textSecondary">{item.label}</Typography>
+                    <Typography variant="body1" gutterBottom>{item.value || 'N/A'}</Typography>
+                  </Grid>
+                ))}
               </Grid>
             </Box>
           )}
@@ -388,20 +270,10 @@ const OwnersTable = () => {
         <DialogActions>
           {selectedOwner?.status === 'pending' && (
             <>
-              <Button
-                variant="contained"
-                color="success"
-                startIcon={<Check />}
-                onClick={() => handleStatusUpdate(selectedOwner._id, 'approved')}
-              >
+              <Button variant="contained" color="success" startIcon={<Check />} onClick={() => handleStatusUpdate(selectedOwner._id, 'approved')}>
                 Accept
               </Button>
-              <Button
-                variant="contained"
-                color="error"
-                startIcon={<Close />}
-                onClick={() => handleStatusUpdate(selectedOwner._id, 'rejected')}
-              >
+              <Button variant="contained" color="error" startIcon={<Close />} onClick={() => handleStatusUpdate(selectedOwner._id, 'rejected')}>
                 Reject
               </Button>
             </>

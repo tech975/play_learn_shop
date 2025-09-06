@@ -1,44 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "../../api/axios";
-
-// Fetch dashboard stats
-export const fetchDashboardStats = createAsyncThunk(
-  "admin/fetchDashboardStats",
-  async (_, { rejectWithValue }) => {
-    try {
-      const [usersResponse, ownersResponse] = await Promise.all([
-        axios.get("/api/auth/users"),
-        axios.get("/api/admin/venue-request/pending"),
-      ]);
-
-      return {
-        users: usersResponse.data?.length || 0,
-        owners: ownersResponse.data?.length || 0,
-        coaches: 0, // Mock data for now
-        revenue: 0, // Mock data for now
-      };
-    } catch (err) {
-      return rejectWithValue(
-        err.response?.data?.message || "Failed to fetch dashboard stats"
-      );
-    }
-  }
-);
-
-// Fetch all users
-export const fetchUsers = createAsyncThunk(
-  "admin/fetchUsers",
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await axios.get("/api/auth/users");
-      return response.data;
-    } catch (err) {
-      return rejectWithValue(
-        err.response?.data?.message || "Failed to fetch users"
-      );
-    }
-  }
-);
+import { showMessage } from "../../utils/uiSlice";
 
 // Fetch owner requests
 export const fetchOwnerRequests = createAsyncThunk(
@@ -46,7 +8,7 @@ export const fetchOwnerRequests = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axios.get("/api/admin/venue-request/pending");
-      return response.data;
+       return response.data;
     } catch (err) {
       return rejectWithValue(
         err.response?.data?.message || "Failed to fetch owner requests"
@@ -55,35 +17,50 @@ export const fetchOwnerRequests = createAsyncThunk(
   }
 );
 
-// Update owner request status
-export const updateOwnerRequestStatus = createAsyncThunk(
-  "admin/updateOwnerRequestStatus",
-  async ({ requestId, status }, { rejectWithValue }) => {
+export const getAllOwnerVenues = createAsyncThunk(
+  "admin/getAllOwnerVenues",
+  async (ownerIds, { rejectWithValue }) => {
+    console.log("ownerIds: ", ownerIds)
+    const ownerIdsString = ownerIds?.join(',');
     try {
-      await axios.put(`/api/admin/venue-request/status/${requestId}`, { status });
-      return { requestId, status };
+      const response = await axios.get(`/api/venues/allOwnerVenues?ids=${ownerIdsString}`)
+      return response.data;
     } catch (err) {
       return rejectWithValue(
-        err.response?.data?.message || "Failed to update owner request status"
+        err.response?.data?.message || "Failed to fetch all Owner Venues"
       );
     }
   }
 );
 
+// Update owner request status
+export const updateOwnerRequestStatus = createAsyncThunk(
+  "admin/updateOwnerRequestStatus",
+  async ({ requestId, status }, { dispatch, rejectWithValue }) => {
+    console.log("status: ", status)
+    try {
+      const response = await axios.put(`/api/admin/venue-request/status/${requestId}`, { status });
+      dispatch(showMessage({ message: "Venue Status Updated Successfully" }));
+      return response.data;
+    } catch (error) {
+      dispatch(
+        showMessage({
+          message: error.response?.data?.message || "Something went wrong",
+          type: "error",
+        })
+      );
+      return rejectWithValue(error.response?.data);
+    }
+  }
+);
+
 const initialState = {
-  dashboardStats: {
-    users: 0,
-    owners: 0,
-    coaches: 0,
-    revenue: 0,
-  },
-  users: [],
   ownerRequests: [],
-  coaches: [],
+  allOwnerVenues: [],
   loading: false,
   error: null,
+  success: false,
   statsLoading: false,
-  usersLoading: false,
   ownersLoading: false,
 };
 
@@ -97,32 +74,6 @@ const adminSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Dashboard stats
-      .addCase(fetchDashboardStats.pending, (state) => {
-        state.statsLoading = true;
-        state.error = null;
-      })
-      .addCase(fetchDashboardStats.fulfilled, (state, action) => {
-        state.statsLoading = false;
-        state.dashboardStats = action.payload;
-      })
-      .addCase(fetchDashboardStats.rejected, (state, action) => {
-        state.statsLoading = false;
-        state.error = action.payload;
-      })
-      // Users
-      .addCase(fetchUsers.pending, (state) => {
-        state.usersLoading = true;
-        state.error = null;
-      })
-      .addCase(fetchUsers.fulfilled, (state, action) => {
-        state.usersLoading = false;
-        state.users = action.payload;
-      })
-      .addCase(fetchUsers.rejected, (state, action) => {
-        state.usersLoading = false;
-        state.error = action.payload;
-      })
       // Owner requests
       .addCase(fetchOwnerRequests.pending, (state) => {
         state.ownersLoading = true;
@@ -136,20 +87,26 @@ const adminSlice = createSlice({
         state.ownersLoading = false;
         state.error = action.payload;
       })
+      .addCase(getAllOwnerVenues.pending, (state) => {
+        state.ownersLoading = true;
+        state.error = null;
+      })
+      .addCase(getAllOwnerVenues.fulfilled, (state, action) => {
+        state.ownersLoading = false;
+        state.allOwnerVenues = action.payload;
+      })
+      .addCase(getAllOwnerVenues.rejected, (state, action) => {
+        state.ownersLoading = false;
+        state.error = action.payload;
+      })
       // Update owner request status
       .addCase(updateOwnerRequestStatus.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(updateOwnerRequestStatus.fulfilled, (state, action) => {
+      .addCase(updateOwnerRequestStatus.fulfilled, (state) => {
         state.loading = false;
-        const { requestId, status } = action.payload;
-        const request = state.ownerRequests.find(
-          (req) => req._id === requestId
-        );
-        if (request) {
-          request.status = status;
-        }
+        state.success = true;
       })
       .addCase(updateOwnerRequestStatus.rejected, (state, action) => {
         state.loading = false;

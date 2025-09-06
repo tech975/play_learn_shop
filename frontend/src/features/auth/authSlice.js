@@ -27,6 +27,21 @@ export const loginUser = createAsyncThunk(
   }
 );
 
+// Fetch all users
+export const fetchUsers = createAsyncThunk(
+  "admin/fetchUsers",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axios.get("/api/auth/users");
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to fetch users"
+      );
+    }
+  }
+);
+
 export const updateUserProfile = createAsyncThunk(
   "auth/updateUserProfile",
   async ({ name, email, phone, location, token }, { rejectWithValue }) => {
@@ -73,6 +88,7 @@ const initialState = {
   user: localStorage.getItem("user")
     ? JSON.parse(localStorage.getItem("user"))
     : null,
+  usersData: [],
   loading: false,
   error: null,
 };
@@ -150,7 +166,19 @@ const authSlice = createSlice({
       .addCase(uploadProfilePic.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      });
+      })
+      .addCase(fetchUsers.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchUsers.fulfilled, (state, action) => {
+        state.loading = false;
+        state.usersData = action.payload;
+      })
+      .addCase(fetchUsers.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
   },
 });
 

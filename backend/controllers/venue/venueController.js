@@ -80,7 +80,7 @@ exports.getVenues = async (req, res) => {
     if (location) filter.location = location;
     if (price) filter.price = { $lte: Number(price) };
 
-    const venues = await Venue.find(filter).populate('owner', 'name email').populate('slots');
+    const venues = await Venue.find(filter).populate('owner').populate('slots');
     res.json(venues);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -89,7 +89,7 @@ exports.getVenues = async (req, res) => {
 
 exports.getVenueById = async (req, res) => {
   try {
-    const venue = await Venue.findById(req.params.id).populate('owner', 'name email').populate('slots');
+    const venue = await Venue.findById(req.params.id).populate('owner').populate('slots');
     if (!venue) return res.status(404).json({ message: 'Venue not found' });
     res.json(venue);
   } catch (err) {
@@ -99,18 +99,36 @@ exports.getVenueById = async (req, res) => {
 
 exports.getOwnerVenues = async (req, res) => {
   const { ownerId } = req.params;
+  
 
   try {
-    const venues = await Venue.find({ owner: ownerId }).populate('owner', 'name email').populate('slots');
+    const venues = await Venue.find({ owner: ownerId }).populate('owner').populate('slots');
     res.json(venues);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 }
 
+exports.getAllOwnerVenues = async (req, res) => {
+  
+  try {
+
+    const { ownerIds } = req.params;
+
+    if(!ownerIds) {
+      return res.status(400).json({ message: "No ownerIds found" })
+    }
+    const venues = await Venue.find({ owner: { $in: ownerIds?.split(",")} }).populate('owner');
+    res.json(venues)
+  } catch (error) {
+    res.status(500).json({ message: "Error while getting all the owner venues"})
+    console.log(error)
+  }
+}
+
 exports.getApprovedVenues = async (req, res) => {
   try {
-    const venues = await Venue.find({ status: "approved" }).populate("owner", "name email");
+    const venues = await Venue.find({ status: "approved" }).populate("owner");
     res.status(200).json(venues);
   } catch (error) {
     res.status(500).json({ message: "Error fetching venues", error: error.message });
@@ -148,7 +166,6 @@ exports.updateVenue = async (req, res) => {
 exports.uploadVenueImages = async (req, res) => {
   try {
     const venue = await Venue.findById(req.params.requestId);
-    console.log("images file", req?.files);
     if (!venue) return res.status(404).json({ message: 'Venue not found' });
 
     const existingImageCount = venue?.images ? venue?.images.length : 0;
@@ -162,8 +179,6 @@ exports.uploadVenueImages = async (req, res) => {
     if (req.files && req.files.length > 0) {
       venue.images.push(...req?.files?.map(file => file.path));
     }
-
-    console.log("venue images", venue.images)
 
     await venue.save();
     res.status(200).json({ message: 'Images uploaded successfully', venue });

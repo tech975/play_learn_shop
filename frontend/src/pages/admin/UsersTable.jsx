@@ -20,11 +20,11 @@ import {
   InputAdornment
 } from '@mui/material';
 import { Search } from '@mui/icons-material';
-import { fetchUsers } from '../../features/admin/adminSlice';
+import { fetchUsers } from '../../features/auth/authSlice';
 
 const UsersTable = () => {
   const dispatch = useDispatch();
-  const { users, usersLoading, error } = useSelector((state) => state.admin);
+  const { usersData, usersLoading, error } = useSelector((state) => state.auth);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState('');
@@ -35,8 +35,8 @@ const UsersTable = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (users) {
-      const filtered = users.filter(user =>
+    if (usersData) {
+      const filtered = usersData.filter(user =>
         user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.phone?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -44,7 +44,7 @@ const UsersTable = () => {
       setFilteredUsers(filtered);
       setPage(0);
     }
-  }, [users, searchTerm]);
+  }, [usersData, searchTerm]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
