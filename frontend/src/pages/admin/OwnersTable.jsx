@@ -173,7 +173,7 @@ const OwnersTable = () => {
 
       {/* Table */}
       <Paper sx={{ width: '100%', overflow: 'hidden', borderRadius: 2, border: '1px solid #e2e8f0' }}>
-        <TableContainer sx={{ maxHeight: 440 }}>
+        <TableContainer sx={{ maxHeight: 540 }}>
           <Table stickyHeader>
             <TableHead>
               <TableRow sx={{ '& .MuiTableCell-head': { backgroundColor: '#f8fafc', fontWeight: 600, color: '#374151' } }}>

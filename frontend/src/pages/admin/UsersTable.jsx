@@ -111,7 +111,7 @@ const UsersTable = () => {
           border: '1px solid #e2e8f0'
         }}
       >
-        <TableContainer sx={{ maxHeight: 440 }}>
+        <TableContainer sx={{ maxHeight: 540 }}>
           <Table stickyHeader aria-label="users table">
             <TableHead>
               <TableRow sx={{ '& .MuiTableCell-head': { backgroundColor: '#f8fafc' } }}>
