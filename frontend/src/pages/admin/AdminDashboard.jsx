@@ -30,24 +30,23 @@ import { fetchCoaches } from '../../features/coach/coachBookingSlice';
 const AdminDashboard = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { dashboardStats, statsLoading, error } = useSelector((state) => state.admin);
+  const { statsLoading, error } = useSelector((state) => state.admin);
   const { usersData } = useSelector((state) => state.auth);
-  const { coaches, loading } = useSelector((state) => state.coaches);
+  const { coaches } = useSelector((state) => state.coaches);
 
   const [showRevenue, setShowRevenue] = useState(false);
 
   useEffect(() => {
-    // dispatch(fetchDashboardStats());
     dispatch(fetchOwnerRequests());
     dispatch(fetchUsers());
     dispatch(fetchCoaches());
   }, [dispatch]);
 
   const chartData = [
-    // { name: 'Users', value: dashboardStats.users, color: '#3b82f6' },
-    // { name: 'Owners', value: dashboardStats.owners, color: '#10b981' },
-    // { name: 'Coaches', value: dashboardStats.coaches, color: '#f59e0b' },
-    // { name: 'Revenue', value: dashboardStats.revenue, color: '#8b5cf6' }
+    { name: 'Users', value: usersData?.length || 0, color: '#3b82f6' },
+    { name: 'Owners', value: usersData?.filter((item) => item?.role === 'owner').length || 0, color: '#10b981' },
+    { name: 'Coaches', value: coaches?.length || 0, color: '#f59e0b' },
+    { name: 'Revenue', value: 500, color: '#8b5cf6' }
   ];
 
   const monthlyData = [

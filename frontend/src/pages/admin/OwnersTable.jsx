@@ -28,6 +28,7 @@ import { Check, Close, Search, FilterList } from '@mui/icons-material';
 import { getAllOwnerVenues, updateOwnerRequestStatus } from '../../features/admin/adminSlice';
 import ActionButtons from '../../components/admin/ActionButtons';
 import { useEffect } from 'react';
+import { fetchUsers } from '../../features/auth/authSlice';
 // import { fetchVenues } from '../../features/venues/venueSlice';
 
 // Utility Functions
@@ -65,10 +66,14 @@ const OwnersTable = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const ownerIds = useMemo(() => {
-    return usersData?.filter((item) => item?.role === 'owner').map((o) => o._id);
+    return usersData && usersData?.filter((item) => item?.role === 'owner').map((o) => o._id);
   }, [usersData]);
 
-    useEffect(() => {
+  useEffect(() => {
+    dispatch(fetchUsers());
+  }, [dispatch]);
+
+  useEffect(() => {
     if (ownerIds?.length) {
       dispatch(getAllOwnerVenues(ownerIds));
     }

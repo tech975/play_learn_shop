@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const instance = axios.create({
-  baseURL: 'http://localhost:5000', // Change if your backend runs elsewhere https://192.168.1.143:5000
+  baseURL: 'http://localhost:5000', // Change if your backend runs elsewhere http://192.168.1.143:5000
   headers: {
     'Content-Type': 'application/json',
   },

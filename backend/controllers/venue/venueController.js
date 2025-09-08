@@ -99,7 +99,6 @@ exports.getVenueById = async (req, res) => {
 
 exports.getOwnerVenues = async (req, res) => {
   const { ownerId } = req.params;
-  
 
   try {
     const venues = await Venue.find({ owner: ownerId }).populate('owner').populate('slots');
