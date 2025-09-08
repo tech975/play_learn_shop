@@ -28,7 +28,7 @@ import { Check, Close, Search, FilterList } from '@mui/icons-material';
 import { getAllOwnerVenues, updateOwnerRequestStatus } from '../../features/admin/adminSlice';
 import ActionButtons from '../../components/admin/ActionButtons';
 import { useEffect } from 'react';
-import { fetchVenues } from '../../features/venues/venueSlice';
+// import { fetchVenues } from '../../features/venues/venueSlice';
 
 // Utility Functions
 const formatDate = (dateString) => new Date(dateString).toLocaleDateString();
@@ -54,13 +54,8 @@ const columns = [
 
 const OwnersTable = () => {
   const dispatch = useDispatch();
-  const { ownerRequests, ownersLoading, loading, error } = useSelector((state) => state.admin);
-  const { venues } = useSelector((state) => state?.venues);
+  const { allOwnerVenues, error, ownersLoading } = useSelector((state) => state.admin);
   const { usersData } = useSelector((state) => state.auth);
-
-  const ownerIds = usersData?.filter((item) => item?.role === 'owner').map(ownerId => ownerId?._id);
-
-  console.log("venuesData: ", venues)
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -68,15 +63,20 @@ const OwnersTable = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedOwner, setSelectedOwner] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-   const [statusUpdated, setStatusUpdated] = useState(false);
 
-   useEffect(() => {
-    dispatch(getAllOwnerVenues(ownerIds));
-  }, [dispatch, ownerIds]);
+  const ownerIds = useMemo(() => {
+    return usersData?.filter((item) => item?.role === 'owner').map((o) => o._id);
+  }, [usersData]);
+
+    useEffect(() => {
+    if (ownerIds?.length) {
+      dispatch(getAllOwnerVenues(ownerIds));
+    }
+  }, [ownerIds, dispatch]);
 
   // Filter logic with useMemo
   const filteredOwners = useMemo(() => {
-    let filtered = ownerRequests || [];
+    let filtered = allOwnerVenues || [];
     if (statusFilter !== 'all') {
       filtered = filtered.filter((o) => o.status === statusFilter);
     }
@@ -91,19 +91,11 @@ const OwnersTable = () => {
       );
     }
     return filtered;
-  }, [ownerRequests, statusFilter, searchTerm]);
-
-  useEffect(() => {
-    if (statusUpdated) {
-      dispatch(fetchOwnerRequests());
-      setStatusUpdated(false); // reset flag
-    }
-  }, [statusUpdated, dispatch]);
+  }, [allOwnerVenues, statusFilter, searchTerm]);
 
   const handleStatusUpdate = async (requestId, newStatus) => {
     try {
       await dispatch(updateOwnerRequestStatus({ requestId, status: newStatus })).unwrap();
-      setStatusUpdated(true);   // ✅ trigger reload via useEffect
       setDialogOpen(false);
     } catch (err) {
       console.error('Error updating status:', err);
@@ -221,7 +213,7 @@ const OwnersTable = () => {
                           onAccept={() => handleStatusUpdate(o._id, 'approved')}
                           onReject={() => handleStatusUpdate(o._id, 'rejected')}
                           showAcceptReject={o.status === 'pending'}
-                          disabled={loading}
+                          disabled={ownersLoading}
                         />
                       </TableCell>
                     </TableRow>
@@ -250,9 +242,9 @@ const OwnersTable = () => {
             <Box sx={{ pt: 2 }}>
               <Grid container spacing={2}>
                 {[
-                  { label: 'Owner Name', value: selectedOwner.user?.name },
-                  { label: 'Email', value: selectedOwner.user?.email },
-                  { label: 'Phone', value: selectedOwner.user?.phone },
+                  { label: 'Owner Name', value: selectedOwner?.name },
+                  { label: 'Email', value: selectedOwner?.email },
+                  { label: 'Phone', value: selectedOwner?.phone },
                   { label: 'Ground Name', value: selectedOwner.groundName },
                   { label: 'Ground Address', value: selectedOwner.groundAddress },
                   { label: 'Status', value: <Chip label={selectedOwner.status} color={getStatusColor(selectedOwner.status)} size="small" /> },

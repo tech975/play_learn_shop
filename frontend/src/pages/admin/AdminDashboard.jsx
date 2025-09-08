@@ -141,7 +141,7 @@ const AdminDashboard = () => {
         />
         <StatCard
           title="Total Owners"
-          value={statsLoading ? 0 : usersData && usersData?.filter((item) => item?.role === 'owner').length}
+          value={statsLoading ? 0 : usersData?.filter((item) => item?.role === 'owner').length}
           icon={<Business sx={{ color: 'white', fontSize: 28 }} />}
           color="#10b981"
           trend="up"

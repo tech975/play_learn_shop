@@ -2,7 +2,6 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "../../api/axios";
 import { showMessage } from "../../utils/uiSlice";
 
-// Fetch owner requests
 export const fetchOwnerRequests = createAsyncThunk(
   "admin/fetchOwnerRequests",
   async (_, { rejectWithValue }) => {
@@ -20,10 +19,9 @@ export const fetchOwnerRequests = createAsyncThunk(
 export const getAllOwnerVenues = createAsyncThunk(
   "admin/getAllOwnerVenues",
   async (ownerIds, { rejectWithValue }) => {
-    console.log("ownerIds: ", ownerIds)
     const ownerIdsString = ownerIds?.join(',');
     try {
-      const response = await axios.get(`/api/venues/allOwnerVenues?ids=${ownerIdsString}`)
+      const response = await axios.get(`/api/venues/allOwnerVenues/${ownerIdsString}`)
       return response.data;
     } catch (err) {
       return rejectWithValue(
@@ -37,7 +35,6 @@ export const getAllOwnerVenues = createAsyncThunk(
 export const updateOwnerRequestStatus = createAsyncThunk(
   "admin/updateOwnerRequestStatus",
   async ({ requestId, status }, { dispatch, rejectWithValue }) => {
-    console.log("status: ", status)
     try {
       const response = await axios.put(`/api/admin/venue-request/status/${requestId}`, { status });
       dispatch(showMessage({ message: "Venue Status Updated Successfully" }));
