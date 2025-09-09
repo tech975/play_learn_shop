@@ -7,9 +7,8 @@ import Searchbar from "../../components/Searchbar";
 import SportsCard from "../public/SportsCard";
 import { sports } from "../../cluster/sportsData";
 import { useNavigate } from "react-router-dom";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay } from "swiper/modules";
-import "swiper/css";
+
+
 
 const VenueList = () => {
   const dispatch = useDispatch();
@@ -92,23 +91,30 @@ const VenueList = () => {
             >
               {/* Image Section */}
               {venue.images && venue.images.length > 0 ? (
-                <Swiper
-                  modules={[Autoplay]}
-                  autoplay={{ delay: 3000, disableOnInteraction: false }}
-                  loop
-                  className="w-full h-56m-1"  // 👈 Increased height
-                  speed={1000}
-                >
-                  {venue?.images?.map((slide, index) => (
-                    <SwiperSlide key={index}>
-                      <img
-                        src={typeof slide === "string" ? slide : slide.img}
-                        alt={venue.groundName}
-                        className="w-full h-56 object-cover rounded-2xl" t
-                      />
-                    </SwiperSlide>
-                  ))}
-                </Swiper>
+                // <Swiper
+                //   modules={[Autoplay]}
+                //   autoplay={{ delay: 3000, disableOnInteraction: false }}
+                //   loop
+                //   className="w-full h-56m-1"  // 👈 Increased height
+                //   speed={1000}
+                // >
+                //   {venue?.images?.map((slide, index) => (
+                //     <SwiperSlide key={index}>
+                //       <img
+                //         src={typeof slide === "string" ? slide : slide.img}
+                //         alt={venue.groundName}
+                //         className="w-full h-56 object-cover rounded-2xl" t
+                //       />
+                //     </SwiperSlide>
+                //   ))}
+                // </Swiper>
+                <div>
+                  <img
+                    src={venue && venue?.images[0]}
+                    alt={venue?.groundName}
+                    className="w-full h-56 object-cover rounded-2xl"
+                  />
+                </div>
               ) : (
                 <div className="w-full h-56 bg-gray-200 flex items-center justify-center text-gray-500">
                   No Image

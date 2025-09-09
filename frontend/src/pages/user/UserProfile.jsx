@@ -105,6 +105,13 @@ const UserProfile = () => {
     }
   };
 
+  const handleProfilePictureChange = (event) => {
+    const file = event.target.files[0];
+    console.log("file: ", file)
+
+    file && dispatch(uploadProfilePic({ file, token: loggedInUser.token }));
+  };
+
   const handleSave = async () => {
     try {
       const result = await dispatch(updateUserProfile({
@@ -129,12 +136,6 @@ const UserProfile = () => {
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
-  };
-
-  const handleProfilePictureChange = (event) => {
-    const file = event.target.files[0];
-
-    file && dispatch(uploadProfilePic({ file, token: loggedInUser.token }));
   };
 
   const handleStatClick = (type) => {
@@ -201,7 +202,7 @@ const UserProfile = () => {
                   }
                 >
                   <Avatar
-                    src={ loggedInUser?.profilePic || profilePic }
+                    src={loggedInUser?.profilePic || profilePic}
                     sx={{
                       width: { xs: 120, md: 140 },
                       height: { xs: 120, md: 140 },
@@ -577,11 +578,12 @@ const UserProfile = () => {
           <div className="space-y-4">
             <div className="flex flex-col items-center gap-3 mb-4">
               <Avatar
-                src={profilePic || loggedInUser?.profilePic}
+                src={profilePic ? `${profilePic}?v=${Date.now()}` : loggedInUser?.profilePic ? `${loggedInUser.profilePic}?v=${Date.now()}` : undefined}
                 sx={{ width: 80, height: 80, bgcolor: "#22c55e", fontSize: 32 }}
               >
                 {!profilePic && !loggedInUser?.profilePic && loggedInUser?.name?.charAt(0).toUpperCase()}
               </Avatar>
+
               <input
                 accept="image/*"
                 style={{ display: 'none' }}
