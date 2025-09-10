@@ -29,7 +29,7 @@ import { getAllOwnerVenues, updateOwnerRequestStatus } from '../../features/admi
 import ActionButtons from '../../components/admin/ActionButtons';
 import { useEffect } from 'react';
 import { fetchUsers } from '../../features/auth/authSlice';
-// import { fetchVenues } from '../../features/venues/venueSlice';
+import { fetchVenues } from '../../features/venues/venueSlice';
 
 // Utility Functions
 const formatDate = (dateString) => new Date(dateString).toLocaleDateString();
@@ -47,6 +47,7 @@ const columns = [
   { id: 'ownerName', label: 'Owner Name', minWidth: 150 },
   { id: 'email', label: 'Email', minWidth: 200 },
   { id: 'phone', label: 'Phone', minWidth: 130 },
+  { id: 'role', label: 'Role', minWidth: 130 },
   { id: 'groundName', label: 'Ground Name', minWidth: 150 },
   { id: 'address', label: 'Address', minWidth: 200 },
   { id: 'status', label: 'Status', minWidth: 120 },
@@ -56,7 +57,7 @@ const columns = [
 const OwnersTable = () => {
   const dispatch = useDispatch();
   const { allOwnerVenues, error, ownersLoading } = useSelector((state) => state.admin);
-  const { usersData } = useSelector((state) => state.auth);
+  const venuesData = useSelector((state) => state.venues.venues);
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -66,11 +67,12 @@ const OwnersTable = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const ownerIds = useMemo(() => {
-    return usersData && usersData?.filter((item) => item?.role === 'owner').map((o) => o._id);
-  }, [usersData]);
+    return venuesData && venuesData?.map(owner => owner.owner._id);
+  }, [venuesData]);
 
   useEffect(() => {
     dispatch(fetchUsers());
+    dispatch(fetchVenues({ sport: null, location: ""}));
   }, [dispatch]);
 
   useEffect(() => {
@@ -205,6 +207,7 @@ const OwnersTable = () => {
                       <TableCell sx={{ fontWeight: 500 }}>{o?.name || 'N/A'}</TableCell>
                       <TableCell>{o?.email || 'N/A'}</TableCell>
                       <TableCell>{o?.phone || 'N/A'}</TableCell>
+                      <TableCell>{o?.owner?.role || 'N/A'}</TableCell>
                       <TableCell sx={{ fontWeight: 500 }}>{o?.groundName || 'N/A'}</TableCell>
                       <TableCell sx={{ maxWidth: 200 }}>
                         <Typography noWrap variant="body2">{o?.groundAddress || o?.location}</Typography>

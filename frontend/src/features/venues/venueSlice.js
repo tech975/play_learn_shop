@@ -5,7 +5,6 @@ import { showMessage } from '../../utils/uiSlice';
 export const fetchVenues = createAsyncThunk(
     "venues/fetchVenues",
     async (filters, { rejectWithValue }) => {
-        console.log("filters: ", filters)
         try {
             const query = new URLSearchParams();
             Object.entries(filters).forEach(([key, value]) => {
@@ -74,6 +73,7 @@ const venueSlice = createSlice({
     name: 'venues',
     initialState: {
         venues: [],
+        approvedVenues: [],
         loading: false,
         error: null
     },
@@ -119,9 +119,9 @@ const venueSlice = createSlice({
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(approvedVenues.fulfilled, (state) => {
+            .addCase(approvedVenues.fulfilled, (state, action) => {
                 state.loading = false;
-                // state.approvedVenues = action.payload;
+                state.approvedVenues = action.payload;
             })
             .addCase(approvedVenues.rejected, (state, action) => {
                 state.loading = false;

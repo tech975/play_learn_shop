@@ -6,7 +6,6 @@ const venueSchema = new mongoose.Schema(
     name: String,
     email: String, 
     phone: String,
-    role: String,
     price: { type: Number, required: true },
     priceType: { type: String, default: 'hourly' },
     sports: { type: [String], required: true, default: [] },

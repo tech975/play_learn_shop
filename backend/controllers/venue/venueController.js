@@ -113,7 +113,6 @@ exports.getAllOwnerVenues = async (req, res) => {
   try {
 
     const { ownerIds } = req.params;
-
     if(!ownerIds) {
       return res.status(400).json({ message: "No ownerIds found" })
     }

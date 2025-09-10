@@ -5,9 +5,9 @@ const auth = require('../middleware/auth');
 const { uploadVenue } = require('../middleware/upload');
 
 router.get('/', venueController.getVenues);
+router.get('/approved', auth, venueController.getApprovedVenues);
 router.get('/:id', auth, venueController.getVenueById);
 router.get('/owner/:ownerId', auth, auth.authorize('owner'), venueController.getOwnerVenues);
-router.get('/approved', auth, venueController.getApprovedVenues);
 router.post('/', auth, auth.authorize('owner'), venueController.createVenue);
 router.put('/owner/:id', auth, auth.authorize('owner'), venueController.updateVenue);
 router.delete('/owner/:id', auth, auth.authorize('admin'), venueController.deleteVenue);

@@ -198,7 +198,7 @@ const OwnerForm = () => {
                         Phone Number *
                       </label>
                       <input
-                        value={user?.phone || ''}
+                        defaultValue={user?.phone || ''}
                         type="tel"
                         {...register('phone', {
                           required: 'Phone number is required',

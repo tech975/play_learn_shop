@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchVenues } from "../../features/venues/venueSlice";
+import { approvedVenues } from "../../features/venues/venueSlice";
 import Navbar from "../../components/Navbar";
 import HeroSlider from "../public/HeroSlider";
 import Searchbar from "../../components/Searchbar";
@@ -8,14 +8,12 @@ import SportsCard from "../public/SportsCard";
 import { sports } from "../../cluster/sportsData";
 import { useNavigate } from "react-router-dom";
 
-
-
 const VenueList = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { venues, loading, error } = useSelector((state) => state.venues);
-
-  console.log("venues: ", venues);
+  const venues = useSelector((state) => state.venues.approvedVenues);
+  const error = useSelector((state) => state.venues.error);
+  const loading = useSelector((state) => state.venues.loading);
 
   // Filters for backend
   const [filters, setFilters] = useState({
@@ -24,8 +22,12 @@ const VenueList = () => {
   });
 
   useEffect(() => {
-    dispatch(fetchVenues(filters));
-  }, [dispatch, filters]);
+    dispatch(approvedVenues());
+  }, [dispatch]);
+
+  // useEffect(() => {
+  //   dispatch(fetchVenues(filters));
+  // }, [dispatch, filters]);
 
   return (
     <div className="md:px-24 mt-16">
