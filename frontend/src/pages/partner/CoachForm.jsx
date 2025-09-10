@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { Lock, LogIn } from 'lucide-react';
-// import { submitCoachApplication } from "../../services/partnerService";
-// import SuccessModal from "../../components/SuccessModal";
+import { Lock, LogIn } from "lucide-react";
 
 const CoachForm = () => {
   const navigate = useNavigate();
@@ -18,18 +16,11 @@ const CoachForm = () => {
     reset,
   } = useForm();
 
-  // Check if user is authenticated
-  useEffect(() => {
-    if (!isAuthenticated) {
-      // Store the current path to redirect back after login
-      sessionStorage.setItem('redirectAfterLogin', '/partner/coach');
-    }
-  }, [isAuthenticated]);
-
   const onSubmit = async (data) => {
-    if (!isAuthenticated) {
-      toast.error('Please login first to submit your application');
-      navigate('/login');
+    if (!isAuthenticated || !user) {
+      toast.error("Please login first to submit your application");
+      sessionStorage.setItem("redirectAfterLogin", "/partner/coach");
+      navigate("/login");
       return;
     }
 
@@ -37,11 +28,11 @@ const CoachForm = () => {
       // Include user ID in the application data
       const applicationData = {
         ...data,
-        userId: user.id,
+        userId: user._id || user.id,
         userEmail: user.email,
-        userName: user.name
+        userName: user.name,
       };
-      
+
       // const response = await submitCoachApplication(applicationData);
       reset();
       setShowSuccessModal(true);
@@ -53,46 +44,11 @@ const CoachForm = () => {
     }
   };
 
-  // If user is not authenticated, show login prompt
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4 flex items-center justify-center">
-        <div className="max-w-md mx-auto bg-white rounded-2xl shadow-xl p-8 text-center">
-          <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Lock className="w-10 h-10 text-blue-600" />
-          </div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">Login Required</h2>
-          <p className="text-gray-600 mb-6">
-            You need to be logged in to submit a coach application. Please login or create an account to continue.
-          </p>
-          <button
-            onClick={() => navigate('/login')}
-            className="w-full bg-[#00df9a] text-black font-semibold py-3 px-6 rounded-lg hover:bg-[#00b87a] transition-colors duration-200 flex items-center justify-center"
-          >
-            <LogIn className="w-5 h-5 mr-2" />
-            Login to Continue
-          </button>
-          <button
-            onClick={() => navigate('/')}
-            className="w-full mt-3 text-gray-600 hover:text-gray-800 transition-colors duration-200"
-          >
-            Back to Home
-          </button>
-        </div>
-      </div>
-    );
-  }
+  // Show form regardless of authentication status
+  // Authentication check happens only on form submission
 
   return (
     <>
-      {/* <SuccessModal
-        isOpen={showSuccessModal}
-        onClose={() => setShowSuccessModal(false)}
-        title="Coach Application Submitted!"
-        message="Thank you for your interest in becoming a coach! We've received your application and our team will review it within 2-3 business days. Once approved, your account will be upgraded to Coach status and you can access coaching features with the same login credentials."
-        type="coach"
-      /> */}
-
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
@@ -148,6 +104,7 @@ const CoachForm = () => {
                         Full Name *
                       </label>
                       <input
+                        defaultValue={user?.name || ''}
                         type="text"
                         {...register("name", {
                           required: "Name is required",
@@ -172,6 +129,7 @@ const CoachForm = () => {
                         Email Address *
                       </label>
                       <input
+                        defaultValue={user?.email || ''}
                         type="email"
                         {...register("email", {
                           required: "Email is required",
@@ -196,6 +154,7 @@ const CoachForm = () => {
                         Phone Number *
                       </label>
                       <input
+                        defaultValue={user?.phone || ''}
                         type="tel"
                         {...register("phone", {
                           required: "Phone number is required",

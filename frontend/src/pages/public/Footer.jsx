@@ -2,7 +2,7 @@ import { Facebook, Instagram, Twitter, Youtube, Mail } from "lucide-react";
 
 const Footer = () => {
   return (
-    <footer className="bg-black text-gray-300 py-10 mt-12">
+    <footer className="bg-black text-gray-300 py-10">
       <div className="max-w-6xl mx-auto px-4 grid md:grid-cols-4 gap-8">
         
         {/* Brand / Logo */}

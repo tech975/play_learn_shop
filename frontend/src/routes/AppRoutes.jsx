@@ -2,6 +2,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from '../pages/public/Home';
 import Login from '../pages/public/Login';
 import Register from '../pages/public/Register';
+import CoachLandingPage from '../pages/public/CoachLandingPage';
+import OwnerLandingPage from '../pages/public/OwnerLandingPage';
 import UserLayout from '../layout/UserLayout';
 import ProtectedRoute from './ProtectedRoute';
 import UserDashboard from '../pages/user/UserDashboard';
@@ -26,6 +28,8 @@ const AppRoutes = () => {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/coach-landing" element={<CoachLandingPage />} />
+        <Route path="/owner-landing" element={<OwnerLandingPage />} />
 
         <Route path='/partner/owner' element={<OwnerForm />} />
         <Route path='/partner/coach' element={<CoachForm />} />
