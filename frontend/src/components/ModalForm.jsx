@@ -1,26 +1,17 @@
-import { useState } from "react";
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } from "@mui/material";
-import { useForm } from "react-hook-form";
-import { useDispatch } from "react-redux";
-import { toast } from "react-toastify";
-// import { applyOwner } from "../../features/owner/ownerSlice"; // redux thunk action
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 export default function ModalForm({ open, onClose }) {
-  const { register, handleSubmit, formState: { errors } } = useForm();
-  const [preview, setPreview] = useState(null);
+  const navigate = useNavigate();
 
-  const onSubmit = (data) => {
-    console.log("Owner form data:", data);
-    toast.success("Owner form submitted successfully!");
-    // dispatch API call here
+  const handleCoachRedirect = () => {
     onClose();
+    navigate('/coach-landing');
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setPreview(URL.createObjectURL(file));
-    }
+  const handleOwnerRedirect = () => {
+    onClose();
+    navigate('/owner-landing');
   };
 
   return (
@@ -35,84 +26,63 @@ export default function ModalForm({ open, onClose }) {
       }}
     >
       <DialogTitle className="!text-xl !font-bold text-center text-white">
-        Become a Venue Owner
+        Join Our Platform
       </DialogTitle>
 
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <DialogContent className="space-y-4">
-          <TextField
-            label="Venue Name"
-            fullWidth
-            {...register("name", { required: "Name is required" })}
-            error={!!errors.name}
-            helperText={errors.name?.message}
-          />
-          <TextField
-            label="Location"
-            fullWidth
-            {...register("location", { required: "Location is required" })}
-            error={!!errors.location}
-            helperText={errors.location?.message}
-          />
-          <TextField
-            label="Sport"
-            fullWidth
-            {...register("sport", { required: "Sport is required" })}
-            error={!!errors.sport}
-            helperText={errors.sport?.message}
-          />
-          <TextField
-            label="Price (per hour)"
-            type="number"
-            fullWidth
-            {...register("price", { required: "Price is required" })}
-            error={!!errors.price}
-            helperText={errors.price?.message}
-          />
+      <DialogContent className="space-y-6 py-8">
+        <div className="text-center text-white mb-6">
+          <p className="text-lg">Choose how you'd like to join our community:</p>
+        </div>
 
-          {/* Image Upload */}
-          <div className="flex flex-col space-y-2">
-            <label className="text-white font-medium">Upload Image</label>
-            <input
-              type="file"
-              accept="image/*"
-              {...register("image", { required: "Image is required" })}
-              onChange={handleImageChange}
-              className="text-white"
-            />
-            {preview && (
-              <img
-                src={preview}
-                alt="preview"
-                className="mt-2 h-32 w-full object-cover rounded-xl border border-gray-300"
-              />
-            )}
-            {errors.image && (
-              <span className="text-red-400 text-sm">
-                {errors.image.message}
-              </span>
-            )}
+        {/* Coach Option */}
+        <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:border-white/40 transition-all duration-300">
+          <div className="text-center mb-4">
+            <div className="text-4xl mb-2">🏃‍♂️</div>
+            <h3 className="text-xl font-bold text-white mb-2">Become a Coach</h3>
+            <p className="text-gray-200 text-sm">
+              Share your expertise and grow your coaching business
+            </p>
           </div>
-        </DialogContent>
-
-        <DialogActions className="!justify-center pb-4">
           <Button
-            onClick={onClose}
-            color="error"
-            variant="outlined"
-            className="!rounded-xl"
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
+            onClick={handleCoachRedirect}
             variant="contained"
-            className="!bg-[#00df9a] !text-black !rounded-xl"
+            fullWidth
+            className="!bg-blue-600 !text-white !rounded-xl !py-3 hover:!bg-blue-700"
           >
-            Submit
+            Join as Coach
           </Button>
-        </DialogActions>
-      </form>
+        </div>
+
+        {/* Owner Option */}
+        <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:border-white/40 transition-all duration-300">
+          <div className="text-center mb-4">
+            <div className="text-4xl mb-2">🏟️</div>
+            <h3 className="text-xl font-bold text-white mb-2">List Your Venue</h3>
+            <p className="text-gray-200 text-sm">
+              Maximize your venue bookings and revenue
+            </p>
+          </div>
+          <Button
+            onClick={handleOwnerRedirect}
+            variant="contained"
+            fullWidth
+            className="!bg-green-600 !text-white !rounded-xl !py-3 hover:!bg-green-700"
+          >
+            List Your Ground
+          </Button>
+        </div>
+      </DialogContent>
+
+      <DialogActions className="!justify-center pb-4">
+        <Button
+          onClick={onClose}
+          color="error"
+          variant="outlined"
+          className="!rounded-xl"
+        >
+          Cancel
+        </Button>
+      </DialogActions>
     </Dialog>
   );
 };

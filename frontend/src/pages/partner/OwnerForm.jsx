@@ -5,8 +5,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { Lock, LogIn } from 'lucide-react';
 import { getApplyAsOwner } from '../../features/venues/venueSlice';
-// import { submitOwnerApplication } from '../../services/partnerService';
-// import SuccessModal from '../../components/SuccessModal';
 
 const OwnerForm = () => {
   const navigate = useNavigate();
@@ -20,17 +18,10 @@ const OwnerForm = () => {
     reset
   } = useForm();
 
-  // Check if user is authenticated
-  useEffect(() => {
-    if (!user && !user?.id) {
-      // Store the current path to redirect back after login
-      sessionStorage.setItem('redirectAfterLogin', '/partner/owner');
-    }
-  }, [user]);
-
   const onSubmit = async (data) => {
-    if (!user && !user?.id) {
+    if (!user) {
       toast.error('Please login first to submit your application');
+      sessionStorage.setItem('redirectAfterLogin', '/partner/owner');
       navigate('/login');
       return;
     }
@@ -52,7 +43,6 @@ const OwnerForm = () => {
       };
 
       await dispatch(getApplyAsOwner(applicationData));
-      // const response = await submitOwnerApplication(applicationData);
       reset();
       setShowSuccessModal(true);
     } catch (error) {
@@ -61,46 +51,11 @@ const OwnerForm = () => {
     }
   };
 
-  // If user is not authenticated, show login prompt
-  if (!user && !user?.id) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4 flex items-center justify-center">
-        <div className="max-w-md mx-auto bg-white rounded-2xl shadow-xl p-8 text-center">
-          <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Lock className="w-10 h-10 text-blue-600" />
-          </div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">Login Required</h2>
-          <p className="text-gray-600 mb-6">
-            You need to be logged in to submit a ground owner application. Please login or create an account to continue.
-          </p>
-          <button
-            onClick={() => navigate('/login')}
-            className="w-full bg-[#00df9a] text-black font-semibold py-3 px-6 rounded-lg hover:bg-[#00b87a] transition-colors duration-200 flex items-center justify-center"
-          >
-            <LogIn className="w-5 h-5 mr-2" />
-            Login to Continue
-          </button>
-          <button
-            onClick={() => navigate('/')}
-            className="w-full mt-3 text-gray-600 hover:text-gray-800 transition-colors duration-200"
-          >
-            Back to Home
-          </button>
-        </div>
-      </div>
-    );
-  }
+  // Show form regardless of authentication status
+  // Authentication check happens only on form submission
 
   return (
     <>
-      {/* <SuccessModal
-        isOpen={showSuccessModal}
-        onClose={() => setShowSuccessModal(false)}
-        title="Ground Owner Application Submitted!"
-        message="Thank you for your interest in becoming a ground owner! We've received your application and our team will review it within 2-3 business days. Once approved, your account will be upgraded to Owner status and you can access the Owner Dashboard with the same login credentials."
-        type="owner"
-      /> */}
-
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
@@ -155,7 +110,7 @@ const OwnerForm = () => {
                         Full Name *
                       </label>
                       <input
-                        value={user?.name || ''}
+                        defaultValue={user?.name || ''}
                         type="text"
                         {...register('name', {
                           required: 'Name is required',
@@ -175,7 +130,7 @@ const OwnerForm = () => {
                         Email Address *
                       </label>
                       <input
-                        value={user?.email || ''}
+                        defaultValue={user?.email || ''}
                         type="email"
                         {...register('email', {
                           required: 'Email is required',
@@ -286,8 +241,8 @@ const OwnerForm = () => {
                           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00df9a] focus:border-transparent transition-all duration-200"
                           placeholder="hourly"
                         />
-                        {errors.state && (
-                          <p className="mt-1 text-sm text-red-600">{errors.state.message}</p>
+                        {errors.priceType && (
+                          <p className="mt-1 text-sm text-red-600">{errors.priceType.message}</p>
                         )}
                       </div>
                     </div>

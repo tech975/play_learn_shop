@@ -340,6 +340,100 @@ const Home = () => {
         </div>
       </div>
 
+      {/* Services Section */}
+      <div className="bg-gradient-to-br from-gray-800 to-gray-900 py-20">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+              Join Our Community
+            </h2>
+            <p className="text-gray-300 text-lg max-w-3xl mx-auto">
+              Whether you're a coach looking to expand your reach or a venue owner wanting to maximize bookings, we have the perfect solution for you.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-12">
+            {/* Coach Section */}
+            <div className="bg-gradient-to-br from-blue-600/20 to-purple-600/20 backdrop-blur-sm rounded-3xl p-8 border border-white/10 hover:border-white/20 transition-all duration-300 transform hover:scale-105">
+              <div className="text-center mb-8">
+                <div className="text-6xl mb-4">🏃‍♂️</div>
+                <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                  For Coaches
+                </h3>
+                <p className="text-gray-300 text-lg leading-relaxed">
+                  Share your expertise, grow your student base, and build a successful coaching career with our platform.
+                </p>
+              </div>
+              
+              <div className="space-y-4 mb-8">
+                <div className="flex items-center text-gray-200">
+                  <span className="text-green-400 mr-3">✓</span>
+                  <span>Access to thousands of potential students</span>
+                </div>
+                <div className="flex items-center text-gray-200">
+                  <span className="text-green-400 mr-3">✓</span>
+                  <span>Easy scheduling and booking management</span>
+                </div>
+                <div className="flex items-center text-gray-200">
+                  <span className="text-green-400 mr-3">✓</span>
+                  <span>Secure payments and instant withdrawals</span>
+                </div>
+                <div className="flex items-center text-gray-200">
+                  <span className="text-green-400 mr-3">✓</span>
+                  <span>Build your reputation with reviews</span>
+                </div>
+              </div>
+
+              <button
+                onClick={() => navigate('/coach-landing')}
+                className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold py-4 px-6 rounded-xl shadow-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105"
+              >
+                Join as a Coach
+              </button>
+            </div>
+
+            {/* Owner Section */}
+            <div className="bg-gradient-to-br from-green-600/20 to-blue-600/20 backdrop-blur-sm rounded-3xl p-8 border border-white/10 hover:border-white/20 transition-all duration-300 transform hover:scale-105">
+              <div className="text-center mb-8">
+                <div className="text-6xl mb-4">🏟️</div>
+                <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                  For Venue Owners
+                </h3>
+                <p className="text-gray-300 text-lg leading-relaxed">
+                  List your sports venue, reach more customers, and maximize your revenue with our booking platform.
+                </p>
+              </div>
+              
+              <div className="space-y-4 mb-8">
+                <div className="flex items-center text-gray-200">
+                  <span className="text-green-400 mr-3">✓</span>
+                  <span>24/7 automated booking system</span>
+                </div>
+                <div className="flex items-center text-gray-200">
+                  <span className="text-green-400 mr-3">✓</span>
+                  <span>Reach thousands of sports enthusiasts</span>
+                </div>
+                <div className="flex items-center text-gray-200">
+                  <span className="text-green-400 mr-3">✓</span>
+                  <span>Easy venue and schedule management</span>
+                </div>
+                <div className="flex items-center text-gray-200">
+                  <span className="text-green-400 mr-3">✓</span>
+                  <span>Transparent pricing and payments</span>
+                </div>
+              </div>
+
+              <button
+                onClick={() => navigate('/owner-landing')}
+                className="w-full bg-gradient-to-r from-green-500 to-blue-600 text-white font-semibold py-4 px-6 rounded-xl shadow-lg hover:from-green-600 hover:to-blue-700 transition-all duration-300 transform hover:scale-105"
+              >
+                List Your Ground
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Testimonials Section */}
       <div className="bg-gradient-to-b from-gray-700 to-black py-20">
         <div className="max-w-6xl mx-auto px-4">

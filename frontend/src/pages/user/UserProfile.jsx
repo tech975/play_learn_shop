@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../../components/Navbar";
+import TransactionHistoryModal from "../../components/TransactionHistoryModal";
+import CertificationUploadModal from "../../components/CertificationUploadModal";
+import ShopModal from "../../components/ShopModal";
 import {
   Avatar,
   Button,
@@ -37,7 +40,10 @@ import {
   Close as CloseIcon,
   Visibility as ViewIcon,
   EmojiEvents as TrophyIcon,
-  Star as StarIcon
+  Star as StarIcon,
+  Receipt as ReceiptIcon,
+  CloudUpload as UploadIcon,
+  ShoppingCart as ShopIcon
 } from "@mui/icons-material";
 import { useDispatch, useSelector } from 'react-redux';
 import { logout, updateUserProfile, uploadProfilePic } from "../../features/auth/authSlice";
@@ -53,6 +59,9 @@ const UserProfile = () => {
   const [open, setOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
   const [detailsDialog, setDetailsDialog] = useState({ open: false, type: '', data: [] });
+  const [transactionModalOpen, setTransactionModalOpen] = useState(false);
+  const [certificationModalOpen, setCertificationModalOpen] = useState(false);
+  const [shopModalOpen, setShopModalOpen] = useState(false);
   const [profilePic, setProfilePicture] = useState(user?.profilePic || null);
   const [coachingSessions, setCoachingSessions] = useState([]);
   const [userStats, setUserStats] = useState({
@@ -394,23 +403,33 @@ const UserProfile = () => {
               </Typography>
             </Box>
 
-            <Box sx={{
-              textAlign: 'center',
-              py: { xs: 3, md: 4 },
-              px: { xs: 1, md: 2 },
-              minHeight: { xs: 140, md: 160 },
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center'
-            }}>
-              <TrophyIcon sx={{ fontSize: { xs: 36, md: 48 }, color: '#8b5cf6', mb: 1 }} />
+            <Box
+              onClick={() => setShopModalOpen(true)}
+              sx={{
+                textAlign: 'center',
+                py: { xs: 3, md: 4 },
+                px: { xs: 1, md: 2 },
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                '&:hover': {
+                  bgcolor: 'grey.50',
+                  transform: 'translateY(-2px)'
+                },
+                minHeight: { xs: 140, md: 160 },
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
+            >
+              <ShopIcon sx={{ fontSize: { xs: 36, md: 48 }, color: '#8b5cf6', mb: 1 }} />
               <Typography variant="h4" fontWeight="bold" sx={{ mb: 0.5, fontSize: { xs: '1.5rem', md: '2rem' } }}>
-                {loading ? <Skeleton width={40} /> : (userStats.achievements?.length || 0)}
+                {loading ? <Skeleton width={40} /> : '8'}
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: '0.75rem', md: '0.875rem' } }}>
-                Achievements
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5, fontSize: { xs: '0.75rem', md: '0.875rem' } }}>
+                Shop Orders
               </Typography>
+              <ViewIcon sx={{ fontSize: { xs: 16, md: 18 }, color: '#8b5cf6' }} />
             </Box>
           </Box>
         </Card>
@@ -426,7 +445,7 @@ const UserProfile = () => {
             >
               <Tab label="Recent Activity" />
               <Tab label="Achievements" />
-              <Tab label="Favorite Sports" />
+              <Tab label="Transaction History" />
             </Tabs>
           </Box>
 
@@ -479,9 +498,30 @@ const UserProfile = () => {
 
             {activeTab === 1 && (
               <Box>
-                <Typography variant="h6" fontWeight="bold" sx={{ mb: 3 }}>
-                  Achievements
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                  <Typography variant="h6" fontWeight="bold">
+                    Certifications & Achievements
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    startIcon={<UploadIcon />}
+                    onClick={() => setCertificationModalOpen(true)}
+                    sx={{
+                      bgcolor: '#22c55e',
+                      '&:hover': { bgcolor: '#16a34a' },
+                      textTransform: 'none',
+                      fontWeight: 'bold'
+                    }}
+                  >
+                    Upload Certification
+                  </Button>
+                </Box>
+                
+                <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+                  Upload your sports certifications, coaching licenses, and other achievements to showcase your expertise. 
+                  All certificates are securely stored in our cloud storage.
                 </Typography>
+
                 {userStats.achievements && userStats.achievements.length > 0 ? (
                   <Grid container spacing={3}>
                     {userStats.achievements.map((achievement, index) => (
@@ -510,8 +550,11 @@ const UserProfile = () => {
                 ) : (
                   <Box sx={{ textAlign: 'center', py: 6 }}>
                     <TrophyIcon sx={{ fontSize: 64, color: 'grey.300', mb: 2 }} />
-                    <Typography variant="body1" color="text.secondary">
-                      No achievements yet
+                    <Typography variant="body1" color="text.secondary" sx={{ mb: 1 }}>
+                      No certifications uploaded yet
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Upload your first certification to showcase your expertise
                     </Typography>
                   </Box>
                 )}
@@ -520,34 +563,40 @@ const UserProfile = () => {
 
             {activeTab === 2 && (
               <Box>
-                <Typography variant="h6" fontWeight="bold" sx={{ mb: 3 }}>
-                  Favorite Sports
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                  <Typography variant="h6" fontWeight="bold">
+                    Transaction History
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    startIcon={<ReceiptIcon />}
+                    onClick={() => setTransactionModalOpen(true)}
+                    sx={{
+                      bgcolor: '#8b5cf6',
+                      '&:hover': { bgcolor: '#7c3aed' },
+                      textTransform: 'none',
+                      fontWeight: 'bold'
+                    }}
+                  >
+                    View All Transactions
+                  </Button>
+                </Box>
+                
+                <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+                  View your complete transaction history including bookings, coaching sessions, and shop purchases. 
+                  Filter by type and date range to find specific transactions.
                 </Typography>
-                {favoritesSports && favoritesSports.length > 0 ? (
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-                    {favoritesSports.map((sport, index) => (
-                      <Chip
-                        key={index}
-                        label={sport}
-                        sx={{
-                          bgcolor: '#22c55e',
-                          color: 'white',
-                          fontWeight: 'medium',
-                          fontSize: '0.9rem',
-                          py: 2,
-                          px: 1
-                        }}
-                      />
-                    ))}
-                  </Box>
-                ) : (
-                  <Box sx={{ textAlign: 'center', py: 6 }}>
-                    <SportsIcon sx={{ fontSize: 64, color: 'grey.300', mb: 2 }} />
-                    <Typography variant="body1" color="text.secondary">
-                      No favorite sports selected
-                    </Typography>
-                  </Box>
-                )}
+
+                {/* Recent Transactions Preview */}
+                <Box sx={{ textAlign: 'center', py: 6 }}>
+                  <ReceiptIcon sx={{ fontSize: 64, color: 'grey.300', mb: 2 }} />
+                  <Typography variant="body1" color="text.secondary" sx={{ mb: 1 }}>
+                    Click "View All Transactions" to see your complete history
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Track all your bookings, sessions, and purchases in one place
+                  </Typography>
+                </Box>
               </Box>
             )}
           </CardContent>
@@ -758,6 +807,27 @@ const UserProfile = () => {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Transaction History Modal */}
+      <TransactionHistoryModal
+        open={transactionModalOpen}
+        onClose={() => setTransactionModalOpen(false)}
+        userId={user?._id}
+      />
+
+      {/* Certification Upload Modal */}
+      <CertificationUploadModal
+        open={certificationModalOpen}
+        onClose={() => setCertificationModalOpen(false)}
+        userId={user?._id}
+      />
+
+      {/* Shop Modal */}
+      <ShopModal
+        open={shopModalOpen}
+        onClose={() => setShopModalOpen(false)}
+        userId={user?._id}
+      />
     </div>
   );
 };
