@@ -7,6 +7,7 @@ const profileStorage = new CloudinaryStorage({
   params: {
     folder: "user_profiles",
     allowed_formats: ["jpg", "png", "jpeg"],
+    invalidate: true,
   },
 });
 

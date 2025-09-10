@@ -44,7 +44,7 @@ const AdminDashboard = () => {
 
   const chartData = [
     { name: 'Users', value: usersData?.length || 0, color: '#3b82f6' },
-    { name: 'Owners', value: usersData?.filter((item) => item?.role === 'owner').length || 0, color: '#10b981' },
+    { name: 'Owners', value: usersData && usersData?.filter((item) => item?.role === 'owner').length || 0, color: '#10b981' },
     { name: 'Coaches', value: coaches?.length || 0, color: '#f59e0b' },
     { name: 'Revenue', value: 500, color: '#8b5cf6' }
   ];
