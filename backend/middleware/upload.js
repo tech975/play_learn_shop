@@ -20,6 +20,27 @@ const venueStorage = new CloudinaryStorage({
     allowed_formats: ["jpg", "png", "jpeg"],
   },
 });
+
 const uploadVenue = multer({ storage: venueStorage });
 
-module.exports = { uploadProfile, uploadVenue };
+const coachStorage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: "coaches",
+    allowed_formats: ["jpg", "png", "jpeg"],
+  },
+});
+
+const uploadCoach = multer({ storage: coachStorage });
+
+const achievementStorage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: "achievements",
+    allowed_formats: ["jpg", "png", "jpeg"]
+  }
+})
+
+const uploadAchievement = multer({ storage: achievementStorage })
+
+module.exports = { uploadProfile, uploadVenue, uploadCoach, uploadAchievement };

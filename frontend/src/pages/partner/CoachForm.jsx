@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { Lock, LogIn } from "lucide-react";
+import { createCoach } from "../../features/coach/coachBookingSlice";
 
 const CoachForm = () => {
   const navigate = useNavigate();
-  const { user, isAuthenticated } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const {
     register,
@@ -17,7 +19,9 @@ const CoachForm = () => {
   } = useForm();
 
   const onSubmit = async (data) => {
-    if (!isAuthenticated || !user) {
+
+    console.log("data: ", data)
+    if (!user) {
       toast.error("Please login first to submit your application");
       sessionStorage.setItem("redirectAfterLogin", "/partner/coach");
       navigate("/login");
@@ -28,12 +32,25 @@ const CoachForm = () => {
       // Include user ID in the application data
       const applicationData = {
         ...data,
-        userId: user._id || user.id,
-        userEmail: user.email,
-        userName: user.name,
+        // userId: user?._id || user.id,
+        email: user?.email,
+        name: user?.name,
+        phone: user?.phone,
+        sports: Array.isArray(data?.sports) ? data?.sports : [data?.sports],
+        experienceYears: data?.experienceYears,
+        pricing: {
+          ...data.pricing,
+          amount: Number(data?.pricing?.amount), // ensure number
+          currency: "INR",
+        },
+        location: data?.location,
+        studentsTrain: data?.studentsTrain
       };
 
+      console.log("application Data: ", applicationData)
+
       // const response = await submitCoachApplication(applicationData);
+      await dispatch(createCoach(applicationData))
       reset();
       setShowSuccessModal(true);
     } catch (error) {
@@ -98,29 +115,22 @@ const CoachForm = () => {
                   </p>
 
                   <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                    {/* Name */}
+                    {/* Full Name */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Full Name *
                       </label>
                       <input
-                        defaultValue={user?.name || ''}
+                        defaultValue={user?.name || ""}
                         type="text"
                         {...register("name", {
                           required: "Name is required",
-                          minLength: {
-                            value: 2,
-                            message: "Name must be at least 2 characters",
-                          },
+                          minLength: { value: 2, message: "At least 2 characters required" },
                         })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00df9a] focus:border-transparent transition-all duration-200"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00df9a]"
                         placeholder="Enter your full name"
                       />
-                      {errors.name && (
-                        <p className="mt-1 text-sm text-red-600">
-                          {errors.name.message}
-                        </p>
-                      )}
+                      {errors.name && <p className="text-red-600">{errors.name.message}</p>}
                     </div>
 
                     {/* Email */}
@@ -129,7 +139,7 @@ const CoachForm = () => {
                         Email Address *
                       </label>
                       <input
-                        defaultValue={user?.email || ''}
+                        defaultValue={user?.email || ""}
                         type="email"
                         {...register("email", {
                           required: "Email is required",
@@ -138,14 +148,10 @@ const CoachForm = () => {
                             message: "Invalid email address",
                           },
                         })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00df9a] focus:border-transparent transition-all duration-200"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00df9a]"
                         placeholder="Enter your email"
                       />
-                      {errors.email && (
-                        <p className="mt-1 text-sm text-red-600">
-                          {errors.email.message}
-                        </p>
-                      )}
+                      {errors.email && <p className="text-red-600">{errors.email.message}</p>}
                     </div>
 
                     {/* Phone */}
@@ -154,38 +160,29 @@ const CoachForm = () => {
                         Phone Number *
                       </label>
                       <input
-                        defaultValue={user?.phone || ''}
+                        defaultValue={user?.phone || ""}
                         type="tel"
                         {...register("phone", {
                           required: "Phone number is required",
-                          pattern: {
-                            value: /^[0-9]{10}$/,
-                            message: "Phone number must be exactly 10 digits",
-                          },
+                          pattern: { value: /^[0-9]{10}$/, message: "Must be 10 digits" },
                         })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00df9a] focus:border-transparent transition-all duration-200"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00df9a]"
                         placeholder="Enter 10-digit phone number"
                         maxLength="10"
                       />
-                      {errors.phone && (
-                        <p className="mt-1 text-sm text-red-600">
-                          {errors.phone.message}
-                        </p>
-                      )}
+                      {errors.phone && <p className="text-red-600">{errors.phone.message}</p>}
                     </div>
 
-                    {/* Expertise */}
+                    {/* Sports */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Expertise/Sport *
+                        Sports *
                       </label>
                       <select
-                        {...register("expertise", {
-                          required: "Please select your expertise",
-                        })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00df9a] focus:border-transparent transition-all duration-200"
+                        {...register("sports", { required: "Please select your sport" })}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00df9a]"
                       >
-                        <option value="">Select your expertise</option>
+                        <option value="">Select your sports</option>
                         <option value="football">Football</option>
                         <option value="cricket">Cricket</option>
                         <option value="basketball">Basketball</option>
@@ -196,102 +193,165 @@ const CoachForm = () => {
                         <option value="swimming">Swimming</option>
                         <option value="other">Other</option>
                       </select>
-                      {errors.expertise && (
-                        <p className="mt-1 text-sm text-red-600">
-                          {errors.expertise.message}
-                        </p>
-                      )}
+                      {errors.sports && <p className="text-red-600">{errors.sports.message}</p>}
                     </div>
 
-                    {/* Years of Experience */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Years of Experience *
-                      </label>
-                      <input
-                        type="number"
-                        {...register("experience", {
-                          required: "Experience is required",
-                          min: {
-                            value: 1,
-                            message: "Experience must be at least 1 year",
-                          },
-                          max: {
-                            value: 50,
-                            message: "Experience cannot exceed 50 years",
-                          },
-                        })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00df9a] focus:border-transparent transition-all duration-200"
-                        placeholder="Enter years of experience"
-                        min="1"
-                        max="50"
-                      />
-                      {errors.experience && (
-                        <p className="mt-1 text-sm text-red-600">
-                          {errors.experience.message}
-                        </p>
-                      )}
+                    {/* Years of Experience & Students Trained */}
+                    <div className="flex gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Years of Experience *
+                        </label>
+                        <input
+                          type="number"
+                          {...register("experienceYears", {
+                            required: "Experience is required",
+                            min: { value: 1, message: "At least 1 year required" },
+                            max: { value: 50, message: "Max 50 years allowed" },
+                          })}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00df9a]"
+                          placeholder="Years of experience"
+                        />
+                        {errors.experienceYears && (
+                          <p className="text-red-600">{errors.experienceYears.message}</p>
+                        )}
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Students Trained *
+                        </label>
+                        <input
+                          type="number"
+                          {...register("studentsTrain", {
+                            required: "Students trained is required",
+                            min: { value: 0, message: "Cannot be negative" },
+                          })}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00df9a]"
+                          placeholder="Number of students"
+                        />
+                        {errors.studentsTrain && (
+                          <p className="text-red-600">{errors.studentsTrain.message}</p>
+                        )}
+                      </div>
                     </div>
 
-                    {/* Students Trained */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Number of Students Trained *
-                      </label>
-                      <input
-                        type="number"
-                        {...register("studentsTrained", {
-                          required: "Number of students trained is required",
-                          min: { value: 0, message: "Cannot be negative" },
-                          max: {
-                            value: 10000,
-                            message: "Number seems too high",
-                          },
-                        })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00df9a] focus:border-transparent transition-all duration-200"
-                        placeholder="Enter number of students trained"
-                        min="0"
-                      />
-                      {errors.studentsTrained && (
-                        <p className="mt-1 text-sm text-red-600">
-                          {errors.studentsTrained.message}
-                        </p>
-                      )}
+                    {/* Pricing */}
+                    <div className="flex gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Pricing Type *
+                        </label>
+                        <select
+                          {...register("pricing.type", { required: "Select pricing type" })}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00df9a]"
+                        >
+                          <option value="per_session">Per Session</option>
+                          <option value="hourly">Hourly</option>
+                        </select>
+                        {errors?.pricing?.type && (
+                          <p className="text-red-600">{errors.pricing.type.message}</p>
+                        )}
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Pricing Amount (INR) *
+                        </label>
+                        <input
+                          type="number"
+                          {...register("pricing.amount", {
+                            required: "Amount is required",
+                            min: { value: 1, message: "Must be greater than 0" },
+                          })}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00df9a]"
+                          placeholder="Enter amount"
+                        />
+                        {errors?.pricing?.amount && (
+                          <p className="text-red-600">{errors.pricing.amount.message}</p>
+                        )}
+                      </div>
                     </div>
 
-                    {/* Address */}
+                    {/* Location */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Address *
                       </label>
                       <textarea
-                        {...register("address", {
+                        {...register("location.address", {
                           required: "Address is required",
-                          minLength: {
-                            value: 10,
-                            message: "Address must be at least 10 characters",
-                          },
+                          minLength: { value: 10, message: "At least 10 characters" },
                         })}
                         rows="3"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00df9a] focus:border-transparent transition-all duration-200 resize-none"
-                        placeholder="Enter your complete address"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00df9a]"
+                        placeholder="Enter address"
                       />
-                      {errors.address && (
-                        <p className="mt-1 text-sm text-red-600">
-                          {errors.address.message}
-                        </p>
+                      {errors.location?.address && (
+                        <p className="text-red-600">{errors.location.address.message}</p>
                       )}
                     </div>
 
-                    {/* Submit Button */}
+                    <div className="flex gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          City *
+                        </label>
+                        <input
+                          type="text"
+                          {...register("location.city", { required: "City is required" })}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00df9a]"
+                          placeholder="Enter city"
+                        />
+                        {errors.location?.city && (
+                          <p className="text-red-600">{errors.location.city.message}</p>
+                        )}
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          State *
+                        </label>
+                        <input
+                          type="text"
+                          {...register("location.state", { required: "State is required" })}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00df9a]"
+                          placeholder="Enter state"
+                        />
+                        {errors.location?.state && (
+                          <p className="text-red-600">{errors.location.state.message}</p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Pincode *
+                      </label>
+                      <input
+                        type="text"
+                        {...register("location.pincode", {
+                          required: "Pincode is required",
+                          pattern: { value: /^[0-9]{6}$/, message: "Must be 6 digits" },
+                        })}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00df9a]"
+                        placeholder="Enter pincode"
+                      />
+                      {errors.location?.pincode && (
+                        <p className="text-red-600">{errors.location.pincode.message}</p>
+                      )}
+                    </div>
+
+                    {/* Submit */}
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full bg-[#00df9a] text-black font-semibold py-3 px-6 rounded-lg hover:bg-[#00b87a] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full bg-[#00df9a] text-black font-semibold py-3 px-6 rounded-lg hover:bg-[#00b87a] transition"
                     >
                       {isSubmitting ? "Submitting..." : "Submit Application"}
                     </button>
                   </form>
+
                 </div>
               </div>
             </div>

@@ -1,12 +1,16 @@
 const mongoose = require("mongoose");
 
 const coachSchema = new mongoose.Schema({
-  // owner: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  owner: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   name: { type: String, required: true },
-  sport: { type: String, index: true, required: true },
+  sports: { type: [String], required: true },
   bio: { type: String },
   experienceYears: { type: Number, default: 0, required: true },
-  certifications: [{ type: String }],
+  studentsTrain: { type: Number, default: 0, required: true },
+  certifications: {
+    image: [String],
+    description: { type: String }
+  },
   pricing: {
     type: { type: String, enum: ["hourly", "per_session"], default: "per_session" },
     amount: { type: Number, required: true },
@@ -20,10 +24,7 @@ const coachSchema = new mongoose.Schema({
     // coordinates: { type: { type: String, enum: ["Point"], default: "Point" },
     //                coordinates: { type: [Number], index: "2dsphere" } }
   },
-  media: {
-    avatar: String,
-    gallery: [String]
-  },
+  images: { type: [String], default: [] },
   rating: { type: Number, default: 0 },
   numReviews: { type: Number, default: 0 },
   status: { type: String, enum: ["pending", "approved", "rejected"], default: "pending", index: true },

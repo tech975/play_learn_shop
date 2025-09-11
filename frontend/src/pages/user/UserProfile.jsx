@@ -497,67 +497,13 @@ const UserProfile = () => {
             )}
 
             {activeTab === 1 && (
-              <Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                  <Typography variant="h6" fontWeight="bold">
-                    Certifications & Achievements
-                  </Typography>
-                  <Button
-                    variant="contained"
-                    startIcon={<UploadIcon />}
-                    onClick={() => setCertificationModalOpen(true)}
-                    sx={{
-                      bgcolor: '#22c55e',
-                      '&:hover': { bgcolor: '#16a34a' },
-                      textTransform: 'none',
-                      fontWeight: 'bold'
-                    }}
-                  >
-                    Upload Certification
-                  </Button>
-                </Box>
-                
-                <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-                  Upload your sports certifications, coaching licenses, and other achievements to showcase your expertise. 
-                  All certificates are securely stored in our cloud storage.
-                </Typography>
-
-                {userStats.achievements && userStats.achievements.length > 0 ? (
-                  <Grid container spacing={3}>
-                    {userStats.achievements.map((achievement, index) => (
-                      <Grid item xs={12} md={6} key={index}>
-                        <Box sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 2,
-                          p: 3,
-                          bgcolor: 'grey.50',
-                          borderRadius: 2
-                        }}>
-                          <Box sx={{ fontSize: '2rem' }}>{achievement.icon}</Box>
-                          <Box>
-                            <Typography variant="body1" fontWeight="medium">
-                              {achievement.title}
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                              {achievement.date}
-                            </Typography>
-                          </Box>
-                        </Box>
-                      </Grid>
-                    ))}
-                  </Grid>
-                ) : (
-                  <Box sx={{ textAlign: 'center', py: 6 }}>
-                    <TrophyIcon sx={{ fontSize: 64, color: 'grey.300', mb: 2 }} />
-                    <Typography variant="body1" color="text.secondary" sx={{ mb: 1 }}>
-                      No certifications uploaded yet
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Upload your first certification to showcase your expertise
-                    </Typography>
-                  </Box>
-                )}
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                {/* Certification Upload Modal */}
+                <CertificationUploadModal
+                  open={certificationModalOpen}
+                  onClose={() => setCertificationModalOpen(false)}
+                  userId={user?._id}
+                />
               </Box>
             )}
 
@@ -581,9 +527,9 @@ const UserProfile = () => {
                     View All Transactions
                   </Button>
                 </Box>
-                
+
                 <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-                  View your complete transaction history including bookings, coaching sessions, and shop purchases. 
+                  View your complete transaction history including bookings, coaching sessions, and shop purchases.
                   Filter by type and date range to find specific transactions.
                 </Typography>
 
@@ -812,13 +758,6 @@ const UserProfile = () => {
       <TransactionHistoryModal
         open={transactionModalOpen}
         onClose={() => setTransactionModalOpen(false)}
-        userId={user?._id}
-      />
-
-      {/* Certification Upload Modal */}
-      <CertificationUploadModal
-        open={certificationModalOpen}
-        onClose={() => setCertificationModalOpen(false)}
         userId={user?._id}
       />
 

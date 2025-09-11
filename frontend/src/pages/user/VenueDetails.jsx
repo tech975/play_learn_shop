@@ -63,13 +63,11 @@ const VenueDetails = () => {
     if (!venue) return null;
 
     return (
-        <div className="p-5 rounded-2xl min-h-screen bg-gray-100">
+        <div className="p-5 rounded-2xl h-screen">
             <HeroSlider />
+            <div className="w-full h-full grid grid-cols-1 md:grid-cols-8 md:grid-rows-7 gap-4">
 
-            <div className="w-full grid grid-cols-1 gap-4 md:grid-cols-8 md:grid-rows-7">
-
-                {/* Owner Sidebar */}
-                <div className="w-full bg-white rounded-xl p-4 shadow-md overflow-y-auto md:col-span-2 md:row-span-7">
+                <div className="w-full h-[100%] col-span-1 row-span-1 md:col-span-2 md:row-span-7 bg-white rounded-xl p-4 shadow-md overflow-y-auto">
                     <div className="flex flex-col items-center mb-4">
                         <img
                             src={venue?.owner?.profilePic}
@@ -82,60 +80,70 @@ const VenueDetails = () => {
                     <h3 className="text-center font-semibold text-lg mb-1">{venue?.owner?.name}</h3>
                     <div className="text-center text-yellow-400 mb-2">★ --</div>
 
+                    {/* Additional Owner Details */}
                     <div className="text-center text-gray-600 text-sm mb-2">
                         <p>Email: <span className="text-gray-800">{venue?.owner?.email}</span></p>
                         <p>Phone: <span className="text-gray-800">{venue?.owner?.phone}</span></p>
+                        {/* <p>Expertise: <span className="text-gray-800">Sports & Fitness</span></p> */}
                     </div>
 
+                    {/* Location */}
                     <div className="text-center text-gray-500 text-xs mb-5">
                         Bengaluru, Bengaluru, Karnataka, India
                     </div>
                     <hr className="m-5" />
-
                     <div className="mb-4">
                         <iframe
                             src="https://www.google.com/maps?q=New+Bamboo+Bazaar+Bengaluru&output=embed"
                             className="w-full h-52 rounded-md border"
                             loading="lazy"
                         ></iframe>
+                        {/* <GoogleMap /> */}
                     </div>
 
+                    {/* Services */}
+                    {/* <div className="text-center text-xs text-gray-600 mb-2">Online Classes</div> */}
                     <div className="text-center text-xs text-gray-600 mb-4">Adults & Kids</div>
 
+                    {/* Categories */}
                     <div className="text-center text-sm font-medium">Sports</div>
                     <div className="text-center text-sm text-gray-600">Cricket</div>
                 </div>
 
-                {/* Venue Images */}
-                <div className="w-full bg-white rounded-xl overflow-hidden md:col-span-4 md:row-span-3">
-                    {venue && venue?.images.length > 0 ? (
-                        <Swiper
-                            cssMode={true}
-                            navigation={true}
-                            pagination={true}
-                            mousewheel={true}
-                            keyboard={true}
-                            modules={[Navigation, Pagination, Mousewheel, Keyboard]}
-                            className="mySwiper justify-center items-center w-full h-full"
-                        >
-                            {venue?.images?.map((slide, index) => (
-                                <SwiperSlide key={index}>
-                                    <img
-                                        src={typeof slide === "string" ? slide : slide.img}
-                                        alt={venue.groundName}
-                                    />
-                                </SwiperSlide>
-                            ))}
-                        </Swiper>
-                    ) : (
-                        <div className="w-full h-56 bg-gray-200 flex items-center justify-center text-gray-500">
-                            No Image
-                        </div>
-                    )}
-                </div>
 
-                {/* Right Sidebar: Details Cards */}
-                <div className="w-full bg-gray-50 rounded-xl p-4 overflow-y-auto shadow-md space-y-4 md:col-span-2 md:row-span-7">
+                <div className="w-full h-[100%] col-span-1 row-span-1 md:col-span-4 md:row-span-3 col-start-3 bg-white rounded-xl overflow-hidden">
+                    {
+                        venue && venue?.images.length > 0 ? (
+                            <Swiper
+                                cssMode={true}
+                                navigation={true}
+                                pagination={true}
+                                mousewheel={true}
+                                keyboard={true}
+                                modules={[Navigation, Pagination, Mousewheel, Keyboard]}
+                                className="mySwiper justify-center items-center w-full h-full"
+                            >
+                                {venue?.images?.map((slide, index) => (
+                                    <SwiperSlide key={index}>
+                                        <img
+                                            src={typeof slide === "string" ? slide : slide.img}
+                                            alt={venue.groundName}
+                                        // className="w-full object-cover"
+                                        />
+                                    </SwiperSlide>
+                                ))}
+                            </Swiper>
+                        ) : (
+                            <div className="w-full h-[100%] bg-gray-200 flex items-center justify-center text-gray-500">
+                                No Image
+                            </div>
+                        )
+                    }
+                </div>
+                
+                {/* <div className="col-span-2 row-span-3 col-start-3 row-start-5 bg-white rounded-xl">7</div> */}
+                <div className="col-span-1 row-span-1 md:col-span-2 md:row-span-7 col-start-7 row-start-1 bg-gray-50 rounded-xl p-4 overflow-y-auto shadow-md space-y-4">
+                    {/* About the Venue */}
                     <Card variant="outlined" sx={{ borderRadius: 2, p: 2 }}>
                         <CardContent>
                             <Typography variant="h6" fontWeight="bold" gutterBottom>
@@ -147,6 +155,7 @@ const VenueDetails = () => {
                         </CardContent>
                     </Card>
 
+                    {/* Amenities */}
                     <Card variant="outlined" sx={{ borderRadius: 2, p: 2 }}>
                         <CardContent>
                             <Typography variant="subtitle1" fontWeight="bold" mb={1}>
@@ -160,6 +169,7 @@ const VenueDetails = () => {
                         </CardContent>
                     </Card>
 
+                    {/* Facilities */}
                     <Card variant="outlined" sx={{ borderRadius: 2, p: 2 }}>
                         <CardContent>
                             <Typography variant="subtitle1" fontWeight="bold" mb={1}>
@@ -179,6 +189,7 @@ const VenueDetails = () => {
                         </CardContent>
                     </Card>
 
+                    {/* Venue Rules */}
                     <Card variant="outlined" sx={{ borderRadius: 2, p: 2 }}>
                         <CardContent>
                             <Typography variant="subtitle1" fontWeight="bold" mb={1}>
@@ -203,6 +214,7 @@ const VenueDetails = () => {
                         </CardContent>
                     </Card>
 
+                    {/* Opening Hours */}
                     <Card variant="outlined" sx={{ borderRadius: 2, p: 2 }}>
                         <CardContent>
                             <Typography variant="subtitle1" fontWeight="bold" mb={1}>
@@ -216,6 +228,7 @@ const VenueDetails = () => {
                         </CardContent>
                     </Card>
 
+                    {/* Events */}
                     <Card variant="outlined" sx={{ borderRadius: 2, p: 2 }}>
                         <CardContent>
                             <Typography variant="subtitle1" fontWeight="bold" mb={1}>
@@ -229,6 +242,7 @@ const VenueDetails = () => {
                         </CardContent>
                     </Card>
 
+                    {/* Extra Info */}
                     <Card variant="outlined" sx={{ borderRadius: 2, p: 2 }}>
                         <CardContent>
                             <Typography variant="subtitle1" fontWeight="bold" mb={1}>
@@ -248,11 +262,11 @@ const VenueDetails = () => {
                     </Card>
                 </div>
 
-                {/* Related Venues */}
-                <div className="w-full flex gap-3 p-2 rounded-2xl overflow-x-auto md:col-span-4 md:row-span-3">
+                <div className="col-span-1 row-span-1 md:col-span-4 md:row-span-3 col-start-3 row-start-5 overflow-x-auto flex gap-3 p-2 rounded-2xl justify-center">
                     {venues && venues.slice(0, 3).map((venue) => (
                         <div
                             key={venue._id}
+                            // onClick={() => navigate(`./${venue._id}`)}
                             className="bg-white shadow-md rounded-2xl overflow-hidden hover:shadow-lg transition cursor-pointer min-w-[297px]"
                         >
                             {venue.images && venue.images.length > 0 ? (
@@ -266,19 +280,24 @@ const VenueDetails = () => {
                                     No Image
                                 </div>
                             )}
+
+                            {/* Info Section */}
                             <div className="p-4">
                                 <h2 className="text-lg font-bold text-gray-800 mb-1">{venue.groundName}</h2>
+
                                 <div className="flex items-center mb-2">
                                     <span className="text-sm">Price: </span>
                                     <p className="text-green-600 font-semibold text-sm ml-1">
                                         ₹ {venue.price} / {venue.priceType}
                                     </p>
                                 </div>
+
                                 {venue.rating && (
                                     <div className="flex items-center mb-2">
                                         <span className="text-yellow-500 font-semibold text-sm">⭐ {venue.rating.toFixed(1)}</span>
                                     </div>
                                 )}
+
                                 <div className="text-gray-600 text-sm">
                                     Location: {venue.groundAddress || "N/A"}
                                 </div>
@@ -287,8 +306,8 @@ const VenueDetails = () => {
                     ))}
                 </div>
 
-                {/* Availability */}
-                <div className="w-full bg-gray-50 rounded-xl p-4 overflow-y-auto shadow-md space-y-4 md:col-span-4 md:col-start-3 md:row-start-4">
+
+                <div className="col-span-1 row-span-1 md:col-span-4 md:col-start-3 row-start-4 bg-gray-50 rounded-xl p-4 overflow-y-auto shadow-md space-y-4">
                     <div>
                         <Typography variant="h6" fontWeight="bold" gutterBottom>
                             Available on
@@ -321,7 +340,6 @@ const VenueDetails = () => {
                         </div>
                     </div>
                 </div>
-
             </div>
 
             <BookingSidebar
@@ -332,10 +350,10 @@ const VenueDetails = () => {
                 bookings={bookings}
                 selectedDate={selectedDate}
                 setSelectedDate={setSelectedDate}
+            // slots={venue.slots}
             />
         </div>
     );
-
 };
 
 export default VenueDetails;

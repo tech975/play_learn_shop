@@ -1,13 +1,19 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from '../../api/axios';
+import { showMessage } from '../../utils/uiSlice';
 
 export const fetchCoaches = createAsyncThunk(
   "coaches/fetchCoaches",
   async (filters, { rejectWithValue }) => {
-      try {
-        const response = await axios.get(`/api/coaches`);
-        
-        return response.data;
+    try {
+      const query = new URLSearchParams();
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value && value !== "") query.append(key, value);
+      });
+
+      const response = await axios.get(`/api/coaches?${query.toString()}`);
+      console.log('response: ', response.data)
+      return response.data;
     } catch (error) {
       return rejectWithValue(
         error?.response?.data?.message || "Failed to fetch coaches"
@@ -45,6 +51,25 @@ export const getCoachSlots = createAsyncThunk(
   }
 );
 
+export const createCoach = createAsyncThunk(
+  "coaches/createCoach",
+  async (formData, { rejectWithValue, dispatch }) => {
+    try {
+      const response = await axios.post('/api/coaches/create', formData)
+      dispatch(showMessage({ message: `Request submitted successfully`, type: "success" }));
+      return response.data
+    } catch (error) {
+      dispatch(
+        showMessage({
+          message: error.response?.data?.message || "Something went wrong",
+          type: "error",
+        })
+      );
+      return rejectWithValue(error.response?.data);
+    }
+  }
+)
+
 export const bookCoachSlot = createAsyncThunk(
   "coaches/bookCoachSlot",
   async ({ slotIds }, { rejectWithValue }) => {
@@ -58,79 +83,91 @@ export const bookCoachSlot = createAsyncThunk(
 );
 
 const coachSlice = createSlice({
-    name: 'coaches',
-    initialState: {
-        coaches: [],
-        slots: [],
-        coachDetails: null,
-        bookingConfirmation: null,
-        loading: false,
-        slotsLoading: false,
-        error: null
-    },
-    reducers: {
-        // Define your reducers here
-    },
-    extraReducers: (builder) => {
-        builder
-            .addCase(fetchCoaches.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(fetchCoaches.fulfilled, (state, action) => {
-                state.loading = false;
-                state.coaches = action.payload;
-            })
-            .addCase(fetchCoaches.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload;
-            })
-            .addCase(getCoachDetails.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(getCoachDetails.fulfilled, (state, action) => {
-                state.loading = false;
-                state.coachDetails = action.payload;
-            })
-            .addCase(getCoachDetails.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload;
-            })
-            .addCase(getCoachSlots.pending, (state) => {
-                state.slotsLoading = true;
-                state.error = null;
-            })
-            .addCase(getCoachSlots.fulfilled, (state, action) => {
-              state.slotsLoading = false;
-              // Only update if changed
-              if (JSON.stringify(state.slots) !== JSON.stringify(action.payload)) {
-                state.slots = action.payload;
-              }
-            })
-            .addCase(getCoachSlots.rejected, (state, action) => {
-                state.slotsLoading = false;
-                state.error = action.payload;
-            })
-            .addCase(bookCoachSlot.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(bookCoachSlot.fulfilled, (state, action) => {
-              state.loading = false;
-              state.bookingConfirmation = action.payload.bookings; // array of bookings
+  name: 'coaches',
+  initialState: {
+    coaches: [],
+    slots: [],
+    coachDetails: null,
+    bookingConfirmation: null,
+    loading: false,
+    slotsLoading: false,
+    error: null
+  },
+  reducers: {
+    // Define your reducers here
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchCoaches.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchCoaches.fulfilled, (state, action) => {
+        state.loading = false;
+        state.coaches = action.payload;
+      })
+      .addCase(fetchCoaches.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(getCoachDetails.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getCoachDetails.fulfilled, (state, action) => {
+        state.loading = false;
+        state.coachDetails = action.payload;
+      })
+      .addCase(getCoachDetails.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(getCoachSlots.pending, (state) => {
+        state.slotsLoading = true;
+        state.error = null;
+      })
+      .addCase(getCoachSlots.fulfilled, (state, action) => {
+        state.slotsLoading = false;
+        // Only update if changed
+        if (JSON.stringify(state.slots) !== JSON.stringify(action.payload)) {
+          state.slots = action.payload;
+        }
+      })
+      .addCase(getCoachSlots.rejected, (state, action) => {
+        state.slotsLoading = false;
+        state.error = action.payload;
+      })
+      .addCase(bookCoachSlot.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(bookCoachSlot.fulfilled, (state, action) => {
+        state.loading = false;
+        state.bookingConfirmation = action.payload.bookings; // array of bookings
 
-              // Mark booked slots as unavailable
-              const bookedSlotIds = action.payload.bookings.map(b => b.slot);
-              state.slots = state.slots.map(slot =>
-                bookedSlotIds.includes(slot._id) ? { ...slot, status: "booked" } : slot
-              );
-            })
-            .addCase(bookCoachSlot.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload;
-            });
-    }
+        // Mark booked slots as unavailable
+        const bookedSlotIds = action.payload.bookings.map(b => b.slot);
+        state.slots = state.slots.map(slot =>
+          bookedSlotIds.includes(slot._id) ? { ...slot, status: "booked" } : slot
+        );
+      })
+      .addCase(bookCoachSlot.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(createCoach.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createCoach.fulfilled, (state, action) => {
+        state.loading = false;
+        state.coaches = action.payload;
+      })
+      .addCase(createCoach.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+  }
 });
 
 // export const { } = coachSlice.actions;

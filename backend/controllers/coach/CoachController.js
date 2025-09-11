@@ -20,35 +20,40 @@ exports.getCoaches = async (req, res) => {
  * @access Private (Coach user)
  */
 exports.createCoach = async (req, res) => {
+  try {
+    const { name, email, phone, sports, experienceYears, studentsTrain, pricing, location } = req.body;
 
-    try {
-        const { name, sport, experienceYears, pricing, location, bio, certifications } = req.body;
-
-        if (!name || !sport || !experienceYears || !pricing?.amount || !location) {
-            return res.status(400).json({ message: "All required fields must be filled" });
-        }
-
-        if (!pricing.amount) {
-            return res.status(400).json({ message: "Pricing amount is required" });
-        }
-
-        const coach = await Coach.create({
-            name,
-            sport,
-            experienceYears,
-            bio,
-            certifications,
-            pricing, // { type, amount, currency }
-            location, // { address, city, state, pincode, coordinates }
-            owner: req.user._id,
-            status: "pending"
-        });
-
-        res.status(201).json(coach);
-    } catch (error) {
-        console.log("error, while creating a coach: ", error)
-        res.status(500).json({ message: "Error creating coach" });
+    if (!name || !email || !phone || !sports || !experienceYears || !studentsTrain || !pricing?.amount || !location?.city) {
+      return res.status(400).json({ message: "All required fields must be filled" });
     }
+
+    if (experienceYears < 0) {
+      return res.status(400).json({ message: "Experience years cannot be negative" });
+    }
+    if (studentsTrain < 0) {
+      return res.status(400).json({ message: "Students trained cannot be negative" });
+    }
+    if (pricing.amount <= 0) {
+      return res.status(400).json({ message: "Pricing amount must be greater than 0" });
+    }
+
+    const existing = await Coach.findOne({ owner: req.user._id, status: { $in: ["pending", "approved"] } });
+    if (existing) {
+      return res.status(400).json({ message: `You already have a ${existing?.status} request` });
+    }
+
+    const coach = new Coach({
+      ...req.body,
+      owner: req.user._id,
+      status: "pending"
+    });
+    await coach.save();
+
+    res.status(201).json({ message: "Request submitted successfully", coach });
+  } catch (error) {
+    console.error("Error creating coach: ", error);
+    res.status(500).json({ message: "Error creating coach" });
+  }
 };
 
 /**

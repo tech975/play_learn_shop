@@ -13,6 +13,11 @@ const userSchema = new mongoose.Schema({
   preferredSports: { type: [String], default: [] },
   mybookings: { type: mongoose.Schema.Types.ObjectId, ref: 'Booking' },
   mysessions: { type: mongoose.Schema.Types.ObjectId, ref: 'Coach' },
+  achievements: [{
+    image: { type: String, required: true },
+    description: { type: String, required: true },
+    date: { type: Date, default: Date.now }
+  }],
   wallet: { type: Number, default: 0 }
 }, { timestamps: true });
 

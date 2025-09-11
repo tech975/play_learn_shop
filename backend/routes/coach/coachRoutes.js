@@ -4,7 +4,7 @@ const auth = require('../../middleware/auth');
 const coachController = require('../../controllers/coach/CoachController');
 
 router.get('/', coachController.getCoaches);
-router.post('/create', auth, auth.authorize('admin', 'coach'), coachController.createCoach);
+router.post('/create', auth, coachController.createCoach);
 router.get('/:id', auth, coachController.getCoachById);
 router.put('/:id', auth, auth.authorize('admin', 'coach'), coachController.updateCoach);
 

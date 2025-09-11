@@ -47,9 +47,8 @@ const CoachList = () => {
             <div
               key={sport.id}
               onClick={() => setFilters({ ...filters, sport: sport.name })}
-              className={`cursor-pointer ${
-                filters.sport === sport.name ? "ring-4 ring-[#00df9a]" : ""
-              }`}
+              className={`cursor-pointer ${filters.sport === sport.name ? "ring-4 ring-[#00df9a]" : ""
+                }`}
             >
               <SportsCard {...sport} />
             </div>
@@ -82,6 +81,19 @@ const CoachList = () => {
               onClick={() => navigate(`./${coach._id}`)}
               className="bg-white shadow-md rounded-2xl p-4 hover:shadow-lg transition"
             >
+              {/* Image */}
+              {coach.media?.gallery?.length > 0 ? (
+                <img
+                  src={coach.media.gallery[0]}
+                  alt={coach.name}
+                  className="w-full h-40 object-cover rounded-lg"
+                />
+              ) : (
+                <div className="w-full h-40 bg-gray-200 rounded-lg flex items-center justify-center text-gray-500">
+                  No Image
+                </div>
+              )}
+
               {/* Name + Sport + Rating */}
               <div className="flex justify-between items-center mb-2">
                 <h2 className="text-lg font-bold text-gray-800">{coach.name}</h2>
@@ -99,19 +111,6 @@ const CoachList = () => {
               <p className="text-gray-600 text-sm mb-3">
                 Location: {coach.location?.address}, {coach.location?.city}
               </p>
-
-              {/* Image */}
-              {coach.media?.gallery?.length > 0 ? (
-                <img
-                  src={coach.media.gallery[0]}
-                  alt={coach.name}
-                  className="w-full h-40 object-cover rounded-lg"
-                />
-              ) : (
-                <div className="w-full h-40 bg-gray-200 rounded-lg flex items-center justify-center text-gray-500">
-                  No Image
-                </div>
-              )}
 
               {/* Price */}
               <p className="text-gray-800 font-semibold mt-2">

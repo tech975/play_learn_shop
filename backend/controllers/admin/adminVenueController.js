@@ -24,8 +24,6 @@ exports.updateRequestStatus = async (req, res) => {
     const request = await Venue.findById(id).populate("owner");
     if (!request) return res.status(404).json({ message: "Venue request not found" });
 
-    console.log("request", request);
-
     request.status = status;
     await request.save();
 
