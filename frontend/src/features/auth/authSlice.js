@@ -1,6 +1,7 @@
 
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from '../../api/axios';
+import { showMessage } from '../../utils/uiSlice';
 
 // Register thunk
 export const registerUser = createAsyncThunk(
@@ -84,6 +85,41 @@ export const uploadProfilePic = createAsyncThunk(
   }
 );
 
+export const addAchievement = createAsyncThunk(
+  "auth/addAcheivement",
+  async ({ image, description, token }, { dispatch, rejectWithValue }) => {
+
+    try {
+      const formData = new FormData();
+      formData.append("image", image);
+      formData.append("description", description);
+
+      const response = await axios.post("/api/auth/achievements", formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      })
+
+      dispatch(showMessage({ message: "Achievement Uploaded Successfully", type: 'success' }));
+
+      console.log("response from slice : ", response.data.achievements)
+
+      return response.data.achievements;
+    } catch (error) {
+      dispatch(
+        showMessage({
+          message: error.response?.data?.message || "Achievement upload failed",
+          type: "error",
+        })
+      );
+      return rejectWithValue(
+        error.response?.data?.message || "Achievement upload failed"
+      )
+    }
+  }
+)
+
 const initialState = {
   user: localStorage.getItem("user")
     ? JSON.parse(localStorage.getItem("user"))
@@ -160,8 +196,8 @@ const authSlice = createSlice({
       })
       .addCase(uploadProfilePic.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = { ...state.user, profilePic: action.payload.profilePic };
-        localStorage.setItem('user', JSON.stringify(state.user));
+        state.user.profilePic = action.payload;
+        localStorage.setItem('user', JSON.stringify(action.payload));
       })
       .addCase(uploadProfilePic.rejected, (state, action) => {
         state.loading = false;
@@ -176,6 +212,19 @@ const authSlice = createSlice({
         state.usersData = action.payload;
       })
       .addCase(fetchUsers.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(addAchievement.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(addAchievement.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user.achievements = action.payload;  // poora user replace hoga
+        localStorage.setItem("user", JSON.stringify(action.payload)); // localStorage bhi update karo
+      })
+      .addCase(addAchievement.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })

@@ -1,9 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
+import { useDispatch, useSelector } from 'react-redux';
+import { addAchievement } from "../features/auth/authSlice";
+import { useNavigate } from "react-router-dom";
 
 export default function CertificationUploadModal() {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const fileInputRef = useRef(null);
   const [description, setDescription] = useState("");
   const [image, setImage] = useState(null);
-  const [achievements, setAchievements] = useState([]);
+  const achievements = useSelector((state) => state.auth.user.achievements)
+
+  console.log("achievements: ", achievements)
 
   const handleImageChange = (e) => {
     setImage(e.target.files[0]);
@@ -15,52 +23,60 @@ export default function CertificationUploadModal() {
       return;
     }
 
-    // Normally, yahan API call karni hogi backend pe
-    const newAchievement = {
-      id: Date.now(),
-      description,
-      image: URL.createObjectURL(image),
-    };
+    dispatch(addAchievement({
+      image: image,
+      description
+    }))
 
-    // naya achievement list ke TOP pe add karo
-    setAchievements([...achievements, newAchievement]);
+    navigate('/user/profile')
 
-    // reset inputs
     setDescription("");
     setImage(null);
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   return (
-    <div className="w-full flex flex-col items-center bg-gray-100 p-6">
+    <div className="w-full flex flex-col items-start bg-gray-100 p-6">
       {/* Upload Card */}
 
       {/* Achievements List */}
-      <div className="w-full max-w-md space-y-4 mb-2">
-        {achievements.map((ach) => (
+      <div className="w-full space-y-4 mb-2">
+        {achievements?.map((ach) => (
           <div
             key={ach.id}
-            className="bg-white shadow-md rounded-2xl p-4 flex flex-col items-center"
+            className="w-full flex space-x-4"
           >
-            <img
-              src={ach.image}
-              alt="achievement"
-              className="w-full h-48 object-cover rounded-xl mb-3"
-            />
-            <p className="text-gray-700">{ach.description}</p>
+            {/* Image Card */}
+            <div className="bg-white shadow-md rounded-2xl p-4 flex justify-center items-center w-1/3">
+              <img
+                src={ach.image}
+                alt="achievement"
+                className="h-32 w-32 object-contain rounded-xl"
+              />
+            </div>
+
+            {/* Description Card */}
+            <div className="bg-white shadow-md rounded-2xl p-4 flex items-center w-2/3">
+              <p className="text-gray-700 text-base">{ach.description}</p>
+            </div>
           </div>
         ))}
       </div>
 
-      <div className="w-full max-w-md bg-white shadow-md rounded-2xl p-6 mb-6">
+      <div className="w-full bg-white shadow-md rounded-2xl p-6 mb-6">
         {/* <h2 className="text-xl font-semibold text-center mb-4">Upload Achievement</h2> */}
         <textarea
           className="w-full border rounded-lg p-3 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          rows="3"
+          rows="1"
           placeholder="Write description..."
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
         <input
+          ref={fileInputRef}
           type="file"
           accept="image/*"
           className="mb-4 w-full"

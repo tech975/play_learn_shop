@@ -277,12 +277,32 @@ const UserProfile = () => {
                 </Stack>
               </Box>
 
+              {/* Logout Button */}
+              <Box sx={{ textAlign: 'center', mt: 4 }}>
+                <Button
+                  variant="outlined"
+                  color="error"
+                  onClick={() => dispatch(logout())}
+                  sx={{
+                    borderRadius: 2,
+                    textTransform: 'none',
+                    fontWeight: 'bold',
+                    px: 4,
+                    py: 1
+                  }}
+                >
+                  Logout
+                </Button>
+              </Box>
+
+
               <Box sx={{
                 display: 'flex',
                 gap: 1,
                 alignSelf: { xs: 'center', md: 'flex-end' },
                 mt: { xs: 2, md: 0 }
               }}>
+
                 <Button
                   variant="contained"
                   startIcon={<EditIcon />}
@@ -497,7 +517,7 @@ const UserProfile = () => {
             )}
 
             {activeTab === 1 && (
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+              <Box className="w-full max-h-96 flex justify-between items-start mb-3 overflow-y-scroll">
                 {/* Certification Upload Modal */}
                 <CertificationUploadModal
                   open={certificationModalOpen}
@@ -547,24 +567,6 @@ const UserProfile = () => {
             )}
           </CardContent>
         </Card>
-
-        {/* Logout Button */}
-        <Box sx={{ textAlign: 'center', mt: 4 }}>
-          <Button
-            variant="outlined"
-            color="error"
-            onClick={() => dispatch(logout())}
-            sx={{
-              borderRadius: 2,
-              textTransform: 'none',
-              fontWeight: 'bold',
-              px: 4,
-              py: 1
-            }}
-          >
-            Logout
-          </Button>
-        </Box>
       </Container>
 
       <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>

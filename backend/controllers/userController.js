@@ -50,6 +50,7 @@ exports.login = async (req, res) => {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
     const token = generateToken(user._id, user.role);
+
     res.json({
       _id: user._id,
       name: user.name,
@@ -60,6 +61,7 @@ exports.login = async (req, res) => {
       dob: user.dob,
       gender: user.gender,
       profilePic: user.profilePic,
+      achievements: user.achievements,
       token
     });
 
@@ -110,11 +112,11 @@ exports.uploadProfilePic = async (req, res) => {
 
 exports.uploadAchievement = async (req, res) => {
 
-  const { image, description } = req.body;
+  const { description } = req.body;
 
   try {
 
-    if (!image && !description) {
+    if (!req.file && !description) {
       return res.status(400).json({ message: "Image and Description are required" });
     }
 
@@ -124,14 +126,11 @@ exports.uploadAchievement = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    user.achievements.push({ image, description });
+    user.achievements.push({ image: req.file.path, description });
     await user.save();
 
 
-    res.status(200).json({
-      message: "Achievement added successfully",
-      achievements: user.achievements
-    });
+    res.status(200).json(user);
 
   } catch (error) {
     console.log("Error while uploading achivements :", error);
@@ -155,18 +154,7 @@ exports.updateUserProfile = async (req, res) => {
 
     await user.save();
 
-    res.json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      phone: user.phone,
-      location: user.location,
-      dob: user.dob,
-      gender: user.gender,
-      profilePic: user.profilePic,
-      preferredSports: user.preferredSports,
-    });
+    res.status(200).json(user);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
